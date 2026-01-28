@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCM - Business Continuity Management</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Crisis Mode Banner -->
+    <div class="crisis-banner" id="crisisBanner">
+        <div class="crisis-content">
+            <svg class="crisis-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <h1>Aktiveeri kriisirežiim</h1>
+        </div>
+        <p class="crisis-subtitle">Kiire juurdepääs kriitiliste plaanide ja kontaktidega</p>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container" id="mainContent">
+        <!-- Home Page -->
+        <div class="page active" id="homePage">
+            <div class="cards-grid">
+                <!-- Plaanid Card -->
+                <div class="card" onclick="navigateTo('plansPage')">
+                    <div class="icon-circle icon-blue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <h2>Plaanid</h2>
+                    <p>Business Continuity plaanide vaatamine ja otsing</p>
+                </div>
+
+                <!-- Kriitilised kontaktid Card -->
+                <div class="card" onclick="navigateTo('contactsPage')">
+                    <div class="icon-circle icon-green">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h2>Kriitilised kontaktid</h2>
+                    <p>Kriitilised kontaktid ja kommunikatsioon</p>
+                </div>
+
+                <!-- Kommunikatsioon Card -->
+                <div class="card" onclick="navigateTo('commPage')">
+                    <div class="icon-circle icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <h2>Kommunikatsioon</h2>
+                    <p>Kommunikatsiooni plaanid ja kanalid</p>
+                </div>
+            </div>
+
+            <!-- System Status -->
+            <div class="system-status">
+                <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <div>
+                    <h3>Süsteemi olek</h3>
+                    <p>Kõik kriitilised süsteemid töötavad tavapäraselt</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Communication Page -->
+        <div class="page" id="commPage">
+            <div class="page-header">
+                <button class="back-btn" onclick="navigateTo('homePage')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div>
+                    <h1>Kommunikatsioon</h1>
+                    <p>Kommunikatsiooni plaanid ja kanalid</p>
+                </div>
+                <div class="header-status">
+                    <span class="status-dot status-active"></span>
+                    <span class="status-dot status-inactive"></span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2>Kommunikatsiooni kanalid</h2>
+                <p class="section-description">Erinevad kommunikatsiooni meetodid kriisiolukorras kasutamiseks.</p>
+
+                <div class="comm-channels">
+                    <div class="comm-card">
+                        <div class="comm-header">
+                            <div class="comm-icon icon-purple">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="5" y="2" width="14" height="20" rx="2"/>
+                                    <path d="M12 18h.01" stroke="white" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Massiteavitus (SMS)</h3>
+                                <p>SMS kõigile töötajatele</p>
+                            </div>
+                            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
+                        <div class="comm-footer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3L22 4"/>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                            </svg>
+                            <span>Mallid ja kontroll-nimekirjad saadaval</span>
+                        </div>
+                    </div>
+
+                    <div class="comm-card">
+                        <div class="comm-header">
+                            <div class="comm-icon icon-red">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Kõnekett</h3>
+                                <p>Järjestikused telefonikõned</p>
+                            </div>
+                            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
+                        <div class="comm-footer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3L22 4"/>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                            </svg>
+                            <span>Mallid ja kontroll-nimekirjad saadaval</span>
+                        </div>
+                    </div>
+
+                    <div class="comm-card">
+                        <div class="comm-header">
+                            <div class="comm-icon icon-blue">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                                    <polyline points="22,6 12,13 2,6" stroke="white" stroke-width="2" fill="none"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>E-post</h3>
+                                <p>E-posti grupid ja mallid</p>
+                            </div>
+                            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
+                        <div class="comm-footer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3L22 4"/>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                            </svg>
+                            <span>Mallid ja kontroll-nimekirjad saadaval</span>
+                        </div>
+                    </div>
+
+                    <div class="comm-card">
+                        <div class="comm-header">
+                            <div class="comm-icon icon-teal">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <rect x="2" y="6" width="20" height="12" rx="2"/>
+                                    <path d="M6 10h4v4H6z" fill="white"/>
+                                    <line x1="14" y1="10" x2="18" y2="10" stroke="white" stroke-width="2"/>
+                                    <line x1="14" y1="14" x2="18" y2="14" stroke="white" stroke-width="2"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Raadio/Sat</h3>
+                                <p>Alternatiivsed kanalid</p>
+                            </div>
+                            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
+                        <div class="comm-footer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3L22 4"/>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                            </svg>
+                            <span>Mallid ja kontroll-nimekirjad saadaval</span>
+                        </div>
+                    </div>
+
+                    <div class="comm-card">
+                        <div class="comm-header">
+                            <div class="comm-icon icon-purple">
+                                <svg viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                                    <circle cx="9" cy="10" r="1" fill="white"/>
+                                    <circle cx="12" cy="10" r="1" fill="white"/>
+                                    <circle cx="15" cy="10" r="1" fill="white"/>
+                                </svg>
+                            </div>
+                            <div>
+                                <h3>Teams/Chat</h3>
+                                <p>Digitaalsed suhtluskanalid</p>
+                            </div>
+                            <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="9 18 15 12 9 6"/>
+                            </svg>
+                        </div>
+                        <div class="comm-footer">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M9 11l3 3L22 4"/>
+                                <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                            </svg>
+                            <span>Mallid ja kontroll-nimekirjad saadaval</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contacts Page -->
+        <div class="page" id="contactsPage">
+            <div class="contacts-header">
+                <button class="back-btn" onclick="navigateTo('homePage')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="group-filters">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                    </svg>
+                    <span>Grupp:</span>
+                    <button class="filter-btn active" onclick="filterContacts('all')">Kõik</button>
+                    <button class="filter-btn" onclick="filterContacts('HTK')">HTK</button>
+                    <button class="filter-btn" onclick="filterContacts('HHLA')">HHLA (HIG)</button>
+                    <button class="filter-btn" onclick="filterContacts('CERT')">CERT.EE</button>
+                    <button class="filter-btn" onclick="filterContacts('SADAM')">SADAM</button>
+                    <button class="filter-btn" onclick="filterContacts('MUUD')">MUUD</button>
+                </div>
+                <button class="add-btn" onclick="alert('Lisa uus kontakt')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                        <line x1="12" y1="9" x2="12" y2="13"/>
+                        <line x1="12" y1="17" x2="12.01" y2="17"/>
+                    </svg>
+                    Näita kriitilisi
+                </button>
+            </div>
+
+            <h2 class="contacts-count">6 kontakti leitud</h2>
+
+            <div class="contacts-grid" id="contactsGrid">
+                <!-- Contacts will be generated by JavaScript -->
+            </div>
+        </div>
+
+        <!-- Plans Page -->
+        <div class="page" id="plansPage">
+            <div class="page-header">
+                <button class="back-btn" onclick="navigateTo('homePage')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div>
+                    <h1>Plaanid</h1>
+                    <p>Business Continuity plaanide vaatamine</p>
+                </div>
+            </div>
+
+            <div class="plans-grid" id="plansGrid">
+                <!-- Plans will be generated by JavaScript -->
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+</html>

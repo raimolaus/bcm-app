@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCM - Business Continuity Management</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="crisis-styles.css">
+    <link rel="stylesheet" href="plans-styles.css">
+</head>
+<body>
+    <div class="crisis-banner clickable" id="crisisBanner" onclick="activateCrisisMode()">
+        <div class="crisis-content">
+            <svg class="crisis-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+            </svg>
+            <h1>Aktiveeri kriisirežiim</h1>
+        </div>
+        <p class="crisis-subtitle">Kiire juurdepääs kriitiliste plaanide ja kontaktidega</p>
+    </div>
+
+    <main class="container" id="mainContent">
+        <div class="page active" id="homePage">
+            <div class="cards-grid">
+                <div class="card" onclick="navigateTo('plansPage')">
+                    <div class="icon-circle icon-blue">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                        </svg>
+                    </div>
+                    <h2>Plaanid</h2>
+                    <p>Business Continuity plaanide vaatamine ja otsing</p>
+                </div>
+                <div class="card" onclick="navigateTo('contactsPage')">
+                    <div class="icon-circle icon-green">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                        </svg>
+                    </div>
+                    <h2>Kriitilised kontaktid</h2>
+                    <p>Kriitilised kontaktid ja kommunikatsioon</p>
+                </div>
+                <div class="card" onclick="navigateTo('commPage')">
+                    <div class="icon-circle icon-orange">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <h2>Kommunikatsioon</h2>
+                    <p>Kommunikatsiooni plaanid ja kanalid</p>
+                </div>
+            </div>
+            <div class="system-status">
+                <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="12" y1="8" x2="12" y2="12"/>
+                    <line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <div>
+                    <h3>Süsteemi olek</h3>
+                    <p>Kõik kriitilised süsteemid töötavad tavapäraselt</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="crisisModePage">
+            <div class="crisis-mode-header">
+                <button class="back-btn" onclick="deactivateCrisisMode()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div>
+                    <h1>KRIISIREŽIIM AKTIVEERITUD</h1>
+                    <p>Vali hädaolukorra stsenaarium</p>
+                </div>
+                <button class="log-btn" onclick="navigateTo('incidentLogPage')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    </svg>
+                    Logi
+                </button>
+            </div>
+            <div class="scenarios-grid" id="scenariosGrid"></div>
+        </div>
+
+        <div class="page" id="scenarioDetailPage">
+            <div class="scenario-detail-header">
+                <button class="back-btn" onclick="navigateTo('crisisModePage')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div>
+                    <h1 id="scenarioTitle">Stsenaarium</h1>
+                    <p id="scenarioDescription">Kirjeldus</p>
+                </div>
+                <button class="log-btn" onclick="navigateTo('incidentLogPage')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                    </svg>
+                    Logi
+                </button>
+            </div>
+            <div class="scenario-content">
+                <div class="scenario-block">
+                    <h2 class="block-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <polyline points="12 6 12 12 16 14"/>
+                        </svg>
+                        Kiirtegevused
+                    </h2>
+                    <div id="quickActionsChecklist" class="checklist"></div>
+                </div>
+                <div class="scenario-block">
+                    <h2 class="block-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 11l3 3L22 4"/>
+                            <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+                        </svg>
+                        Tegevuskava
+                    </h2>
+                    <div id="actionPlanChecklist" class="checklist"></div>
+                </div>
+                <div class="scenario-block">
+                    <h2 class="block-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                        Kommunikatsioon
+                    </h2>
+                    <div id="communicationButtons" class="comm-buttons-grid"></div>
+                </div>
+                <div class="scenario-block">
+                    <h2 class="block-title">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                        </svg>
+                        Kontaktid
+                    </h2>
+                    <div id="scenarioContacts" class="scenario-contacts-grid"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="page" id="incidentLogPage">
+            <div class="page-header">
+                <button class="back-btn" onclick="window.history.back()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div>
+                    <h1>Sündmuste logi</h1>
+                    <p>Kõik tegevused ja märkmed</p>
+                </div>
+                <button class="export-btn" onclick="exportLog()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="7 10 12 15 17 10"/>
+                        <line x1="12" y1="15" x2="12" y2="3"/>
+                    </svg>
+                    Ekspordi
+                </button>
+            </div>
+            <div class="log-timeline" id="logTimeline"></div>
+        </div>
+
+        <div class="page" id="contactsPage">
+            <div class="contacts-header">
+                <button class="back-btn" onclick="navigateTo('homePage')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="group-filters">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                        <circle cx="9" cy="7" r="4"/>
+                    </svg>
+                    <span>Grupp:</span>
+                    <button class="filter-btn active" onclick="filterContacts('all')">Kõik</button>
+                    <button class="filter-btn" onclick="filterContacts('HTK')">HTK</button>
+                    <button class="filter-btn" onclick="filterContacts('HHLA')">HHLA (HIG)</button>
+                    <button class="filter-btn" onclick="filterContacts('CERT')">CERT.EE</button>
+                    <button class="filter-btn" onclick="filterContacts('SADAM')">SADAM</button>
+                    <button class="filter-btn" onclick="filterContacts('MUUD')">MUUD</button>
+                </div>
+            </div>
+            <h2 class="contacts-count">6 kontakti leitud</h2>
+            <div class="contacts-grid" id="contactsGrid"></div>
+        </div>
+
+        <div class="page" id="commPage">
+            <div class="page-header">
+                <button class="back-btn" onclick="navigateTo('homePage')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div><h1>Kommunikatsioon</h1><p>Kommunikatsiooni plaanid ja kanalid</p></div>
+            </div>
+            <div class="section">
+                <h2>Kommunikatsiooni kanalid</h2>
+            </div>
+        </div>
+
+        <div class="page" id="plansPage">
+            <div class="page-header">
+                <button class="back-btn" onclick="navigateTo('homePage')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div><h1>Plaanid</h1><p>Business Continuity plaanide vaatamine</p></div>
+            </div>
+            <div class="plans-grid" id="plansGrid"></div>
+        </div>
+    </main>
+
+    <script src="crisis-data.js"></script>
+    <script src="app.js"></script>
+    <script src="crisis-app.js"></script>
+    <script src="plans-app.js"></script>
+</body>
+</html>

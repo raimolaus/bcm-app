@@ -1,0 +1,36 @@
+# Node modules (kui tulevikus kasutad)
+node_modules/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Backup files
+*.backup
+*_backup
+*.old
+*~
+
+# Temporary files
+*.tmp
+*.temp
+.cache/
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables (tulevikus)
+.env
+.env.local
+
+# Build outputs (tulevikus)
+dist/
+build/

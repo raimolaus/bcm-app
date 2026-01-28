@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="et">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BCM Test</title>
+    <style>
+        body { font-family: Arial; padding: 20px; }
+        .button { padding: 20px; background: red; color: white; cursor: pointer; margin: 10px; display: inline-block; }
+    </style>
+</head>
+<body>
+    <h1>BCM TEST</h1>
+    <div class="button" onclick="test1()">Test 1: Alert</div>
+    <div class="button" onclick="test2()">Test 2: Scenarios</div>
+    <div class="button" onclick="test3()">Test 3: Plans</div>
+    <div id="output"></div>
+
+    <script src="crisis-data.js"></script>
+    <script>
+        function test1() {
+            alert('Test 1 töötab!');
+        }
+
+        function test2() {
+            if (typeof scenarios !== 'undefined') {
+                document.getElementById('output').innerHTML = 'Scenarios loaded: ' + scenarios.length;
+            } else {
+                document.getElementById('output').innerHTML = 'ERROR: scenarios not defined!';
+            }
+        }
+
+        function test3() {
+            if (typeof plans !== 'undefined') {
+                document.getElementById('output').innerHTML = 'Plans loaded: ' + plans.length;
+            } else {
+                document.getElementById('output').innerHTML = 'ERROR: plans not defined!';
+            }
+        }
+
+        console.log('Test page loaded');
+        console.log('Scenarios:', typeof scenarios);
+        console.log('Plans:', typeof plans);
+    </script>
+</body>
+</html>

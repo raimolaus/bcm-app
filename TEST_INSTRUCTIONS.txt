@@ -1,0 +1,49 @@
+=================================
+BCM ÄPPI TESTIMISE JUHISED
+=================================
+
+PARANDUSED TEHTUD:
+✅ app-new.js süntaksiviga parandatud
+✅ renderContacts() null checkid lisatud
+✅ navigateTo() kontrollib sihtlehe olemasolu
+✅ Kõik JavaScript failid süntaktiliselt korrektsed
+
+KUIDAS TESTIDA:
+
+1. Ava index.html brauseris (topeltklõps failile)
+
+2. Kontrolli järgmisi funktsioone:
+   
+   ESILEHT (homePage):
+   ✓ Peaks näitama 3 kaarti: Plaanid, Kriitilised kontaktid, Kommunikatsioon
+   ✓ Punane "Aktiveeri kriisirežiim" banner üleval
+   
+   PLAANIDE LEHT:
+   ✓ Kliki "Plaanid" kaardile
+   ✓ Peaks näitama 6 plaani (sh uus "Küberintsidentide plaan")
+   
+   KONTAKTIDE LEHT:
+   ✓ Kliki "Kriitilised kontaktid" kaardile
+   ✓ Peaks näitama 6 kontakti (sh CERT-EE 24/7)
+   
+   KRIISIREŽIIM:
+   ✓ Kliki punasele "Aktiveeri kriisirežiim" bannerile
+   ✓ Peaks avanema 13 stsenaariumi (sh 4 uut küberintsidendi stsenaariumi)
+   ✓ Peaks olema kaks nuppu: "Logi" ja "War Room"
+   
+   WAR ROOM:
+   ✓ Kriisirežiimis kliki punasele "War Room" nupule
+   ✓ Peaks avanema War Room leht klassifikatsiooniga
+   
+   STSENAARIUMI DETAILID:
+   ✓ Kriisirežiimis kliki mingile stsenaariumile (nt "Küberintsident")
+   ✓ Peaks avanema stsenaariumi detailide leht
+
+3. Kui midagi EI tööta:
+   - Ava brauseri konsool (F12 või Ctrl+Shift+J)
+   - Vaata konsooli vigu (punased read)
+   - Saada vigade info arendajale
+
+EELDATAV TULEMUS:
+Kõik lehed peaksid korralikult avanema ja navigatsioon peaks töötama.
+

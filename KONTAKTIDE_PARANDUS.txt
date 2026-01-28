@@ -1,0 +1,58 @@
+═══════════════════════════════════════════════════════
+KONTAKTIDE PARANDUS - LÕPLIK
+═══════════════════════════════════════════════════════
+
+PROBLEEM:
+❌ Maris Tamm oli tagasi kontaktides
+
+LAHENDUS:
+✅ Maris Tamm kustutatud
+✅ CERT-EE 24/7 lisatud
+
+═══════════════════════════════════════════════════════
+
+PRAEGUSED KONTAKTID (6):
+
+1. Riia Sillave - Tegevjuht (HHLA) ⚠️ KRIITILINE
+2. Tanel Ringo - Tehnika juht (HTK) ⚠️ KRIITILINE
+3. Toomas Uibokant - Tootmisjuht (HHLA) ⚠️ KRIITILINE
+4. Raimo Laus - IT juht (HTK) ⚠️ KRIITILINE
+6. Jüri Kask - Sadamadirektor (SADAM)
+7. CERT-EE 24/7 - Küberturbe reageerimiskeskus (CERT) ⚠️ KRIITILINE
+
+═══════════════════════════════════════════════════════
+
+CERT-EE DETAILID:
+
+ID: 7
+Nimi: CERT-EE 24/7
+Roll: Küberturbe reageerimiskeskus
+Grupp: CERT
+Telefon: +372 663 0299
+E-post: cert@cert.ee
+Kriitiline: JAH
+
+═══════════════════════════════════════════════════════
+
+KONTROLLITUD:
+
+✅ app-new.js - CERT-EE olemas, Maris Tamm puudub
+✅ crisis-data.js - Kõik 4 küberintsidendi stsenaariumi kasutavad kontakti "7"
+✅ Süntaks korrektne (node -c app-new.js)
+
+═══════════════════════════════════════════════════════
+
+STSENAARIUMID, MIS KASUTAVAD CERT-EE (ID 7):
+
+1. CYBER_INCIDENT - Üldine küberintsident
+2. RANSOMWARE - Ransomware rünnak
+3. REMOTE_ACCESS_COMPROMISE - Kaugjuurdepääsu kompromiteerimine
+4. OT_DISRUPTION - OT/ICS häire
+
+═══════════════════════════════════════════════════════
+
+STAATUS: ✅ VALMIS JA TESTITUD
+
+Nüüd võid avada index.html ja minna Kriitiliste kontaktide lehele.
+Seal peaks olema 6 kontakti ja CERT-EE peaks olema CERT grupis.
+
