@@ -21,6 +21,12 @@ desktop.ini
 *.temp
 .cache/
 
+# Development/temporary batch files
+create-structure.bat
+move-files.bat
+launch-bcm-dev.bat
+index_old*.html
+
 # IDE settings
 .vscode/
 .idea/

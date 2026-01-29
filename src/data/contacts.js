@@ -1,5 +1,7 @@
-// Sample data
-const contacts = [
+// Contacts Data - BCM App
+// Critical contacts for crisis management
+
+export const contacts = [
     {
         id: 1,
         name: "Riia Sillave",
@@ -37,13 +39,15 @@ const contacts = [
         critical: true
     },
     {
-        id: 5,
-        name: "Maris Tamm",
-        role: "Turvajuht",
+        id: 7,
+        name: "CERT-EE 24/7",
+        role: "Küberturbe reageerimiskeskus",
         group: "CERT",
-        phone: "+3725550005",
-        email: "maris.tamm@cert.ee",
-        critical: false
+        phone: "+372 663 0299",
+        alternatePhone: "+372 5308 8299",
+        email: "cert@cert.ee",
+        website: "raport.cert.ee",
+        critical: true
     },
     {
         id: 6,
@@ -56,25 +60,24 @@ const contacts = [
     }
 ];
 
-    // In real app: window.location.href = `tel:${phone}`;
+// Get contact by ID
+export function getContactById(id) {
+    return contacts.find(c => c.id === id);
 }
 
-function smsContact(phone) {
-    alert(`Saadetakse SMS numbrile: ${phone}`);
-    // In real app: window.location.href = `sms:${phone}`;
+// Get contacts by group
+export function getContactsByGroup(group) {
+    if (group === 'all') return contacts;
+    return contacts.filter(c => c.group === group);
 }
 
-function emailContact(email) {
-    alert(`Saadetakse e-post aadressile: ${email}`);
-    // In real app: window.location.href = `mailto:${email}`;
+// Get critical contacts only
+export function getCriticalContacts() {
+    return contacts.filter(c => c.critical);
 }
 
-    // In real app: navigate to plan detail page
+// Get all unique groups
+export function getGroups() {
+    const groups = [...new Set(contacts.map(c => c.group))];
+    return ['all', ...groups];
 }
-
-// Initialize
-document.addEventListener('DOMContentLoaded', () => {
-    renderContacts();
-    
-});
-console.log('app.js loaded');
