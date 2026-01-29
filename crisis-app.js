@@ -723,3 +723,19 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 console.log('Incident metrics functions loaded');
+
+// Expose all functions globally for onclick handlers
+window.activateCrisisMode = activateCrisisMode;
+window.deactivateCrisisMode = deactivateCrisisMode;
+window.openScenario = openScenario;
+window.toggleChecklistItem = toggleChecklistItem;
+window.sendCommunication = sendCommunication;
+window.makeCall = makeCall;
+window.exportLog = exportLog;
+window.selectSLevel = selectSLevel;
+window.setT0Now = setT0Now;
+window.toggleAdditionalMetrics = toggleAdditionalMetrics;
+window.saveIncidentMetrics = saveIncidentMetrics;
+window.clearIncidentMetrics = clearIncidentMetrics;
+window.viewLogEntry = viewLogEntry;
+window.deleteLogEntry = deleteLogEntry;
