@@ -17,6 +17,13 @@ import {
     goToSystemStatus,
     viewActiveIncidents
 } from './utils/systemStatus.js';
+import {
+    initCrisisMode,
+    activateCrisisMode,
+    deactivateCrisisMode,
+    isCrisisModeActive,
+    updateCrisisModeUI
+} from './utils/crisisMode.js';
 
 // Import pages
 import { initHomePage } from './pages/HomePage.js';
@@ -36,12 +43,13 @@ console.log('Version: 0.2 Modular');
 // Initialize all systems
 function initializeApp() {
     console.log('Initializing systems...');
-    
+
     // Initialize utilities
     initNavigation();
     initStorage();
     initLogger();
     initSystemStatus();
+    initCrisisMode();
     
     // Initialize pages
     initHomePage();
@@ -64,6 +72,12 @@ function initializeApp() {
     window.resetToAutoStatus = resetToAutoStatus;
     window.goToSystemStatus = goToSystemStatus;
     window.viewActiveIncidents = viewActiveIncidents;
+
+    // Expose crisis mode functions
+    window.activateCrisisMode = activateCrisisMode;
+    window.deactivateCrisisMode = deactivateCrisisMode;
+    window.isCrisisModeActive = isCrisisModeActive;
+    window.updateCrisisModeUI = updateCrisisModeUI;
 
     // Expose data globally for legacy scripts
     window.scenarios = scenarios;

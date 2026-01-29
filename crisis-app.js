@@ -14,20 +14,6 @@ let checklistStates = {};
 let currentIncidentMetrics = null;
 let currentIncidentLogId = null;
 
-// Crisis Mode Activation
-function activateCrisisMode() {
-    navigateTo('crisisModePage');
-    renderScenarios();
-    addToLog('INFO', 'Kriisirežiim aktiveeritud');
-}
-
-function deactivateCrisisMode() {
-    if (confirm('Kas oled kindel, et soovid kriisirežiimi deaktiveerida?')) {
-        navigateTo('homePage');
-        addToLog('INFO', 'Kriisirežiim deaktiveeritud');
-    }
-}
-
 // Render Scenarios Grid
 function renderScenarios() {
     const grid = document.getElementById('scenariosGrid');
@@ -796,8 +782,8 @@ document.addEventListener('DOMContentLoaded', function() {
 console.log('Incident metrics functions loaded');
 
 // Expose all functions globally for onclick handlers
-window.activateCrisisMode = activateCrisisMode;
-window.deactivateCrisisMode = deactivateCrisisMode;
+// Note: activateCrisisMode and deactivateCrisisMode are now in src/utils/crisisMode.js
+window.renderScenarios = renderScenarios;
 window.openScenario = openScenario;
 window.toggleChecklistItem = toggleChecklistItem;
 window.sendCommunication = sendCommunication;
