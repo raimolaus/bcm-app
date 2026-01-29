@@ -61,13 +61,16 @@ if (document.readyState === 'loading') {
     initializeApp();
 }
 
-// Load legacy crisis script (plans-app.js now replaced with PlansPage.js module)
+// Load legacy crisis script as module (contains ES6 imports)
 const legacyScripts = [
-    'crisis-app.js'
+    { src: 'crisis-app.js', type: 'module' }
 ];
 
 legacyScripts.forEach(script => {
     const scriptElement = document.createElement('script');
-    scriptElement.src = script;
+    scriptElement.src = script.src;
+    if (script.type) {
+        scriptElement.type = script.type;
+    }
     document.head.appendChild(scriptElement);
 });

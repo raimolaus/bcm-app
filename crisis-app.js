@@ -1,8 +1,18 @@
 // Crisis Mode Application Logic
 
+import {
+    SLevelDetails,
+    IncidentMetrics,
+    IncidentLogEntry,
+    isCyberScenario,
+    getDefaultNotificationRequirements
+} from './src/data/incident-types.js';
+
 let currentScenario = null;
 let incidentLog = [];
 let checklistStates = {};
+let currentIncidentMetrics = null;
+let currentIncidentLogId = null;
 
 // Crisis Mode Activation
 function activateCrisisMode() {
@@ -56,6 +66,16 @@ function openScenario(scenarioId) {
 
     // Render blocks
     renderQuickActions();
+
+    // Show/hide Incident Metrics block for cyber scenarios only
+    const metricsBlock = document.getElementById('incidentMetricsBlock');
+    if (isCyberScenario(scenarioId)) {
+        metricsBlock.style.display = 'block';
+        renderIncidentMetrics();
+    } else {
+        metricsBlock.style.display = 'none';
+    }
+
     renderActionPlan();
     renderCommunicationButtons();
     renderScenarioContacts();
@@ -243,16 +263,130 @@ function renderIncidentLog() {
         return;
     }
 
-    container.innerHTML = incidentLog.reverse().map(entry => `
-        <div class="log-entry log-${entry.type.toLowerCase()}">
-            <div class="log-time">${entry.timestamp}</div>
-            <div class="log-content">
-                <span class="log-type">${getLogTypeIcon(entry.type)}</span>
-                <p>${entry.message}</p>
-                <span class="log-user">${entry.user}</span>
+    // Get stored incident log entries (with metrics)
+    const storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+
+    if (storedLog.length === 0) {
+        container.innerHTML = '<p class="empty-log">Logis pole veel kirjeid</p>';
+        return;
+    }
+
+    container.innerHTML = storedLog.reverse().map(entry => {
+        const metrics = entry.incidentMetrics;
+        const hasMetrics = metrics && isCyberScenario(entry.scenarioId);
+
+        const createdDate = new Date(entry.createdAt);
+        const updatedDate = new Date(entry.updatedAt);
+
+        return `
+            <div class="incident-log-entry ${hasMetrics ? 'cyber-incident' : ''}">
+                <div class="log-entry-header">
+                    <h3>${entry.scenarioName}</h3>
+                    <span class="log-entry-id">${entry.id}</span>
+                </div>
+                <div class="log-entry-meta">
+                    <span>🕐 Loodud: ${createdDate.toLocaleString('et-EE')}</span>
+                    ${entry.updatedAt !== entry.createdAt ? `<span>🔄 Uuendatud: ${updatedDate.toLocaleString('et-EE')}</span>` : ''}
+                </div>
+
+                ${hasMetrics ? `
+                    <div class="log-metrics-summary">
+                        <h4>📊 Intsidenti mõõtmed</h4>
+                        <div class="metrics-grid">
+                            ${metrics.t0 ? `<div class="metric-item"><strong>t0:</strong> ${new Date(metrics.t0).toLocaleString('et-EE')}</div>` : ''}
+                            ${metrics.sLevel ? `<div class="metric-item"><strong>S-tase:</strong> <span class="badge badge-${SLevelDetails[metrics.sLevel].class}">${metrics.sLevel}</span></div>` : ''}
+                            ${metrics.affectedDomain ? `<div class="metric-item"><strong>Domeen:</strong> ${metrics.affectedDomain}</div>` : ''}
+                            ${metrics.serviceDisruption ? `<div class="metric-item"><strong>Teenuse seiskus:</strong> ${metrics.serviceDisruption}</div>` : ''}
+                            ${metrics.dataBreachSuspicion ? `<div class="metric-item"><strong>Andmeleke kahtlus:</strong> ${metrics.dataBreachSuspicion}</div>` : ''}
+                            ${metrics.spreadStatus ? `<div class="metric-item"><strong>Leviku staatus:</strong> ${metrics.spreadStatus}</div>` : ''}
+                        </div>
+                        ${metrics.shortDescription ? `<div class="metric-description"><strong>Kirjeldus:</strong> ${metrics.shortDescription}</div>` : ''}
+
+                        <div class="notifications-summary">
+                            <h5>Teavituste staatus:</h5>
+                            <div class="notifications-list">
+                                ${renderNotificationStatus('CERT-EE', metrics.notifications.certEE)}
+                                ${renderNotificationStatus('DPO/GDPR', metrics.notifications.dpoGDPR)}
+                                ${renderNotificationStatus('Juhtkond', metrics.notifications.management)}
+                            </div>
+                        </div>
+
+                        ${metrics.reporter || metrics.systemLocation || metrics.logger ? `
+                            <div class="additional-info">
+                                ${metrics.reporter ? `<div><strong>Raporteerija:</strong> ${metrics.reporter}</div>` : ''}
+                                ${metrics.systemLocation ? `<div><strong>Süsteem:</strong> ${metrics.systemLocation}</div>` : ''}
+                                ${metrics.logger ? `<div><strong>Logija:</strong> ${metrics.logger}</div>` : ''}
+                            </div>
+                        ` : ''}
+                    </div>
+                ` : ''}
+
+                <div class="log-entry-actions">
+                    <button class="btn-secondary-sm" onclick="viewLogEntry('${entry.id}')">👁️ Vaata</button>
+                    <button class="btn-secondary-sm" onclick="deleteLogEntry('${entry.id}')">🗑️ Kustuta</button>
+                </div>
             </div>
+        `;
+    }).join('');
+}
+
+// Helper function to render notification status
+function renderNotificationStatus(recipient, notification) {
+    if (!notification) return '';
+
+    const statusBadge = notification.status === 'SENT' ? 'success' :
+                       notification.status === 'PLANNED' ? 'warning' : 'default';
+
+    const timestamp = notification.timestamp ?
+                     ` (${new Date(notification.timestamp).toLocaleString('et-EE')})` : '';
+
+    return `
+        <div class="notification-summary-item">
+            <strong>${recipient}:</strong>
+            <span class="badge badge-${statusBadge}">${getNotificationStatusText(notification.status)}</span>
+            ${notification.required === 'REQUIRED' ? '<span class="required-badge">⚠️ Vajalik</span>' : ''}
+            ${timestamp}
         </div>
-    `).join('');
+    `;
+}
+
+// Helper function to get notification status text
+function getNotificationStatusText(status) {
+    const texts = {
+        'PLANNED': 'Planeeritud',
+        'SENT': 'Saadetud',
+        'NOT_NEEDED': 'Pole vaja'
+    };
+    return texts[status] || status;
+}
+
+// View log entry details
+function viewLogEntry(entryId) {
+    const storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    const entry = storedLog.find(e => e.id === entryId);
+
+    if (!entry) {
+        alert('Logikirjet ei leitud');
+        return;
+    }
+
+    alert(`Logikirje detailid:\n\n${JSON.stringify(entry, null, 2)}`);
+    // TODO: Implement proper detail view modal
+}
+
+// Delete log entry
+function deleteLogEntry(entryId) {
+    if (!confirm('Kas oled kindel, et soovid selle logikirje kustutada?')) {
+        return;
+    }
+
+    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    storedLog = storedLog.filter(e => e.id !== entryId);
+    localStorage.setItem('incidentLog', JSON.stringify(storedLog));
+
+    alert('Logikirje kustutatud');
+    renderIncidentLog();
+    addToLog('SYSTEM_EVENT', `Logikirje kustutatud: ${entryId}`);
 }
 
 function getLogTypeIcon(type) {
@@ -308,88 +442,284 @@ document.addEventListener('DOMContentLoaded', function() {
 console.log('crisis-app.js loaded');
 
 
-// WAR ROOM FUNCTIONALITY
-let warRoomData = {
-    t0: null,
-    reporter: null,
-    classification: null,
-    isActive: false
-};
+// =============================================================================
+// INCIDENT METRICS FUNCTIONALITY
+// =============================================================================
 
-function openWarRoom() {
-    navigateTo('warRoomPage');
-    renderClassificationCards();
-    addToLog('INFO', 'War Room avatud');
+let selectedSLevel = null;
+
+// Render Incident Metrics Form
+function renderIncidentMetrics() {
+    renderSLevelGrid();
+
+    // Initialize with new metrics if none exist
+    if (!currentIncidentMetrics) {
+        currentIncidentMetrics = new IncidentMetrics();
+    }
+
+    // Load existing values if any
+    loadIncidentMetricsToForm();
 }
 
-function setT0Now() {
-    const now = new Date();
-    const dateTimeLocal = now.toISOString().slice(0, 16);
-    document.getElementById('t0Time').value = dateTimeLocal;
-    warRoomData.t0 = now;
-}
-
-function renderClassificationCards() {
-    const classifications = [
-        { id: 'S0', name: 'KRIITILINE', description: 'OT/terminali põhiprotsess seiskub; ransomware', response: '≤15 min', containment: '≤1 h', nis2: 'TÕENÄOLINE', class: 'critical' },
-        { id: 'S1', name: 'KÕRGE', description: 'Oluline teenusehäire; kinnitatud pahavara', response: '≤30 min', containment: '≤4 h', nis2: 'VÕIMALIK', class: 'high' },
-        { id: 'S2', name: 'KESKMINE', description: 'Piiratud intsident ühes süsteemis', response: '≤2 h', containment: '≤24 h', nis2: 'EBAUSUTAV', class: 'medium' },
-        { id: 'S3', name: 'MADAL', description: 'Turvasündmus/hoiatus, false positive', response: '≤24 h', containment: '≤48 h', nis2: 'EI', class: 'low' }
-    ];
-    const grid = document.getElementById('classificationGrid');
+// Render S-Level Grid
+function renderSLevelGrid() {
+    const grid = document.getElementById('sLevelGrid');
     if (!grid) return;
-    grid.innerHTML = classifications.map(c => `
-        <div class="classification-card ${c.class}" onclick="selectClassification('${c.id}')">
-            <div class="classification-badge ${c.class}">${c.id}</div>
-            <h3>${c.name}</h3>
-            <p>${c.description}</p>
-            <div class="classification-meta">
-                <div>⏱️ ${c.response}</div>
-                <div>🎯 ${c.containment}</div>
-                <div>📋 ${c.nis2}</div>
+
+    grid.innerHTML = Object.values(SLevelDetails).map(level => `
+        <div class="s-level-card ${level.class} ${selectedSLevel === level.id ? 'selected' : ''}"
+             onclick="selectSLevel('${level.id}')">
+            <div class="s-level-badge ${level.class}">${level.id}</div>
+            <div class="s-level-info">
+                <h4>${level.name}</h4>
+                <p>${level.description}</p>
+                <div class="s-level-meta">
+                    <span>⏱️ ${level.response}</span>
+                    <span>🎯 ${level.containment}</span>
+                </div>
             </div>
         </div>
     `).join('');
 }
 
-function selectClassification(level) {
-    warRoomData.classification = level;
-    document.getElementById('selectedClassification').style.display = 'block';
-    document.getElementById('classificationDisplay').textContent = level;
-    document.querySelectorAll('.classification-card').forEach(card => card.classList.remove('selected'));
-    event.target.closest('.classification-card').classList.add('selected');
-    addToLog('INFO', 'Intsident klassifitseeritud: ' + level);
+// Select S-Level
+function selectSLevel(level) {
+    selectedSLevel = level;
+    renderSLevelGrid();
+
+    // Auto-suggest notifications based on S-Level
+    const dataBreachSuspicion = document.getElementById('dataBreachSuspicion').value;
+    updateNotificationSuggestions(level, dataBreachSuspicion);
+
+    addToLog('INFO', `S-tase valitud: ${level}`);
 }
 
-function activateWarRoom() {
-    warRoomData.isActive = true;
-    alert('WAR ROOM AKTIVEERITUD!');
-    addToLog('SYSTEM_EVENT', '🚨 War Room aktiveeritud');
+// Set t0 to current time
+function setT0Now() {
+    const now = new Date();
+    const dateTimeLocal = now.toISOString().slice(0, 16);
+    document.getElementById('t0Time').value = dateTimeLocal;
+    addToLog('INFO', 't0 määratud praegusele ajale');
 }
 
-function notifyCERT() {
-    alert('CERT-EE teavitamine: cert@cert.ee | +372 663 0299');
-    addToLog('COMMUNICATION', 'CERT-EE teavitatud');
+// Toggle Additional Metrics
+function toggleAdditionalMetrics() {
+    const content = document.getElementById('additionalMetricsContent');
+    const toggleText = document.getElementById('additionalMetricsToggleText');
+
+    if (content.style.display === 'none') {
+        content.style.display = 'block';
+        toggleText.textContent = '▼ Peida lisaväljad';
+    } else {
+        content.style.display = 'none';
+        toggleText.textContent = '▶ Näita lisaväljad';
+    }
 }
 
-function saveAssessment() {
-    localStorage.setItem('warRoomData', JSON.stringify(warRoomData));
-    alert('Hindamine salvestatud!');
-    addToLog('SYSTEM_EVENT', 'War Room hindamine salvestatud');
+// Update Notification Suggestions based on S-Level and Data Breach
+function updateNotificationSuggestions(sLevel, dataBreachSuspicion) {
+    const suggestions = getDefaultNotificationRequirements(sLevel, dataBreachSuspicion);
+
+    if (suggestions.certEE) {
+        document.getElementById('certEE_required').value = suggestions.certEE;
+    }
+    if (suggestions.dpoGDPR) {
+        document.getElementById('dpoGDPR_required').value = suggestions.dpoGDPR;
+    }
+    if (suggestions.management) {
+        document.getElementById('management_required').value = suggestions.management;
+    }
 }
 
-function exportAssessmentPDF() {
-    const data = 'KÜBERINTSIDENDI HINDAMINE\n\nKlassifikatsioon: ' + (warRoomData.classification || 'Pole määratud');
-    const blob = new Blob([data], { type: 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'War_Room_Hindamine.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    addToLog('SYSTEM_EVENT', 'Hindamine eksporditud');
+// Data Breach Suspicion change handler
+document.addEventListener('DOMContentLoaded', function() {
+    const dataBreachSelect = document.getElementById('dataBreachSuspicion');
+    if (dataBreachSelect) {
+        dataBreachSelect.addEventListener('change', function() {
+            if (selectedSLevel) {
+                updateNotificationSuggestions(selectedSLevel, this.value);
+            }
+        });
+    }
+});
+
+// Save Incident Metrics
+function saveIncidentMetrics() {
+    if (!currentScenario) {
+        alert('Palun vali esmalt stsenaarium');
+        return;
+    }
+
+    // Validate MVP fields
+    if (!selectedSLevel) {
+        alert('Palun vali S-tase');
+        return;
+    }
+
+    // Collect form data
+    const metrics = new IncidentMetrics();
+
+    // MVP fields
+    const t0Value = document.getElementById('t0Time').value;
+    metrics.t0 = t0Value ? new Date(t0Value).toISOString() : null;
+    metrics.sLevel = selectedSLevel;
+    metrics.affectedDomain = document.getElementById('affectedDomain').value;
+    metrics.serviceDisruption = document.getElementById('serviceDisruption').value;
+    metrics.dataBreachSuspicion = document.getElementById('dataBreachSuspicion').value;
+    metrics.spreadStatus = document.getElementById('spreadStatus').value;
+    metrics.shortDescription = document.getElementById('shortDescription').value;
+
+    // Notifications
+    metrics.notifications.certEE.required = document.getElementById('certEE_required').value;
+    metrics.notifications.certEE.status = document.getElementById('certEE_status').value;
+    const certEETimestamp = document.getElementById('certEE_timestamp').value;
+    metrics.notifications.certEE.timestamp = certEETimestamp ? new Date(certEETimestamp).toISOString() : null;
+
+    metrics.notifications.dpoGDPR.required = document.getElementById('dpoGDPR_required').value;
+    metrics.notifications.dpoGDPR.status = document.getElementById('dpoGDPR_status').value;
+    const dpoTimestamp = document.getElementById('dpoGDPR_timestamp').value;
+    metrics.notifications.dpoGDPR.timestamp = dpoTimestamp ? new Date(dpoTimestamp).toISOString() : null;
+
+    metrics.notifications.management.required = document.getElementById('management_required').value;
+    metrics.notifications.management.status = document.getElementById('management_status').value;
+    const mgmtTimestamp = document.getElementById('management_timestamp').value;
+    metrics.notifications.management.timestamp = mgmtTimestamp ? new Date(mgmtTimestamp).toISOString() : null;
+
+    // Nice-to-have fields
+    metrics.reporter = document.getElementById('reporter').value;
+    metrics.systemLocation = document.getElementById('systemLocation').value;
+    metrics.nis2Relevant = document.getElementById('nis2Relevant').value;
+    metrics.initialIndicators = document.getElementById('initialIndicators').value;
+
+    const evidenceText = document.getElementById('evidenceArtifacts').value;
+    metrics.evidenceArtifacts = evidenceText ? evidenceText.split('\n').filter(e => e.trim()) : [];
+
+    metrics.logger = document.getElementById('logger').value;
+
+    // Create or update incident log entry
+    let logEntry;
+    if (currentIncidentLogId) {
+        // Update existing
+        const existingIndex = incidentLog.findIndex(log => log.id === currentIncidentLogId);
+        if (existingIndex >= 0) {
+            logEntry = incidentLog[existingIndex];
+            logEntry.incidentMetrics = metrics;
+            logEntry.updatedAt = new Date().toISOString();
+        }
+    } else {
+        // Create new
+        logEntry = new IncidentLogEntry(currentScenario.id, currentScenario.name, metrics);
+        incidentLog.push(logEntry);
+        currentIncidentLogId = logEntry.id;
+    }
+
+    // Save to localStorage
+    localStorage.setItem('incidentLog', JSON.stringify(incidentLog));
+
+    currentIncidentMetrics = metrics;
+
+    alert('Intsidenti mõõtmed salvestatud!');
+    addToLog('SYSTEM_EVENT', `💾 Intsidenti mõõtmed salvestatud (${logEntry.id})`);
+
+    console.log('Saved incident metrics:', metrics);
+    console.log('Saved log entry:', logEntry);
 }
 
-console.log('War Room functions loaded');
+// Clear Incident Metrics Form
+function clearIncidentMetrics() {
+    if (!confirm('Kas oled kindel, et soovid vormi tühjendada?')) {
+        return;
+    }
+
+    selectedSLevel = null;
+    currentIncidentMetrics = null;
+    currentIncidentLogId = null;
+
+    // Clear form
+    document.getElementById('t0Time').value = '';
+    renderSLevelGrid();
+    document.getElementById('affectedDomain').value = '';
+    document.getElementById('serviceDisruption').value = '';
+    document.getElementById('dataBreachSuspicion').value = '';
+    document.getElementById('spreadStatus').value = '';
+    document.getElementById('shortDescription').value = '';
+
+    // Clear notifications
+    ['certEE', 'dpoGDPR', 'management'].forEach(recipient => {
+        document.getElementById(`${recipient}_required`).value = 'TO_BE_ASSESSED';
+        document.getElementById(`${recipient}_status`).value = 'PLANNED';
+        document.getElementById(`${recipient}_timestamp`).value = '';
+    });
+
+    // Clear additional fields
+    document.getElementById('reporter').value = '';
+    document.getElementById('systemLocation').value = '';
+    document.getElementById('nis2Relevant').value = 'UNKNOWN';
+    document.getElementById('initialIndicators').value = '';
+    document.getElementById('evidenceArtifacts').value = '';
+    document.getElementById('logger').value = '';
+
+    addToLog('INFO', 'Intsidenti mõõtmed tühjendatud');
+}
+
+// Load Incident Metrics to Form (if editing existing)
+function loadIncidentMetricsToForm() {
+    if (!currentIncidentMetrics) return;
+
+    const metrics = currentIncidentMetrics;
+
+    // Load MVP fields
+    if (metrics.t0) {
+        const t0Date = new Date(metrics.t0);
+        document.getElementById('t0Time').value = t0Date.toISOString().slice(0, 16);
+    }
+
+    if (metrics.sLevel) {
+        selectedSLevel = metrics.sLevel;
+        renderSLevelGrid();
+    }
+
+    if (metrics.affectedDomain) document.getElementById('affectedDomain').value = metrics.affectedDomain;
+    if (metrics.serviceDisruption) document.getElementById('serviceDisruption').value = metrics.serviceDisruption;
+    if (metrics.dataBreachSuspicion) document.getElementById('dataBreachSuspicion').value = metrics.dataBreachSuspicion;
+    if (metrics.spreadStatus) document.getElementById('spreadStatus').value = metrics.spreadStatus;
+    if (metrics.shortDescription) document.getElementById('shortDescription').value = metrics.shortDescription;
+
+    // Load notifications
+    if (metrics.notifications) {
+        ['certEE', 'dpoGDPR', 'management'].forEach(recipient => {
+            const notif = metrics.notifications[recipient];
+            if (notif) {
+                if (notif.required) document.getElementById(`${recipient}_required`).value = notif.required;
+                if (notif.status) document.getElementById(`${recipient}_status`).value = notif.status;
+                if (notif.timestamp) {
+                    const timestamp = new Date(notif.timestamp);
+                    document.getElementById(`${recipient}_timestamp`).value = timestamp.toISOString().slice(0, 16);
+                }
+            }
+        });
+    }
+
+    // Load additional fields
+    if (metrics.reporter) document.getElementById('reporter').value = metrics.reporter;
+    if (metrics.systemLocation) document.getElementById('systemLocation').value = metrics.systemLocation;
+    if (metrics.nis2Relevant) document.getElementById('nis2Relevant').value = metrics.nis2Relevant;
+    if (metrics.initialIndicators) document.getElementById('initialIndicators').value = metrics.initialIndicators;
+    if (metrics.evidenceArtifacts) document.getElementById('evidenceArtifacts').value = metrics.evidenceArtifacts.join('\n');
+    if (metrics.logger) document.getElementById('logger').value = metrics.logger;
+}
+
+// Load incident log from localStorage on startup
+document.addEventListener('DOMContentLoaded', function() {
+    const savedLog = localStorage.getItem('incidentLog');
+    if (savedLog) {
+        try {
+            incidentLog = JSON.parse(savedLog);
+            console.log('Loaded incident log from storage:', incidentLog.length, 'entries');
+        } catch (e) {
+            console.error('Error loading incident log:', e);
+        }
+    }
+});
+
+console.log('Incident metrics functions loaded');

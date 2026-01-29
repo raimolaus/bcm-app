@@ -218,26 +218,36 @@ export const scenarios = [
     {
         id: "CYBER_INCIDENT",
         name: "Küberintsident",
-        description: "IT/OT küberintsidendi tuvastamine ja käsitlemine",
+        description: "IT/OT küberintsidendi tuvastamine ja käsitlemine. KÄIVITAMINE: EDR/SIEM alarm + reaalne mõju või levikukahtlus; admin/privilege sisselogimine; teenuse katkestus küberkahtlusega; OT/ICS anomaalia.",
         icon: "🔒",
         priority: "CRITICAL",
         quickActions: [
-            { id: 1, title: "Teavita IT juhti viivitamatult", type: "CALL" },
-            { id: 2, title: "Fikseeri t0 (tuvastamise aeg)", type: "ACTION" },
-            { id: 3, title: "Aktiveeri War Room (S0/S1 korral)", type: "ACTION" },
-            { id: 4, title: "Klassifitseeri intsident (S0-S3)", type: "ACTION" }
+            { id: 1, title: "Täida Intsidenti mõõtmed: t0, S-tase, domeen, seiskus, andmeleke kahtlus, leviku staatus, lühikirjeldus", type: "ACTION" },
+            { id: 2, title: "Vajuta Salvesta (loo/uuenda incident log)", type: "ACTION" },
+            { id: 3, title: "Eskaleeri: IT juht/asendaja; OT kahtlusel tootmisjuht/OT vastutaja", type: "CALL" },
+            { id: 4, title: "Kui levik = 'Käib', alusta piiramisest (host/segment isolatsioon)", type: "ACTION" },
+            { id: 5, title: "Käivita koordineerimine WhatsAppis (juhtkond/tuumiktiim), kui S0/S1 või mõju kasvab", type: "ACTION" }
         ],
         actionPlan: [
-            { id: 1, title: "Hinda ja klassifitseeri", description: "Kinnita faktid, määra tase S0-S3 ja NIS2 lipu esmahinnang. Otsusta war roomi vajadus." },
-            { id: 2, title: "Tõkesta levik", description: "Isoleeri mõjutatud süsteemid, keela kompromiteeritud kontod, peata kahtlased juurdepääsud, säilita logid." },
-            { id: 3, title: "Kõrvalda põhjus", description: "Eemalda pahavara, sulge haavatavus, rakenda parandused. Kontrolli lateraalset liikumist." },
-            { id: 4, title: "Taasta teenus", description: "Taasta teenus turvaliselt (backup/restore), valideeri et intsident ei taastu." },
-            { id: 5, title: "Teavita CERT-EE", description: "S0/S1 korral teavita CERT-EE 24h jooksul. Kasuta raport.cert.ee või cert@cert.ee." },
-            { id: 6, title: "Sulge ja õpi", description: "Tee järelanalüüs, pane parendused tegevusplaani (omanik + tähtaeg)." }
+            { id: 1, title: "Kinnita, kas tegemist on turvasündmuse või küberintsidendiga", description: "False positive vs reaalne mõju" },
+            { id: 2, title: "Kaardista mõjutatud ulatus", description: "Kontod, hostid, serverid, võrgu segmendid, OT komponendid" },
+            { id: 3, title: "Kogu esmane tõendus", description: "SIEM/EDR alarmid, logide viited, ajad, kasutajad, IP-d (ära kustuta/üle kirjuta)" },
+            { id: 4, title: "Uuenda Leviku staatus ja salvesta logi", description: "Värskenda intsidenti mõõtmeid" },
+            { id: 5, title: "Piira mõju", description: "Eralda mõjutatud host(id) ja/või võrgusegment (võimalusel)" },
+            { id: 6, title: "Piira identiteediriski", description: "Lukusta kahtlased kontod või eemalda privileegid; vajadusel sunni paroolivahetus" },
+            { id: 7, title: "Piira ligipääse", description: "Ajutised reeglid VPN/RDP/eeliskontode kasutusele (vastavalt olukorrale)" },
+            { id: 8, title: "OT korral kooskõlasta tootmisega", description: "Väldi pimedat katkestamist, mis võib tekitada ohutusriskid" },
+            { id: 9, title: "Tuvasta sissetungivektor", description: "Phishing/VPN/RDP/haavatavus/konfig" },
+            { id: 10, title: "Sulge vektor", description: "Patch, konfiguratsioonimuudatus, MFA/CA poliitikad, teenuse piiramine" },
+            { id: 11, title: "Eemalda pahatahtlikud komponendid", description: "EDR cleanup/reimage ja kontrolli püsivust (scheduled tasks, services)" },
+            { id: 12, title: "Taasta teenused prioriteedi järgi", description: "Jälgi taastatud süsteeme (EDR/logid)" },
+            { id: 13, title: "Kommunikatsioonitsükkel", description: "WhatsApp staatus + juhtkonnale; märgi teavituste staatused (CERT-EE/DPO) logis" },
+            { id: 14, title: "Kui stabiliseerub: märgi 'Kontrolli all'", description: "Fikseeri kokkuvõte ja õppetunnid" },
+            { id: 15, title: "Loo parenduste ülesanded", description: "ClickUp + lisa viited incident log'ile" }
         ],
         communications: [
-            { id: 1, title: "Teavita juhtkonda", channel: "CALL", template: "Küberintsident tuvastatud. War room aktiveeritud." },
-            { id: 2, title: "Teavita CERT-EE", channel: "EMAIL", template: "Esmateade küberintsidendist (vt CERT-EE teavituse mall)", subject: "HHLA TK - Küberintsidendi teavitus" },
+            { id: 1, title: "Koordineerimine WhatsAppis (juhtkond/tuumiktiim)", channel: "CALL", template: "Kasuta kriisigruppi X või loo ajutine vastavalt protseduurile. Määra Logija, kes hoiab ajajoont/otsuseid koos." },
+            { id: 2, title: "Teavita CERT-EE (S0/S1 korral)", channel: "EMAIL", template: "S0/S1 korral teavita CERT-EE 24h jooksul. Kasuta raport.cert.ee või cert@cert.ee", subject: "HHLA TK - Küberintsidendi teavitus" },
             { id: 3, title: "Siseteave töötajatele", channel: "EMAIL", template: "Teavitame küberintsidendist. IT teenused võivad olla ajutiselt häiritud. Järgige IT juhi juhiseid." }
         ],
         contacts: ["4", "1", "3", "2", "7"]
@@ -245,78 +255,104 @@ export const scenarios = [
     {
         id: "RANSOMWARE",
         name: "Ransomware rünnak",
-        description: "Ransomware'i tuvastamine ja käsitlemine",
+        description: "Ransomware'i tuvastamine ja käsitlemine. KÄIVITAMINE: Failid krüpteeruvad / ransom note / massiline failimuutus; EDR/AV ransomware tuvastus; failiserveri/VM failid kasutamatud; backup/shadow copy'd kaovad kahtlaselt.",
         icon: "💀",
         priority: "CRITICAL",
         quickActions: [
-            { id: 1, title: "Isoleeri kohe nakatunud süsteemid", type: "ACTION" },
-            { id: 2, title: "Teavita IT juhti", type: "CALL" },
-            { id: 3, title: "ÄRA MAKSA lunaraha ilma juhtkonna otsuseta", type: "ACTION" },
-            { id: 4, title: "Peata levik segmentide vahel", type: "ACTION" }
+            { id: 1, title: "Täida Intsidenti mõõtmed (S-tase tavaliselt S0/S1) ja vajuta Salvesta", type: "ACTION" },
+            { id: 2, title: "KOHE isoleeri mõjutatud host(id) võrgust (NAC/VLAN/füüsiline lahti)", type: "ACTION" },
+            { id: 3, title: "Keela/pausi kahtlased kontod (eriti admin/service)", type: "ACTION" },
+            { id: 4, title: "Kui krüpteerimine levib jagamiste kaudu, piiritle ajutiselt SMB/jagamiste ligipääsu", type: "ACTION" },
+            { id: 5, title: "Käivita koordineerimine WhatsAppis (juhtkond/tuumiktiim)", type: "ACTION" }
         ],
         actionPlan: [
-            { id: 1, title: "Isoleeri segmendid viivitamatult", description: "Katkesta nakatunud võrgusegmentide ühendus. Sulge VPN ja kaugjuurdepääsud." },
-            { id: 2, title: "Peata levik", description: "Tuvasta kahtlased protsessid, blokeeri C2 serverid, sulge lateral movement võimalused." },
-            { id: 3, title: "Kinnita varukoopia tervis", description: "Kontrolli kas varukoopiaid pole krüpteeritud. Katkesta varukoopia võrgust." },
-            { id: 4, title: "Kooskõlasta tootmisjuhiga", description: "Hinda tootmise mõju, korrasta OT süsteemide taastamise prioriteedid." },
-            { id: 5, title: "Otsusta taastamisstrateegia", description: "Backup restore vs fresh install. Mitte maksta lunaraha ilma juhatuse nõusolekuta." },
-            { id: 6, title: "Teavita CERT-EE ja koguge tõendid", description: "Salvesta logid, IOC'd, malware sample'id. Teavita CERT-EE viivitamatult." }
+            { id: 1, title: "Kinnita ransomware sümptomid", description: "Krüpteeritud failid, ransom note, massiline failimuutus, EDR tuvastus" },
+            { id: 2, title: "Kaardista levik", description: "Hostid/serverid/shares; kas AD/DC või virtualiseerimine mõjutatud" },
+            { id: 3, title: "Salvesta indikaatorid", description: "Faililaiend, ransom note ID, protsessinimed, hashid (kui saad)" },
+            { id: 4, title: "Uuenda Leviku staatus ja salvesta logi", description: "Värskenda intsidenti mõõtmeid" },
+            { id: 5, title: "Containment: eralda mõjutatud hostid", description: "Eralda mõjutatud hostid + kriitilised serverivõrgud kasutajavõrgust; karmista segmentatsiooni" },
+            { id: 6, title: "Containment: lukusta privileged kontod", description: "Võta ajutiselt maha riskantsed admin-kanalid" },
+            { id: 7, title: "Kontrolli backup'e", description: "Olemasolu ja tervis (ära tee restore'i enne, kui levik peatatud)" },
+            { id: 8, title: "Tuvasta algvektor ja sulge see", description: "Patch/MFA/poliitikad" },
+            { id: 9, title: "Eradication: reimage/puhastus", description: "Eemalda püsivus ja kontrolli kõrvalmõjusid" },
+            { id: 10, title: "Credential reset plaan", description: "Adminid -> teenusekontod -> kasutajad (kontrollitud järjekorras)" },
+            { id: 11, title: "Recovery: taasta clean backupist etapiti", description: "Jälgi, et krüpteerimine ei taastu" },
+            { id: 12, title: "Kommunikatsioon", description: "Juhtkond + teavitused (CERT-EE/DPO) logis timestampidega" },
+            { id: 13, title: "Sulgemine: root cause + parendused", description: "Immutability, segmentatsioon, MFA, hardening + ClickUp" }
         ],
         communications: [
-            { id: 1, title: "Teavita juhtkonda KOHE", channel: "CALL", template: "KRIITILINE: Ransomware tuvastatud. War room vajalik viivitamatult." },
-            { id: 2, title: "Teavita CERT-EE", channel: "CALL", phone: "+372 663 0299" }
+            { id: 1, title: "Koordineerimine WhatsAppis (juhtkond/tuumiktiim)", channel: "CALL", template: "KRIITILINE: Ransomware tuvastatud. Kasuta kriisigruppi X või loo ajutine. Määra Logija." },
+            { id: 2, title: "Teavita CERT-EE", channel: "CALL", phone: "+372 663 0299", template: "Teavita CERT-EE viivitamatult: cert@cert.ee või +372 663 0299" },
+            { id: 3, title: "Siseteave töötajatele", channel: "EMAIL", template: "Ransomware intsident. IT teenused häiritud. Järgige IT juhi juhiseid. ÄRA ava kahtlaseid faile või linke." }
         ],
         contacts: ["4", "1", "3", "7"]
     },
     {
         id: "REMOTE_ACCESS_COMPROMISE",
         name: "Kaugjuurdepääsu kompromiteerimine",
-        description: "VPN või kaugjuurdepääsu kontode kompromiteerimine",
+        description: "VPN või kaugjuurdepääsu kontode kompromiteerimine. KÄIVITAMINE: Ebatavaline VPN login (uus geo/asukohamuster), võimatu reisimine; korduvad MFA pushid / uued seadmed / ebatavalised ajad; admin-tegevused pärast VPN sessiooni.",
         icon: "🌐",
         priority: "HIGH",
         quickActions: [
-            { id: 1, title: "Sulge VPN/remote gateway", type: "ACTION" },
-            { id: 2, title: "Vaheta võtmekontod", type: "ACTION" },
-            { id: 3, title: "Teavita IT juhti", type: "CALL" },
-            { id: 4, title: "Kontrolli logid", type: "ACTION" }
+            { id: 1, title: "Täida Intsidenti mõõtmed ja vajuta Salvesta", type: "ACTION" },
+            { id: 2, title: "KOHE: keela kahtlane konto või sunni paroolivahetus (vastavalt poliitikale)", type: "ACTION" },
+            { id: 3, title: "Revoke sessioonid ja tokenid (IdP/VPN/M365 vms)", type: "ACTION" },
+            { id: 4, title: "Kontrolli MFA: reset/re-enroll; vaata recovery meetodid üle", type: "ACTION" },
+            { id: 5, title: "Kui privilege kahtlus -> käivita WhatsApp koordineerimine", type: "ACTION" }
         ],
         actionPlan: [
-            { id: 1, title: "Sulge kompromiteeritud kaugjuurdepääs", description: "Peata VPN/RDP/SSH juurdepääs kohe. Katkesta aktiivsed seansid." },
-            { id: 2, title: "Vaheta võtmekontod ja paroolid", description: "Vaheta kõik admin kontod ja teenuskontod. Rakenda MFA kõigile." },
-            { id: 3, title: "Vaata logid läbi", description: "VPN logid, autentimise logid, domeenikontrolleri logid - tuvasta lateraalne liikumine." },
-            { id: 4, title: "Kontrolli lateraalset liikumist", description: "Kas ründaja jõudis teistesse süsteemidesse? Vaata AD, server logid, failijagamised." },
-            { id: 5, title: "Taasta juurdepääs turvaliselt", description: "Rakenda tugev autentimine (MFA, sertifikaadid), piira IP-d, logi kõik." },
-            { id: 6, title: "Teavita tarnijaid", description: "Kui tarnija konto oli kompromiteeritud, teavita tarnijat ja nõua nende poolset uurimist." }
+            { id: 1, title: "Kinnita anomaalia", description: "IP/geo/device, aeg, impossible travel, ebatavalised MFA pushid" },
+            { id: 2, title: "Kontrolli kasutajalt (kui võimalik), kas ligipääs on legit", description: "Kui ei, käsitle kompromissina" },
+            { id: 3, title: "Kaardista sessiooni tegevus", description: "Mida puudutati, kas tehti admin-muudatusi" },
+            { id: 4, title: "Otsi lateraalset liikumist ja privilege eskalatsiooni", description: "Kontrolli AD/DC, GPO, service accounts" },
+            { id: 5, title: "Uuenda Leviku staatus ja salvesta logi", description: "Värskenda intsidenti mõõtmeid" },
+            { id: 6, title: "Containment: piiritle VPN ligipääsu", description: "Riik/device/CA, keela riskantsed remote admin teed" },
+            { id: 7, title: "Containment: blokeeri kahtlased IP-d", description: "Tõsta monitooringut (SIEM)" },
+            { id: 8, title: "Eradication: konto taastamine", description: "Password + MFA + recovery meetodid" },
+            { id: 9, title: "Kontrolli seotud seadmeid (endpoint compromise)", description: "Vajadusel isoleeri ja puhasta" },
+            { id: 10, title: "Kui privilege eskalatsioon: kontrolli AD/DC, GPO, scheduled tasks", description: "Eemalda pahatahtlikud muudatused" },
+            { id: 11, title: "Recovery: taasta ligipääs kontrollitult", description: "Tugev MFA, piiratud poliitikad; jälgi kindla perioodi jooksul" },
+            { id: 12, title: "Kommunikatsioon", description: "Juhtkond + DPO/GDPR (kui andmekahtlus) + CERT-EE (vastavalt klassile); staatused logis" },
+            { id: 13, title: "Sulgemine: parendused", description: "MFA/CA, VPN hardening, breakglass + ClickUp" }
         ],
         communications: [
-            { id: 1, title: "Teavita juhtkonda", channel: "CALL" },
-            { id: 2, title: "Teavita tarnijat (kui asjakohane)", channel: "EMAIL", template: "Tuvastasime kompromiteeritud kaugjuurdepääsu. Palume teie poolset uurimist." }
+            { id: 1, title: "Koordineerimine WhatsAppis (juhtkond/tuumiktiim)", channel: "CALL", template: "Kaugjuurdepääsu kompromiteerimine. Kasuta kriisigruppi X või loo ajutine. Määra Logija." },
+            { id: 2, title: "Teavita CERT-EE (vastavalt klassile)", channel: "EMAIL", template: "S0/S1 korral teavita CERT-EE: cert@cert.ee", subject: "HHLA TK - Kaugjuurdepääsu kompromiteerimine" },
+            { id: 3, title: "Teavita tarnijat (kui asjakohane)", channel: "EMAIL", template: "Tuvastasime kompromiteeritud kaugjuurdepääsu. Palume teie poolset uurimist." }
         ],
         contacts: ["4", "1", "3", "7"]
     },
     {
         id: "OT_DISRUPTION",
         name: "OT/ICS häire",
-        description: "Tööstusvõrkude ja automaatika küberintsident",
+        description: "Tööstusvõrkude ja automaatika küberintsident. KÄIVITAMINE: SCADA/PLC/HMI anomaalia, mida ei seleta hooldus või rike; OT võrgus ebatavaline liiklus / uued seadmed / konfiguratsioonimuutused; tootmisprotsess häirub ja on küberkahtlus.",
         icon: "🏭",
         priority: "CRITICAL",
         quickActions: [
-            { id: 1, title: "Eralda OT võrk IT võrgust", type: "ACTION" },
-            { id: 2, title: "Mine manual mode protseduurile", type: "ACTION" },
-            { id: 3, title: "Teavita tootmisjuhti ja IT juhti", type: "CALL" },
-            { id: 4, title: "Kaasa seadmetarnija", type: "CALL" }
+            { id: 1, title: "Täida Intsidenti mõõtmed (domeen OT/Mõlemad; S-tase tihti S0/S1 kui ohutus/tootmine) ja vajuta Salvesta", type: "ACTION" },
+            { id: 2, title: "Eskaleeri: tootmisjuht/OT vastutaja + IT juht", type: "CALL" },
+            { id: 3, title: "Ohutus enne: vajadusel fail-safe / manual override", type: "ACTION" },
+            { id: 4, title: "Kui küberlevis kahtlus: piiritle OT↔IT ühendusi kooskõlastatult (ära tee pimedat katkestust)", type: "ACTION" },
+            { id: 5, title: "Käivita WhatsApp koordineerimine, kui tootmine/ohutus mõjutatud", type: "ACTION" }
         ],
         actionPlan: [
-            { id: 1, title: "Eralda OT/IT segmendid", description: "Katkesta OT ja IT võrkide vaheline ühendus füüsiliselt kui vajalik." },
-            { id: 2, title: "Aktiveeri manual mode", description: "Mine üle käsitsi juhtimisele vastavalt BCP protseduurile. Kaasa tootmisjuht." },
-            { id: 3, title: "Kaasa seadmetarnija ja tootmisjuht", description: "OT süsteemide analüüs vajab seadmetarnija ekspertiisi. Kooskõlasta taastamine tootmisjuhiga." },
-            { id: 4, title: "Hinda ohutusriski", description: "Kas automaatika seiskumine ohustab inimeste või keskkonna ohutust?" },
-            { id: 5, title: "Kontrolli SCADA/TOS süsteeme", description: "Kas süsteemid on nakatunud või ainult ühendus katkenud? Vaata logid, kontrolli firmware." },
-            { id: 6, title: "Taasta kontrollitult", description: "Ära taasta OT süsteeme enne täielikku analüüsi ja puhastust. Valideeri kõik sammud." }
+            { id: 1, title: "Kinnita häire iseloom", description: "Milline liin/seade/segment; kas on planeeritud muudatus/hooldus" },
+            { id: 2, title: "Kaardista mõju", description: "PLC/HMI/SCADA komponendid; kas tootmine või ohutus mõjutatud" },
+            { id: 3, title: "Kogu tõendus", description: "OT logid, HMI/SCADA alarmid, võrgu jälg, viimaste muudatuste ajalugu" },
+            { id: 4, title: "Uuenda Leviku staatus ja salvesta logi", description: "Värskenda intsidenti mõõtmeid" },
+            { id: 5, title: "Containment: eralda mõjutatud OT alamsegment", description: "Kui võimalik, hoides ohutuse tagatud" },
+            { id: 6, title: "Containment: keela mittevajalik remote access OT-sse", description: "Piiritle IT->OT liiklus minimaalseks" },
+            { id: 7, title: "Säilita tõendid", description: "Väldi factory reset'i enne otsust" },
+            { id: 8, title: "Eradication: sulge sissepääs", description: "Remote access poliitikad, kontod, patch kui ohutu; eemalda pahatahtlik komponent koos OT spetsialistiga" },
+            { id: 9, title: "Taasta known-good konfiguratsioon kontrollitult, etapiti", description: "Vastavalt tootmisplaanile" },
+            { id: 10, title: "Recovery: taastamine segmendi/liini kaupa", description: "Stabiilsuse ja kvaliteedi kontroll; järelmonitooring" },
+            { id: 11, title: "Kommunikatsioon", description: "Juhtkond (ohutusrisk, tootmise mõju, taastamise järjekord) + CERT-EE (S0/S1 korral tihti vajalik) + DPO ainult andmekahtluse korral; staatused logis" },
+            { id: 12, title: "Sulgemine: parendused", description: "Segmentatsioon, remote access hardening, logging, taastamisprotseduur + ClickUp" }
         ],
         communications: [
-            { id: 1, title: "Teavita juhtkonda ja tootmist", channel: "CALL", template: "OT süsteemid häiritud. Manual mode aktiveeritud." },
-            { id: 2, title: "Teavita seadmetarnijat", channel: "CALL" }
+            { id: 1, title: "Koordineerimine WhatsAppis (juhtkond/tuumiktiim)", channel: "CALL", template: "OT süsteemid häiritud. Kasuta kriisigruppi X või loo ajutine. Määra Logija." },
+            { id: 2, title: "Teavita seadmetarnijat", channel: "CALL", template: "OT häire. Vajame seadmetarnija ekspertiisi SCADA/TOS süsteemide analüüsiks." },
+            { id: 3, title: "Teavita CERT-EE (S0/S1 korral)", channel: "EMAIL", template: "OT/ICS küberintsident. S0/S1 korral teavita CERT-EE: cert@cert.ee", subject: "HHLA TK - OT/ICS häire" }
         ],
         contacts: ["4", "3", "1", "7"]
     }
