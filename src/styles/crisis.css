@@ -1448,34 +1448,6 @@
     }
 }
 
-/* End Crisis Button */
-.end-crisis-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.4);
-    color: white;
-    padding: 10px 20px;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    transition: all 0.2s;
-    margin-left: auto;
-}
-
-.end-crisis-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    border-color: rgba(255, 255, 255, 0.6);
-    transform: scale(1.05);
-}
-
-.end-crisis-btn svg {
-    width: 18px;
-    height: 18px;
-}
-
 /* System Status Modal */
 .modal {
     display: none;
