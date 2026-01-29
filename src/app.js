@@ -2,13 +2,14 @@
 // Entry point for the application
 
 // Import utilities
-import { navigateTo, initNavigation } from './utils/navigation.js';
+import { navigateTo, goBack, goHome, initNavigation } from './utils/navigation.js';
 import { initStorage } from './utils/storage.js';
 import { initLogger } from './utils/logger.js';
 
 // Import pages
 import { initHomePage } from './pages/HomePage.js';
-import { initContactsPage } from './pages/ContactsPage.js';
+import { initContactsPage, renderContacts } from './pages/ContactsPage.js';
+import { initPlansPage, renderPlans, plansActions } from './pages/PlansPage.js';
 
 // Import data
 import { scenarios, plans } from './data/crisis-data.js';
@@ -32,14 +33,22 @@ function initializeApp() {
     // Initialize pages
     initHomePage();
     initContactsPage();
-    
-    // Expose navigateTo globally for onclick handlers
+    initPlansPage();
+
+    // Expose functions globally for onclick handlers
     window.navigateTo = navigateTo;
+    window.goBack = goBack;
+    window.goHome = goHome;
+    window.plansActions = plansActions;
 
     // Expose data globally for legacy scripts
     window.scenarios = scenarios;
     window.plans = plans;
     window.contacts = contacts;
+
+    // Render initial content
+    renderContacts();
+    renderPlans();
 
     console.log('✅ BCM Application Ready!');
     console.log(`📊 Loaded: ${scenarios.length} scenarios, ${plans.length} plans, ${contacts.length} contacts`);
@@ -52,11 +61,9 @@ if (document.readyState === 'loading') {
     initializeApp();
 }
 
-// Load legacy crisis and plans scripts
-// These will be refactored in future versions
+// Load legacy crisis script (plans-app.js now replaced with PlansPage.js module)
 const legacyScripts = [
-    'crisis-app.js',
-    'plans-app.js'
+    'crisis-app.js'
 ];
 
 legacyScripts.forEach(script => {
