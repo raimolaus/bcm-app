@@ -278,10 +278,17 @@ function renderIncidentLog() {
         const createdDate = new Date(entry.createdAt);
         const updatedDate = new Date(entry.updatedAt);
 
+        const isExercise = entry.isExercise === true;
+        const status = entry.status || 'OPEN';
+
         return `
-            <div class="incident-log-entry ${hasMetrics ? 'cyber-incident' : ''}">
+            <div class="incident-log-entry ${hasMetrics ? 'cyber-incident' : ''} ${isExercise ? 'exercise' : ''} ${status === 'OPEN' ? 'status-open' : 'status-closed'}">
                 <div class="log-entry-header">
-                    <h3>${entry.scenarioName}</h3>
+                    <h3>
+                        ${entry.scenarioName}
+                        ${isExercise ? '<span class="exercise-badge">[ÕPPUS]</span>' : ''}
+                        <span class="status-badge status-${status.toLowerCase()}">${status}</span>
+                    </h3>
                     <span class="log-entry-id">${entry.id}</span>
                 </div>
                 <div class="log-entry-meta">
@@ -323,6 +330,10 @@ function renderIncidentLog() {
 
                 <div class="log-entry-actions">
                     <button class="btn-secondary-sm" onclick="viewLogEntry('${entry.id}')">👁️ Vaata</button>
+                    ${status === 'OPEN' ?
+                        `<button class="btn-secondary-sm" onclick="closeIncident('${entry.id}')">✓ Sulge intsident</button>` :
+                        `<button class="btn-secondary-sm" onclick="reopenIncident('${entry.id}')">↻ Ava uuesti</button>`
+                    }
                     <button class="btn-secondary-sm" onclick="deleteLogEntry('${entry.id}')">🗑️ Kustuta</button>
                 </div>
             </div>
@@ -387,6 +398,61 @@ function deleteLogEntry(entryId) {
     alert('Logikirje kustutatud');
     renderIncidentLog();
     addToLog('SYSTEM_EVENT', `Logikirje kustutatud: ${entryId}`);
+
+    // Update system status after deletion
+    if (window.updateSystemStatus) {
+        window.updateSystemStatus();
+    }
+}
+
+// Close incident
+function closeIncident(entryId) {
+    if (!confirm('Kas oled kindel, et soovid selle intsidendi sulgeda?')) {
+        return;
+    }
+
+    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    const entry = storedLog.find(e => e.id === entryId);
+
+    if (entry) {
+        entry.status = 'CLOSED';
+        entry.updatedAt = new Date().toISOString();
+        localStorage.setItem('incidentLog', JSON.stringify(storedLog));
+
+        alert('Intsident suletud');
+        renderIncidentLog();
+        addToLog('SYSTEM_EVENT', `Intsident suletud: ${entryId}`);
+
+        // Update system status after closing
+        if (window.updateSystemStatus) {
+            window.updateSystemStatus();
+        }
+    }
+}
+
+// Reopen incident
+function reopenIncident(entryId) {
+    if (!confirm('Kas oled kindel, et soovid selle intsidendi uuesti avada?')) {
+        return;
+    }
+
+    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    const entry = storedLog.find(e => e.id === entryId);
+
+    if (entry) {
+        entry.status = 'OPEN';
+        entry.updatedAt = new Date().toISOString();
+        localStorage.setItem('incidentLog', JSON.stringify(storedLog));
+
+        alert('Intsident avatud');
+        renderIncidentLog();
+        addToLog('SYSTEM_EVENT', `Intsident avatud uuesti: ${entryId}`);
+
+        // Update system status after reopening
+        if (window.updateSystemStatus) {
+            window.updateSystemStatus();
+        }
+    }
 }
 
 function getLogTypeIcon(type) {
@@ -623,6 +689,11 @@ function saveIncidentMetrics() {
 
     console.log('Saved incident metrics:', metrics);
     console.log('Saved log entry:', logEntry);
+
+    // Update system status after saving incident
+    if (window.updateSystemStatus) {
+        window.updateSystemStatus();
+    }
 }
 
 // Clear Incident Metrics Form

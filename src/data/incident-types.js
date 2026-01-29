@@ -146,6 +146,13 @@ export class IncidentMetrics {
     }
 }
 
+// Incident Log Entry Status
+export const IncidentStatus = {
+    OPEN: 'OPEN',
+    CLOSED: 'CLOSED',
+    RESOLVED: 'RESOLVED'
+};
+
 // Incident Log Entry Structure
 export class IncidentLogEntry {
     constructor(scenarioId, scenarioName, incidentMetrics = null) {
@@ -158,6 +165,10 @@ export class IncidentLogEntry {
         this.actions = []; // Array of completed actions
         this.communications = []; // Array of sent communications
         this.notes = []; // Array of timestamped notes
+
+        // New fields for iteration 2
+        this.isExercise = isExerciseMode(); // Auto-detect from global exercise mode
+        this.status = IncidentStatus.OPEN; // OPEN, CLOSED, RESOLVED
     }
 }
 
@@ -194,6 +205,75 @@ export function getDefaultNotificationRequirements(sLevel, dataBreachSuspicion) 
     }
 
     return requirements;
+}
+
+// ========================================================================
+// SYSTEM STATUS (for Dashboard status card and top bar indicator)
+// ========================================================================
+
+// System Status Levels
+export const SystemStatusLevel = {
+    OK: 'OK',
+    WARNING: 'WARNING',
+    ALERT: 'ALERT'
+};
+
+// System Status Source
+export const SystemStatusSource = {
+    AUTO: 'AUTO',
+    MANUAL: 'MANUAL'
+};
+
+// System Status Structure
+export class SystemStatus {
+    constructor() {
+        this.status = SystemStatusLevel.OK;
+        this.reason = '';
+        this.source = SystemStatusSource.AUTO;
+        this.updatedAt = new Date().toISOString();
+        this.updatedBy = null; // Optional user info
+    }
+}
+
+// Helper function to get status display info
+export function getSystemStatusDisplay(status) {
+    const displays = {
+        OK: {
+            level: 'OK',
+            label: 'Kõik süsteemid töötavad tavapäraselt',
+            color: '#22c55e',
+            bgColor: '#f0fdf4',
+            icon: '✓'
+        },
+        WARNING: {
+            level: 'WARNING',
+            label: 'Hoiatus',
+            color: '#f59e0b',
+            bgColor: '#fffbeb',
+            icon: '⚠'
+        },
+        ALERT: {
+            level: 'ALERT',
+            label: 'Häire',
+            color: '#dc2626',
+            bgColor: '#fef2f2',
+            icon: '🚨'
+        }
+    };
+    return displays[status] || displays.OK;
+}
+
+// ========================================================================
+// EXERCISE MODE
+// ========================================================================
+
+// Exercise mode state (stored in localStorage)
+export function isExerciseMode() {
+    return localStorage.getItem('exerciseMode') === 'true';
+}
+
+export function setExerciseMode(enabled) {
+    localStorage.setItem('exerciseMode', enabled ? 'true' : 'false');
 }
 
 console.log('incident-types.js loaded');

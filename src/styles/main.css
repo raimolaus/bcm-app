@@ -17,15 +17,15 @@ body {
     top: 1rem;
     right: 1rem;
     z-index: 9999;
-    background: rgba(0, 0, 0, 0.3);
-    border: none;
-    color: white;
+    background: white;
+    border: 2px solid #e0e0e0;
+    color: #1976d2;
     cursor: pointer;
     padding: 0.5rem;
     border-radius: 8px;
     display: none;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .home-btn-fixed svg {
@@ -34,9 +34,10 @@ body {
 }
 
 .home-btn-fixed:hover {
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    transform: scale(1.1);
+    background: #f5f5f7;
+    color: #1565c0;
+    border-color: #1976d2;
+    transform: scale(1.05);
 }
 
 /* Mobiil */
@@ -237,16 +238,17 @@ body {
     opacity: 0.9;
 }
 
-/* Back Button - ainult ikoon, transparent */
+/* Back Button */
 .back-btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    background: transparent;
-    border: none;
-    color: #6b7280;
+    background: white;
+    border: 2px solid #e0e0e0;
+    color: #1976d2;
     cursor: pointer;
     padding: 0.5rem;
+    border-radius: 8px;
     transition: all 0.2s ease;
     flex-shrink: 0;
 }
@@ -257,19 +259,25 @@ body {
 }
 
 .back-btn:hover {
-    color: #3b82f6;
+    background: #f5f5f7;
+    color: #1565c0;
+    border-color: #1976d2;
     transform: translateX(-2px);
 }
 
-/* Crisis mode pages - back button hall */
+/* Crisis mode pages - keep back button consistent */
 .crisis-mode-header .back-btn,
 .scenario-detail-header .back-btn {
-    color: rgba(255, 255, 255, 0.9);
+    background: white;
+    color: #1976d2;
+    border-color: #e0e0e0;
 }
 
 .crisis-mode-header .back-btn:hover,
 .scenario-detail-header .back-btn:hover {
-    color: white;
+    background: #f5f5f7;
+    color: #1565c0;
+    border-color: #1976d2;
 }
 
 /* Mobiil */
@@ -1036,4 +1044,94 @@ body {
     .plan-detail-actions {
         flex-direction: column;
     }
+}
+
+/* ========================================================================
+   SYSTEM STATUS CARD (Home Page)
+   ======================================================================== */
+
+.system-status-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px 32px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    border: 2px solid;
+    margin-top: 32px;
+}
+
+.system-status-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.system-status-main {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+}
+
+.system-status-info h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 4px;
+    color: #1e293b;
+}
+
+.system-status-info p {
+    font-size: 15px;
+    color: #64748b;
+    margin: 0;
+}
+
+.status-source {
+    font-size: 13px;
+    color: #94a3b8;
+    font-style: italic;
+    display: inline-block;
+    margin-top: 4px;
+}
+
+.btn-link {
+    background: transparent;
+    border: 2px solid #1976d2;
+    color: #1976d2;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-link:hover {
+    background: #1976d2;
+    color: white;
+}
+
+.status-link {
+    color: #1976d2;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.status-link:hover {
+    color: #1565c0;
+    text-decoration: underline;
+}
+
+/* Filter Bar */
+.filter-bar {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }

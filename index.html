@@ -11,15 +11,51 @@
     <link rel="stylesheet" href="src/styles/plans.css">
 </head>
 <body>
-    <!-- Fixed Home Button - ülemine parem nurk -->
-    <button class="home-btn-fixed" onclick="goHome()" id="homeBtn" style="display: none;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
-            <polyline points="9 22 9 12 15 12 15 22"/>
-        </svg>
-    </button>
+    <!-- Top Bar -->
+    <div class="top-bar" id="topBar">
+        <div class="top-bar-left">
+            <!-- System Status Pill -->
+            <div class="status-pill" id="statusPill" onclick="goToSystemStatus()">
+                <span class="status-pill-icon" id="statusPillIcon">✓</span>
+                <span class="status-pill-text" id="statusPillText">Süsteem OK</span>
+            </div>
+        </div>
 
-    <!-- Crisis Banner -->
+        <div class="top-bar-center">
+            <!-- Small Crisis Button (visible on non-Home pages) -->
+            <button class="crisis-btn-small" id="crisisBtnSmall" onclick="activateCrisisMode()" style="display: none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
+                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                    <line x1="12" y1="9" x2="12" y2="13"/>
+                    <line x1="12" y1="17" x2="12.01" y2="17"/>
+                </svg>
+                Kriisirežiim
+            </button>
+        </div>
+
+        <div class="top-bar-right">
+            <!-- Exercise Mode Toggle -->
+            <div class="exercise-toggle">
+                <label class="toggle-label">
+                    <span class="toggle-text" id="exerciseText">ÕPPUS: VÄLJAS</span>
+                    <div class="toggle-switch">
+                        <input type="checkbox" id="exerciseToggle" onchange="toggleExerciseMode()">
+                        <span class="toggle-slider"></span>
+                    </div>
+                </label>
+            </div>
+
+            <!-- Fixed Home Button -->
+            <button class="home-btn-fixed" onclick="goHome()" id="homeBtn" style="display: none;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                    <polyline points="9 22 9 12 15 12 15 22"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- Crisis Banner (only on Home page) -->
     <div class="crisis-banner clickable" id="crisisBanner" onclick="activateCrisisMode()">
         <div class="crisis-content">
             <svg class="crisis-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -67,15 +103,24 @@
                     <p>Kommunikatsiooni plaanid ja kanalid</p>
                 </div>
             </div>
-            <div class="system-status">
-                <svg class="status-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"/>
-                    <line x1="12" y1="8" x2="12" y2="12"/>
-                    <line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <div>
-                    <h3>Süsteemi olek</h3>
-                    <p>Kõik kriitilised süsteemid töötavad tavapäraselt</p>
+            <div class="system-status-card" id="systemStatusCard">
+                <div class="system-status-header">
+                    <div class="system-status-main">
+                        <svg class="status-icon" id="statusIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"/>
+                            <line x1="12" y1="8" x2="12" y2="12"/>
+                            <line x1="12" y1="16" x2="12.01" y2="16"/>
+                        </svg>
+                        <div class="system-status-info">
+                            <h3>Süsteemi olek</h3>
+                            <p id="systemStatusReason">Kõik kriitilised süsteemid töötavad tavapäraselt</p>
+                            <span class="status-source" id="statusSource"></span>
+                        </div>
+                    </div>
+                    <button class="btn-link" onclick="openSystemStatusModal()">Määra olek</button>
+                </div>
+                <div id="systemStatusActions" style="display: none; margin-top: 12px;">
+                    <a href="#" onclick="viewActiveIncidents(); return false;" class="status-link">Vaata aktiivseid intsidente →</a>
                 </div>
             </div>
         </div>
@@ -372,6 +417,47 @@
             <div class="log-timeline" id="logTimeline"></div>
         </div>
     </main>
+
+    <!-- System Status Modal -->
+    <div class="modal" id="systemStatusModal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Määra süsteemi olek</h2>
+                <button class="modal-close" onclick="closeSystemStatusModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="status-select-grid">
+                    <div class="status-select-card ok" onclick="selectManualStatus('OK')">
+                        <div class="status-select-icon">✓</div>
+                        <div class="status-select-label">OK</div>
+                        <div class="status-select-desc">Süsteemid töötavad tavapäraselt</div>
+                    </div>
+                    <div class="status-select-card warning" onclick="selectManualStatus('WARNING')">
+                        <div class="status-select-icon">⚠</div>
+                        <div class="status-select-label">HOIATUS</div>
+                        <div class="status-select-desc">Väike häire või õppus</div>
+                    </div>
+                    <div class="status-select-card alert" onclick="selectManualStatus('ALERT')">
+                        <div class="status-select-icon">🚨</div>
+                        <div class="status-select-label">HÄIRE</div>
+                        <div class="status-select-desc">Kriitiline olukord</div>
+                    </div>
+                </div>
+                <div class="manual-status-form" id="manualStatusForm" style="display: none;">
+                    <label for="manualStatusReason">Põhjus (max 120 tähemärki):</label>
+                    <textarea id="manualStatusReason" maxlength="120" rows="3" placeholder="Kirjelda lühidalt olukorda..."></textarea>
+                    <div class="modal-actions">
+                        <button class="btn-primary" onclick="saveManualStatus()">Salvesta</button>
+                        <button class="btn-secondary" onclick="closeSystemStatusModal()">Tühista</button>
+                    </div>
+                </div>
+                <div class="manual-status-info">
+                    <p><strong>Märkus:</strong> Käsitsi määratud olek kehtib kuni taastamiseni või kuni tekib S0/S1 pärisintsident.</p>
+                    <button class="btn-link" onclick="resetToAutoStatus()" id="resetAutoBtn" style="display: none;">Taasta automaatne olek</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Main Application Script (ES6 Module) -->
     <script type="module" src="src/app.js"></script>

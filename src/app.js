@@ -5,6 +5,18 @@
 import { navigateTo, goBack, goHome, initNavigation } from './utils/navigation.js';
 import { initStorage } from './utils/storage.js';
 import { initLogger } from './utils/logger.js';
+import {
+    initSystemStatus,
+    updateSystemStatus,
+    toggleExerciseMode,
+    openSystemStatusModal,
+    closeSystemStatusModal,
+    selectManualStatus,
+    saveManualStatus,
+    resetToAutoStatus,
+    goToSystemStatus,
+    viewActiveIncidents
+} from './utils/systemStatus.js';
 
 // Import pages
 import { initHomePage } from './pages/HomePage.js';
@@ -29,6 +41,7 @@ function initializeApp() {
     initNavigation();
     initStorage();
     initLogger();
+    initSystemStatus();
     
     // Initialize pages
     initHomePage();
@@ -40,6 +53,17 @@ function initializeApp() {
     window.goBack = goBack;
     window.goHome = goHome;
     window.plansActions = plansActions;
+
+    // Expose system status functions
+    window.updateSystemStatus = updateSystemStatus;
+    window.toggleExerciseMode = toggleExerciseMode;
+    window.openSystemStatusModal = openSystemStatusModal;
+    window.closeSystemStatusModal = closeSystemStatusModal;
+    window.selectManualStatus = selectManualStatus;
+    window.saveManualStatus = saveManualStatus;
+    window.resetToAutoStatus = resetToAutoStatus;
+    window.goToSystemStatus = goToSystemStatus;
+    window.viewActiveIncidents = viewActiveIncidents;
 
     // Expose data globally for legacy scripts
     window.scenarios = scenarios;

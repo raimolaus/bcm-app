@@ -81,6 +81,21 @@ function updateNavigationButtons(pageId) {
         btn.style.display = isHomePage ? 'none' : 'flex';
     });
 
+    // Crisis banner (only on Home page)
+    const crisisBanner = document.getElementById('crisisBanner');
+    if (crisisBanner) {
+        crisisBanner.style.display = isHomePage ? 'block' : 'none';
+    }
+
+    // Small crisis button in top bar (only on non-Home pages)
+    const crisisBtnSmall = document.getElementById('crisisBtnSmall');
+    if (crisisBtnSmall) {
+        crisisBtnSmall.style.display = isHomePage ? 'none' : 'block';
+    }
+
+    // Update status pill visibility based on page and status
+    updateStatusPillVisibility(isHomePage);
+
     // Crisis mode pages - add class to body for styling
     const crisisPages = ['crisisModePage', 'scenarioDetailPage', 'warRoomPage', 'incidentLogPage'];
 
@@ -88,6 +103,34 @@ function updateNavigationButtons(pageId) {
         document.body.classList.add('crisis-mode');
     } else {
         document.body.classList.remove('crisis-mode');
+    }
+}
+
+// Update status pill visibility
+function updateStatusPillVisibility(isHomePage) {
+    const statusPill = document.getElementById('statusPill');
+    if (!statusPill) return;
+
+    // Get current system status
+    const storedStatus = localStorage.getItem('systemStatus');
+    if (!storedStatus) {
+        statusPill.style.display = isHomePage ? 'flex' : 'none';
+        return;
+    }
+
+    const status = JSON.parse(storedStatus);
+    const SystemStatusLevel = {
+        OK: 'OK',
+        WARNING: 'WARNING',
+        ALERT: 'ALERT'
+    };
+
+    // ALERT or WARNING: always visible on all pages
+    // OK: only visible on Home page
+    if (status.status === SystemStatusLevel.ALERT || status.status === SystemStatusLevel.WARNING) {
+        statusPill.style.display = 'flex';
+    } else {
+        statusPill.style.display = isHomePage ? 'flex' : 'none';
     }
 }
 
