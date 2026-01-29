@@ -64,7 +64,14 @@ export function updateCrisisModeUI() {
                     <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
                 KRIIS AKTIIVNE
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; margin-left: 4px;">
+                    <circle cx="12" cy="12" r="10"/>
+                    <line x1="15" y1="9" x2="9" y2="15"/>
+                    <line x1="9" y1="9" x2="15" y2="15"/>
+                </svg>
             `;
+            // Change onclick to deactivate when crisis is active
+            crisisBtnSmall.setAttribute('onclick', 'deactivateCrisisMode()');
         } else {
             crisisBtnSmall.classList.remove('crisis-active');
             crisisBtnSmall.innerHTML = `
@@ -75,6 +82,8 @@ export function updateCrisisModeUI() {
                 </svg>
                 Kriisirežiim
             `;
+            // Change onclick back to activate
+            crisisBtnSmall.setAttribute('onclick', 'activateCrisisMode()');
         }
     }
 
@@ -83,8 +92,22 @@ export function updateCrisisModeUI() {
     if (crisisBanner) {
         if (isActive) {
             crisisBanner.classList.add('crisis-active');
+            // Change onclick to deactivate when crisis is active
+            crisisBanner.setAttribute('onclick', 'deactivateCrisisMode()');
+            // Update text to show it's active
+            const bannerH1 = crisisBanner.querySelector('h1');
+            if (bannerH1) {
+                bannerH1.innerHTML = 'KRIIS AKTIIVNE - KLIKKA LÕPETAMISEKS';
+            }
         } else {
             crisisBanner.classList.remove('crisis-active');
+            // Change onclick back to activate
+            crisisBanner.setAttribute('onclick', 'activateCrisisMode()');
+            // Restore original text
+            const bannerH1 = crisisBanner.querySelector('h1');
+            if (bannerH1) {
+                bannerH1.textContent = 'Aktiveeri kriisirežiim';
+            }
         }
     }
 }
