@@ -193,28 +193,69 @@ body {
     opacity: 0.9;
 }
 
-.back-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
+/* Navigation Buttons */
+.page-nav-buttons {
     display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    transition: all 0.2s;
+    gap: 12px;
     flex-shrink: 0;
 }
 
-.back-btn:hover {
+.nav-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    padding: 10px 16px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+    color: white;
+    font-size: 15px;
+    font-weight: 500;
+}
+
+.nav-btn:hover {
     background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.nav-btn:active {
+    transform: translateY(0);
+}
+
+.nav-btn svg {
+    width: 20px;
+    height: 20px;
+    color: white;
+    flex-shrink: 0;
 }
 
 .back-btn svg {
-    width: 24px;
-    height: 24px;
-    color: white;
+    width: 20px;
+    height: 20px;
+}
+
+.home-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+/* Mobile: Show only icons */
+@media (max-width: 768px) {
+    .nav-btn {
+        padding: 10px;
+        min-width: 40px;
+        justify-content: center;
+    }
+
+    .nav-btn-text {
+        display: none;
+    }
+
+    .page-nav-buttons {
+        gap: 8px;
+    }
 }
 
 .header-status {
