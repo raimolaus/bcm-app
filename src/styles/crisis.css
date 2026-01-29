@@ -542,6 +542,14 @@
     margin-bottom: 0;
 }
 
+.war-room-header .back-btn {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.war-room-header .back-btn:hover {
+    color: white;
+}
+
 .war-room-container {
     max-width: 1200px;
     margin: 0 auto;

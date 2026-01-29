@@ -67,17 +67,28 @@ export function goHome() {
 
 // Update navigation buttons visibility
 function updateNavigationButtons(pageId) {
-    const navButtons = document.querySelectorAll('.page-nav-buttons');
+    const isHomePage = pageId === 'homePage';
 
-    navButtons.forEach(buttons => {
-        if (pageId === 'homePage') {
-            // Hide navigation buttons on home page
-            buttons.style.display = 'none';
-        } else {
-            // Show navigation buttons on all other pages
-            buttons.style.display = 'flex';
-        }
+    // Fixed home button
+    const homeBtn = document.getElementById('homeBtn');
+    if (homeBtn) {
+        homeBtn.style.display = isHomePage ? 'none' : 'block';
+    }
+
+    // Back buttons
+    const backButtons = document.querySelectorAll('.back-btn');
+    backButtons.forEach(btn => {
+        btn.style.display = isHomePage ? 'none' : 'flex';
     });
+
+    // Crisis mode pages - add class to body for styling
+    const crisisPages = ['crisisModePage', 'scenarioDetailPage', 'warRoomPage', 'incidentLogPage'];
+
+    if (crisisPages.includes(pageId)) {
+        document.body.classList.add('crisis-mode');
+    } else {
+        document.body.classList.remove('crisis-mode');
+    }
 }
 
 // Initialize navigation

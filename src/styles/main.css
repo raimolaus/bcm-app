@@ -11,6 +11,53 @@ body {
     line-height: 1.6;
 }
 
+/* Fixed Home Button - ülemine parem nurk */
+.home-btn-fixed {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    z-index: 9999;
+    background: transparent;
+    border: none;
+    color: #6b7280;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: none;
+    transition: all 0.2s ease;
+}
+
+.home-btn-fixed svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.home-btn-fixed:hover {
+    color: #3b82f6;
+    transform: scale(1.1);
+}
+
+/* Valge värv kriisirežiimi lehekülgedel */
+body.crisis-mode .home-btn-fixed {
+    color: white;
+}
+
+body.crisis-mode .home-btn-fixed:hover {
+    color: #e5e7eb;
+}
+
+/* Mobiil */
+@media (max-width: 640px) {
+    .home-btn-fixed {
+        top: 0.75rem;
+        right: 0.75rem;
+    }
+
+    .home-btn-fixed svg {
+        width: 1.25rem;
+        height: 1.25rem;
+    }
+}
+
 /* Crisis Banner */
 .crisis-banner {
     background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
@@ -173,19 +220,22 @@ body {
 .page-header {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-bottom: 2px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 100;
     margin-bottom: 32px;
-    background: #0277bd;
-    color: white;
-    padding: 24px 32px;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(2, 119, 189, 0.2);
 }
 
 .page-header h1 {
-    font-size: 28px;
+    flex: 1;
+    margin: 0;
+    font-size: 1.5rem;
+    color: #1f2937;
     font-weight: 600;
-    margin-bottom: 4px;
 }
 
 .page-header p {
@@ -193,68 +243,54 @@ body {
     opacity: 0.9;
 }
 
-/* Navigation Buttons */
-.page-nav-buttons {
-    display: flex;
-    gap: 12px;
-    flex-shrink: 0;
-}
-
-.nav-btn {
-    background: rgba(255, 255, 255, 0.2);
-    border: none;
-    padding: 10px 16px;
-    border-radius: 12px;
+/* Back Button - ainult ikoon, transparent */
+.back-btn {
     display: flex;
     align-items: center;
-    gap: 8px;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    color: #6b7280;
     cursor: pointer;
-    transition: all 0.2s;
-    color: white;
-    font-size: 15px;
-    font-weight: 500;
-}
-
-.nav-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: translateY(-2px);
-}
-
-.nav-btn:active {
-    transform: translateY(0);
-}
-
-.nav-btn svg {
-    width: 20px;
-    height: 20px;
-    color: white;
+    padding: 0.5rem;
+    transition: all 0.2s ease;
     flex-shrink: 0;
 }
 
 .back-btn svg {
-    width: 20px;
-    height: 20px;
+    width: 1.5rem;
+    height: 1.5rem;
 }
 
-.home-btn svg {
-    width: 20px;
-    height: 20px;
+.back-btn:hover {
+    color: #3b82f6;
+    transform: translateX(-2px);
 }
 
-/* Mobile: Show only icons */
-@media (max-width: 768px) {
-    .nav-btn {
-        padding: 10px;
-        min-width: 40px;
-        justify-content: center;
+/* Crisis mode pages - back button hall */
+.crisis-mode-header .back-btn,
+.scenario-detail-header .back-btn {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.crisis-mode-header .back-btn:hover,
+.scenario-detail-header .back-btn:hover {
+    color: white;
+}
+
+/* Mobiil */
+@media (max-width: 640px) {
+    .page-header {
+        padding: 0.75rem 1rem;
     }
 
-    .nav-btn-text {
-        display: none;
+    .page-header h1 {
+        font-size: 1.125rem;
     }
 
-    .page-nav-buttons {
-        gap: 8px;
+    .back-btn svg {
+        width: 1.25rem;
+        height: 1.25rem;
     }
 }
 
