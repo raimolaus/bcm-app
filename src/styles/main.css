@@ -17,13 +17,15 @@ body {
     top: 1rem;
     right: 1rem;
     z-index: 9999;
-    background: transparent;
+    background: rgba(0, 0, 0, 0.3);
     border: none;
     color: white;
     cursor: pointer;
     padding: 0.5rem;
+    border-radius: 8px;
     display: none;
     transition: all 0.2s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .home-btn-fixed svg {
@@ -32,7 +34,8 @@ body {
 }
 
 .home-btn-fixed:hover {
-    color: #e5e7eb;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
     transform: scale(1.1);
 }
 
