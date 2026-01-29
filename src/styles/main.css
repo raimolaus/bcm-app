@@ -19,7 +19,7 @@ body {
     z-index: 9999;
     background: transparent;
     border: none;
-    color: #6b7280;
+    color: white;
     cursor: pointer;
     padding: 0.5rem;
     display: none;
@@ -32,17 +32,8 @@ body {
 }
 
 .home-btn-fixed:hover {
-    color: #3b82f6;
-    transform: scale(1.1);
-}
-
-/* Valge värv kriisirežiimi lehekülgedel */
-body.crisis-mode .home-btn-fixed {
-    color: white;
-}
-
-body.crisis-mode .home-btn-fixed:hover {
     color: #e5e7eb;
+    transform: scale(1.1);
 }
 
 /* Mobiil */
