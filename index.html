@@ -72,7 +72,7 @@
     <main class="container" id="mainContent">
         <!-- Home Page -->
         <div class="page active" id="homePage">
-            <div class="cards-grid">
+            <div class="cards-grid cards-grid-4">
                 <div class="card" onclick="navigateTo('plansPage')">
                     <div class="icon-circle icon-blue">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -83,6 +83,7 @@
                     <h2>Plaanid</h2>
                     <p>Business Continuity plaanide vaatamine ja otsing</p>
                 </div>
+
                 <div class="card" onclick="navigateTo('contactsPage')">
                     <div class="icon-circle icon-green">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -93,6 +94,7 @@
                     <h2>Kriitilised kontaktid</h2>
                     <p>Kriitilised kontaktid ja kommunikatsioon</p>
                 </div>
+
                 <div class="card" onclick="navigateTo('commPage')">
                     <div class="icon-circle icon-orange">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -101,6 +103,23 @@
                     </div>
                     <h2>Kommunikatsioon</h2>
                     <p>Kommunikatsiooni plaanid ja kanalid</p>
+                </div>
+
+                <!-- ============================================ -->
+                <!-- NELJAS KAART - UUS! -->
+                <!-- ============================================ -->
+                <div class="card" onclick="navigateTo('incidentsPage')">
+                    <div class="icon-circle icon-red">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+                            <path d="M9 12h6m-6 4h6"/>
+                        </svg>
+                    </div>
+                    <h2>Logid & Intsidendid</h2>
+                    <p>Intsidentide jälgimine ja raporteerimine</p>
+                    <div class="card-badge" id="activeIncidentsBadge" style="display: none;">
+                        <span class="active-incidents-count">0</span>
+                    </div>
                 </div>
             </div>
             <div class="system-status-card" id="systemStatusCard">
@@ -415,6 +434,120 @@
                 </button>
             </div>
             <div class="log-timeline" id="logTimeline"></div>
+        </div>
+
+        <!-- ========================================= -->
+        <!-- INCIDENTS LIST PAGE -->
+        <!-- ========================================= -->
+        <div class="page" id="incidentsPage">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <h1>Logid & Intsidendid</h1>
+            </div>
+
+            <!-- FILTERS -->
+            <div class="incident-filters">
+                <button class="filter-btn active" onclick="window.incidentActions.filter('all')" data-filter="all">
+                    Kõik <span class="count" id="countAll">0</span>
+                </button>
+                <button class="filter-btn" onclick="window.incidentActions.filter('active')" data-filter="active">
+                    🔴 Aktiivsed <span class="count" id="countActive">0</span>
+                </button>
+                <button class="filter-btn" onclick="window.incidentActions.filter('exercise')" data-filter="exercise">
+                    🎓 Õppused <span class="count" id="countExercise">0</span>
+                </button>
+                <button class="filter-btn" onclick="window.incidentActions.filter('closed')" data-filter="closed">
+                    ✅ Suletud <span class="count" id="countClosed">0</span>
+                </button>
+            </div>
+
+            <!-- SORT & ACTIONS -->
+            <div class="incidents-toolbar">
+                <div class="sort-controls">
+                    <label>Sorteeri:</label>
+                    <select id="incidentSort" onchange="window.incidentActions.sort(this.value)">
+                        <option value="date-desc">Uusim enne</option>
+                        <option value="date-asc">Vanim enne</option>
+                        <option value="severity">Tõsiduse järgi</option>
+                        <option value="status">Staatuse järgi</option>
+                    </select>
+                </div>
+                <button class="btn-secondary btn-small" onclick="window.incidentActions.exportAll()">
+                    📄 Ekspordi kõik
+                </button>
+            </div>
+
+            <!-- INCIDENTS LIST -->
+            <div class="incidents-list" id="incidentsList">
+                <p class="empty-message">Intsidente pole veel</p>
+            </div>
+        </div>
+
+        <!-- ========================================= -->
+        <!-- INCIDENT DETAIL PAGE -->
+        <!-- ========================================= -->
+        <div class="page" id="incidentDetailPage">
+            <div class="page-header">
+                <button class="back-btn" onclick="goBack()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 12H5M12 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+                <div class="incident-detail-header">
+                    <h1 id="incidentDetailTitle">Intsident</h1>
+                    <div class="incident-meta-badges">
+                        <span class="status-badge" id="incidentStatusBadge">AKTIIVNE</span>
+                        <span class="severity-badge" id="incidentSeverityBadge">S1</span>
+                        <span class="type-badge" id="incidentTypeBadge">PÄRIS</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROGRESS BAR -->
+            <div class="incident-progress-section" id="incidentProgressSection">
+                <div class="progress-bar-large">
+                    <div class="progress-fill" id="incidentProgressFill" style="width: 0%"></div>
+                </div>
+                <div class="progress-info">
+                    <span class="progress-text" id="incidentProgressText">0% valmis</span>
+                    <span class="progress-steps" id="incidentProgressSteps">0/0 sammud</span>
+                </div>
+            </div>
+
+            <!-- TABS -->
+            <div class="incident-tabs">
+                <button class="tab-btn active" onclick="window.incidentActions.switchTab('overview')" data-tab="overview">
+                    📊 Ülevaade
+                </button>
+                <button class="tab-btn" onclick="window.incidentActions.switchTab('timeline')" data-tab="timeline">
+                    ⏱️ Timeline
+                </button>
+                <button class="tab-btn" onclick="window.incidentActions.switchTab('checklist')" data-tab="checklist">
+                    ☑️ Tegevused
+                </button>
+                <button class="tab-btn" onclick="window.incidentActions.switchTab('notifications')" data-tab="notifications">
+                    📢 Teavitused
+                </button>
+            </div>
+
+            <!-- TAB CONTENT -->
+            <div class="incident-content" id="incidentTabContent">
+                <!-- Dynamic content -->
+            </div>
+
+            <!-- ACTIONS -->
+            <div class="incident-actions-bar">
+                <button class="btn-secondary" onclick="window.incidentActions.exportCurrent()">
+                    📄 Eksport
+                </button>
+                <button class="btn-primary" onclick="window.incidentActions.updateStatus()" id="updateStatusBtn">
+                    ✏️ Uuenda staatus
+                </button>
+            </div>
         </div>
     </main>
 
