@@ -44,6 +44,15 @@ function openScenario(scenarioId) {
     currentScenario = scenarios.find(s => s.id === scenarioId);
     if (!currentScenario) return;
 
+    // ============================================
+    // UUS: Loo automaatselt intsident
+    // ============================================
+    if (typeof window.createIncidentFromScenario === 'function') {
+        const incidentId = window.createIncidentFromScenario(scenarioId, currentScenario);
+        console.log('Created incident:', incidentId);
+    }
+    // ============================================
+
     navigateTo('scenarioDetailPage');
 
     // Update header

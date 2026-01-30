@@ -24,11 +24,14 @@ import {
     isCrisisModeActive,
     updateCrisisModeUI
 } from './utils/crisisMode.js';
+import { createIncidentFromScenario, updateIncidentChecklist, markActionComplete } from './utils/incident-integration.js';
 
 // Import pages
 import { initHomePage } from './pages/HomePage.js';
 import { initContactsPage, renderContacts } from './pages/ContactsPage.js';
 import { initPlansPage, renderPlans, plansActions } from './pages/PlansPage.js';
+import { initIncidentsPage, renderIncidentsList, incidentActions } from './pages/IncidentsPage.js';
+import { initIncidentDetailPage, incidentDetailActions } from './pages/IncidentDetailPage.js';
 
 // Import data
 import { scenarios, plans } from './data/crisis-data.js';
@@ -55,12 +58,16 @@ function initializeApp() {
     initHomePage();
     initContactsPage();
     initPlansPage();
+    initIncidentsPage();
+    initIncidentDetailPage();
 
     // Expose functions globally for onclick handlers
     window.navigateTo = navigateTo;
     window.goBack = goBack;
     window.goHome = goHome;
     window.plansActions = plansActions;
+    window.incidentActions = incidentActions;
+    window.incidentDetailActions = incidentDetailActions;
 
     // Expose system status functions
     window.updateSystemStatus = updateSystemStatus;
@@ -79,6 +86,12 @@ function initializeApp() {
     window.isCrisisModeActive = isCrisisModeActive;
     window.updateCrisisModeUI = updateCrisisModeUI;
 
+    // Incident integration
+    window.createIncidentFromScenario = createIncidentFromScenario;
+    window.updateIncidentChecklist = updateIncidentChecklist;
+    window.markActionComplete = markActionComplete;
+    window.renderIncidentsList = renderIncidentsList;
+
     // Expose data globally for legacy scripts
     window.scenarios = scenarios;
     window.plans = plans;
@@ -87,6 +100,7 @@ function initializeApp() {
     // Render initial content
     renderContacts();
     renderPlans();
+    renderIncidentsList();
 
     console.log('✅ BCM Application Ready!');
     console.log(`📊 Loaded: ${scenarios.length} scenarios, ${plans.length} plans, ${contacts.length} contacts`);
