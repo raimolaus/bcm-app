@@ -45,11 +45,16 @@ function openScenario(scenarioId) {
     if (!currentScenario) return;
 
     // ============================================
-    // UUS: Loo automaatselt intsident
+    // FAAS2: Check if we are in new incident flow
     // ============================================
-    if (typeof window.createIncidentFromScenario === 'function') {
-        const incidentId = window.createIncidentFromScenario(scenarioId, currentScenario);
-        console.log('Created incident:', incidentId);
+    const isNewIncidentFlow = sessionStorage.getItem('faas2_incident_flow') === 'true';
+
+    if (isNewIncidentFlow) {
+        // Store selected scenario
+        sessionStorage.setItem('faas2_selected_scenario', scenarioId);
+        // Show REAL/TRAINING confirmation dialog
+        showIncidentConfirmationDialog(scenarioId, currentScenario);
+        return; // Don't navigate yet
     }
     // ============================================
 
@@ -790,6 +795,193 @@ document.addEventListener('DOMContentLoaded', function() {
 
 console.log('Incident metrics functions loaded');
 
+// =============================================================================
+// FAAS2: NEW INCIDENT FLOW - REAL/TRAINING CONFIRMATION
+// =============================================================================
+
+let selectedIncidentMode = 'REAL'; // Default
+
+// Show incident confirmation dialog with REAL/TRAINING toggle
+function showIncidentConfirmationDialog(scenarioId, scenarioData) {
+    const existingDialog = document.getElementById('faas2IncidentDialog');
+    if (existingDialog) {
+        existingDialog.remove();
+    }
+
+    const dialog = document.createElement('div');
+    dialog.id = 'faas2IncidentDialog';
+    dialog.className = 'modal';
+    dialog.style.display = 'flex';
+    dialog.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Ava uus intsident</h2>
+            </div>
+            <div class="modal-body">
+                <p><strong>Stsenaarium:</strong> ${scenarioData.name}</p>
+                <p style="margin-bottom: 24px;">${scenarioData.description}</p>
+
+                <div style="margin-bottom: 24px;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Režiim:</label>
+                    <div style="display: flex; gap: 12px;">
+                        <button class="btn-mode-toggle active" id="modeReal" onclick="selectIncidentMode('REAL')" style="flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #3b82f6; background: #3b82f6; color: white; font-weight: 600; cursor: pointer;">
+                            REAL
+                        </button>
+                        <button class="btn-mode-toggle" id="modeTraining" onclick="selectIncidentMode('TRAINING')" style="flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #d1d5db; background: white; color: #374151; font-weight: 600; cursor: pointer;">
+                            TRAINING
+                        </button>
+                    </div>
+                    <p style="margin-top: 8px; font-size: 14px; color: #6b7280;">
+                        <span id="modeDescription">Päris intsident - kajastub süsteemis reaalsena</span>
+                    </p>
+                </div>
+
+                <p style="font-size: 14px; color: #6b7280;">Kas oled kindel, et soovid luua uue intsidendi?</p>
+
+                <div class="modal-actions" style="margin-top: 24px;">
+                    <button class="btn-primary" onclick="confirmCreateIncident('${scenarioId}')" style="flex: 1;">
+                        Kinnita ja loo intsident
+                    </button>
+                    <button class="btn-secondary" onclick="cancelIncidentCreation()" style="flex: 1;">
+                        Tühista
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(dialog);
+}
+
+// Select incident mode (REAL/TRAINING)
+function selectIncidentMode(mode) {
+    selectedIncidentMode = mode;
+
+    const realBtn = document.getElementById('modeReal');
+    const trainingBtn = document.getElementById('modeTraining');
+    const description = document.getElementById('modeDescription');
+
+    if (mode === 'REAL') {
+        realBtn.classList.add('active');
+        realBtn.style.background = '#3b82f6';
+        realBtn.style.color = 'white';
+        realBtn.style.borderColor = '#3b82f6';
+
+        trainingBtn.classList.remove('active');
+        trainingBtn.style.background = 'white';
+        trainingBtn.style.color = '#374151';
+        trainingBtn.style.borderColor = '#d1d5db';
+
+        description.textContent = 'Päris intsident - kajastub süsteemis reaalsena';
+    } else {
+        trainingBtn.classList.add('active');
+        trainingBtn.style.background = '#3b82f6';
+        trainingBtn.style.color = 'white';
+        trainingBtn.style.borderColor = '#3b82f6';
+
+        realBtn.classList.remove('active');
+        realBtn.style.background = 'white';
+        realBtn.style.color = '#374151';
+        realBtn.style.borderColor = '#d1d5db';
+
+        description.textContent = 'Õppus/Treening - märgitud õppusena';
+    }
+}
+
+// Confirm and create incident
+function confirmCreateIncident(scenarioId) {
+    const scenario = scenarios.find(s => s.id === scenarioId);
+    if (!scenario) {
+        alert('Stsenaariumi ei leitud');
+        return;
+    }
+
+    // Create incident with selected mode
+    if (typeof window.createIncidentFromScenario === 'function') {
+        const incident = window.createIncidentFromScenario(scenarioId, scenario);
+
+        // Update isExercise flag based on mode
+        if (incident) {
+            const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+            const idx = incidents.findIndex(i => i.id === incident);
+            if (idx >= 0) {
+                incidents[idx].isExercise = (selectedIncidentMode === 'TRAINING');
+                localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
+            }
+        }
+
+        console.log(`[FAAS2] Incident created: ${incident} (${selectedIncidentMode})`);
+
+        // Add timeline entry
+        addToLog('SYSTEM_EVENT', `Intsident loodud: ${scenario.name} (${selectedIncidentMode})`);
+    }
+
+    // Clear flow state
+    sessionStorage.removeItem('faas2_incident_flow');
+    sessionStorage.setItem('faas2_incident_mode', selectedIncidentMode);
+
+    // Close dialog
+    const dialog = document.getElementById('faas2IncidentDialog');
+    if (dialog) {
+        dialog.remove();
+    }
+
+    // Reset mode to default
+    selectedIncidentMode = 'REAL';
+
+    // Update context box
+    if (typeof window.updateContextBox === 'function') {
+        window.updateContextBox();
+    }
+
+    // Navigate to scenario detail page
+    currentScenario = scenario;
+    navigateTo('scenarioDetailPage');
+
+    // Update header
+    document.getElementById('scenarioTitle').textContent = currentScenario.name;
+    document.getElementById('scenarioDescription').textContent = currentScenario.description;
+
+    // Render blocks
+    renderQuickActions();
+
+    // Show/hide Incident Metrics block for cyber scenarios only
+    const metricsBlock = document.getElementById('incidentMetricsBlock');
+    if (isCyberScenario(scenarioId)) {
+        metricsBlock.style.display = 'block';
+        renderIncidentMetrics();
+    } else {
+        metricsBlock.style.display = 'none';
+    }
+
+    renderActionPlan();
+    renderCommunicationButtons();
+    renderScenarioContacts();
+
+    addToLog('ACTION', `Avatud stsenaarium: ${currentScenario.name}`);
+}
+
+// Cancel incident creation
+function cancelIncidentCreation() {
+    // Clear flow state
+    sessionStorage.removeItem('faas2_incident_flow');
+    sessionStorage.removeItem('faas2_selected_scenario');
+
+    // Close dialog
+    const dialog = document.getElementById('faas2IncidentDialog');
+    if (dialog) {
+        dialog.remove();
+    }
+
+    // Reset mode to default
+    selectedIncidentMode = 'REAL';
+
+    // Navigate back to home
+    if (typeof window.goHome === 'function') {
+        window.goHome();
+    }
+}
+
 // Expose all functions globally for onclick handlers
 // Note: activateCrisisMode and deactivateCrisisMode are now in src/utils/crisisMode.js
 window.renderScenarios = renderScenarios;
@@ -805,3 +997,6 @@ window.saveIncidentMetrics = saveIncidentMetrics;
 window.clearIncidentMetrics = clearIncidentMetrics;
 window.viewLogEntry = viewLogEntry;
 window.deleteLogEntry = deleteLogEntry;
+window.selectIncidentMode = selectIncidentMode;
+window.confirmCreateIncident = confirmCreateIncident;
+window.cancelIncidentCreation = cancelIncidentCreation;

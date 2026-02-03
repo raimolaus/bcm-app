@@ -36,6 +36,7 @@ import { initIncidentDetailPage, incidentDetailActions } from './pages/IncidentD
 // Import data
 import { scenarios, plans } from './data/crisis-data.js';
 import { contacts } from './data/contacts.js';
+import { loadIncidents, IncidentStatus } from './data/incidents.js';
 
 // Import legacy scripts (temporarily keep crisis-app and plans-app until fully refactored)
 // These will be loaded as classic scripts for now
@@ -88,7 +89,56 @@ function initializeApp() {
 
     // FAAS2: New incident flow
     window.openNewIncidentFlow = function () {
-        console.log('[FAAS2] openNewIncidentFlow() called - implement in STEP2');
+        console.log('[FAAS2] openNewIncidentFlow() - Opening scenario selection');
+        // Store that we are in "new incident flow" mode
+        sessionStorage.setItem('faas2_incident_flow', 'true');
+        sessionStorage.removeItem('faas2_selected_scenario');
+        sessionStorage.removeItem('faas2_incident_mode');
+        // Navigate to crisis mode page (scenario selection)
+        window.navigateTo('crisisModePage');
+    };
+
+    // FAAS2: Update context box based on active incidents
+    window.updateContextBox = function () {
+        const contextBox = document.getElementById('bcmContextBox');
+        const contextTitle = document.getElementById('bcmContextTitle');
+        const contextSub = document.getElementById('bcmContextSub');
+
+        if (!contextBox || !contextTitle || !contextSub) {
+            console.warn('[FAAS2] Context box elements not found');
+            return;
+        }
+
+        // Load active incidents (ACTIVE or CONTAINED status)
+        const { loadIncidents, IncidentStatus } = window;
+        if (!loadIncidents) {
+            console.warn('[FAAS2] loadIncidents not available');
+            return;
+        }
+
+        const allIncidents = loadIncidents();
+        const activeIncidents = allIncidents.filter(i =>
+            i.status === IncidentStatus.ACTIVE || i.status === IncidentStatus.CONTAINED
+        );
+
+        if (activeIncidents.length === 0) {
+            // No active incidents - normal state
+            contextBox.className = 'bcm-context-box normal';
+            contextTitle.textContent = 'BUSINESS CONTINUITY MANAGEMENT';
+            contextSub.textContent = '';
+        } else if (activeIncidents.length === 1) {
+            // Single active incident
+            contextBox.className = 'bcm-context-box alert';
+            contextTitle.textContent = 'INTSIDENT: ' + activeIncidents[0].scenarioName;
+            contextSub.textContent = activeIncidents[0].id;
+        } else {
+            // Multiple active incidents
+            contextBox.className = 'bcm-context-box alert';
+            contextTitle.textContent = 'AKTIIVSED INTSIDENDID: ' + activeIncidents.length;
+            contextSub.textContent = 'Vaata Logid & Intsidendid lehte';
+        }
+
+        console.log(`[FAAS2] Context box updated: ${activeIncidents.length} active incidents`);
     };
 
     // Incident integration
@@ -101,11 +151,18 @@ function initializeApp() {
     window.scenarios = scenarios;
     window.plans = plans;
     window.contacts = contacts;
+    window.loadIncidents = loadIncidents;
+    window.IncidentStatus = IncidentStatus;
 
     // Render initial content
     renderContacts();
     renderPlans();
     renderIncidentsList();
+
+    // FAAS2: Update context box on page load
+    if (typeof window.updateContextBox === 'function') {
+        window.updateContextBox();
+    }
 
     console.log('✅ BCM Application Ready!');
     console.log(`📊 Loaded: ${scenarios.length} scenarios, ${plans.length} plans, ${contacts.length} contacts`);
