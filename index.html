@@ -26,17 +26,6 @@
         </div>
 
         <div class="top-bar-right">
-            <!-- Exercise Mode Toggle -->
-            <div class="exercise-toggle">
-                <label class="toggle-label">
-                    <span class="toggle-text" id="exerciseText">ÕPPUS: VÄLJAS</span>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="exerciseToggle" onchange="toggleExerciseMode()">
-                        <span class="toggle-slider"></span>
-                    </div>
-                </label>
-            </div>
-
             <!-- Fixed Home Button -->
             <button class="home-btn-fixed" onclick="goHome()" id="homeBtn" style="display: none;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -56,9 +45,6 @@
                 <div class="bcm-context-title" id="bcmContextTitle">BUSINESS CONTINUITY MANAGEMENT</div>
                 <div class="bcm-context-sub" id="bcmContextSub"></div>
             </div>
-
-            <!-- FAAS2: Open Incident CTA -->
-            <button class="btn-primary btn-open-incident" onclick="openNewIncidentFlow()">AVA INTSIDENT</button>
 
             <div class="cards-grid cards-grid-4">
                 <div class="card" onclick="navigateTo('plansPage')">
@@ -93,8 +79,20 @@
                     <p>Kommunikatsiooni plaanid ja kanalid</p>
                 </div>
 
+                <div class="card card-action" onclick="activateCrisisMode()">
+                    <div class="icon-circle icon-red">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <h2>AVA INTSIDENT</h2>
+                    <p>Vali stsenaarium ja alusta juhtumi haldust</p>
+                </div>
+
                 <!-- ============================================ -->
-                <!-- NELJAS KAART - UUS! -->
+                <!-- VIIES KAART -->
                 <!-- ============================================ -->
                 <div class="card" onclick="navigateTo('incidentsPage')">
                     <div class="icon-circle icon-red">
@@ -108,26 +106,6 @@
                     <div class="card-badge" id="activeIncidentsBadge" style="display: none;">
                         <span class="active-incidents-count">0</span>
                     </div>
-                </div>
-            </div>
-            <div class="system-status-card" id="systemStatusCard">
-                <div class="system-status-header">
-                    <div class="system-status-main">
-                        <svg class="status-icon" id="statusIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <line x1="12" y1="16" x2="12.01" y2="16"/>
-                        </svg>
-                        <div class="system-status-info">
-                            <h3>Süsteemi olek</h3>
-                            <p id="systemStatusReason">Kõik kriitilised süsteemid töötavad tavapäraselt</p>
-                            <span class="status-source" id="statusSource"></span>
-                        </div>
-                    </div>
-                    <button class="btn-link" onclick="openSystemStatusModal()">Määra olek</button>
-                </div>
-                <div id="systemStatusActions" style="display: none; margin-top: 12px;">
-                    <a href="#" onclick="viewActiveIncidents(); return false;" class="status-link">Vaata aktiivseid intsidente →</a>
                 </div>
             </div>
         </div>

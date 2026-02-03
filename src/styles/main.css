@@ -1794,3 +1794,6 @@ body {
 .bcm-context-title{font-size:22px;font-weight:700}
 .bcm-context-sub{font-size:14px;opacity:.9;margin-top:4px}
 .btn-open-incident{width:100%;margin:16px 0;font-size:18px;padding:16px;border-radius:16px}
+
+/* Optional emphasis for the "AVA INTSIDENT" action card */
+.card.card-action h2 { letter-spacing: 0.2px; }

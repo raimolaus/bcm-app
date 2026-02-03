@@ -16,10 +16,38 @@ function setupCardHandlers() {
 }
 
 export function activateCrisisMode() {
-    navigateTo('crisisModePage');
-    
-    if (window.crisisManager && window.crisisManager.activate) {
-        window.crisisManager.activate();
+    // 1) Navigate to crisis mode page
+    if (typeof navigateTo === 'function') {
+        navigateTo('crisisModePage');
+    } else if (typeof window.navigateTo === 'function') {
+        window.navigateTo('crisisModePage');
+    }
+
+    // 2) Render scenarios - try different renderer functions
+    // Check for renderScenarios (from crisis-app.js)
+    if (typeof window.renderScenarios === 'function') {
+        window.renderScenarios();
+        return;
+    }
+    if (typeof renderScenarios === 'function') {
+        renderScenarios();
+        return;
+    }
+    // Check for renderCrisisScenarios (alternative name)
+    if (typeof window.renderCrisisScenarios === 'function') {
+        window.renderCrisisScenarios();
+        return;
+    }
+    if (typeof renderCrisisScenarios === 'function') {
+        renderCrisisScenarios();
+        return;
+    }
+
+    // 3) Fallback - if no renderer found, show a message
+    console.warn('⚠️ No scenario renderer found. Scenarios grid may be empty.');
+    const grid = document.getElementById('scenariosGrid');
+    if (grid) {
+        grid.innerHTML = '<p style="padding:16px;color:#6b7280">Stsenaariumite loogika pole laetud. Kontrolli JS-i init järjekorda.</p>';
     }
 }
 
