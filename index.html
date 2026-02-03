@@ -529,11 +529,14 @@
 
             <!-- ACTIONS -->
             <div class="incident-actions-bar">
-                <button class="btn-secondary" onclick="window.incidentActions.exportCurrent()">
+                <button class="btn-secondary" onclick="window.incidentDetailActions.exportCurrent()">
                     📄 Eksport
                 </button>
-                <button class="btn-primary" onclick="window.incidentActions.updateStatus()" id="updateStatusBtn">
+                <button class="btn-primary" onclick="window.incidentDetailActions.updateStatus()" id="updateStatusBtn">
                     ✏️ Uuenda staatus
+                </button>
+                <button class="btn-secondary" onclick="window.incidentDetailActions.closeIncident()" id="closeIncidentBtn" style="background: #dc2626; color: white; border-color: #dc2626;">
+                    🔒 Sulge intsident
                 </button>
             </div>
         </div>

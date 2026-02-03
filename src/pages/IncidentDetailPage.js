@@ -328,14 +328,249 @@ export function exportCurrentIncident() {
     alert('Intsident eksporditud!');
 }
 
+// FAAS2: Update incident status with reason
+export function updateIncidentStatus() {
+    if (!currentIncident) return;
+
+    // Create modal dialog for status selection
+    const existingDialog = document.getElementById('faas2StatusDialog');
+    if (existingDialog) {
+        existingDialog.remove();
+    }
+
+    const dialog = document.createElement('div');
+    dialog.id = 'faas2StatusDialog';
+    dialog.className = 'modal';
+    dialog.style.display = 'flex';
+    dialog.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Muuda intsidendi staatust</h2>
+            </div>
+            <div class="modal-body">
+                <p><strong>Praegune staatus:</strong> ${getStatusText(currentIncident.status)}</p>
+
+                <div style="margin: 16px 0;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Uus staatus:</label>
+                    <select id="newStatusSelect" class="metric-select" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #d1d5db;">
+                        <option value="ACTIVE" ${currentIncident.status === 'ACTIVE' ? 'selected' : ''}>AKTIIVNE</option>
+                        <option value="CONTAINED" ${currentIncident.status === 'CONTAINED' ? 'selected' : ''}>OHJELDATUD</option>
+                        <option value="RESOLVED" ${currentIncident.status === 'RESOLVED' ? 'selected' : ''}>LAHENDATUD</option>
+                        <option value="CLOSED" ${currentIncident.status === 'CLOSED' ? 'selected' : ''}>SULETUD</option>
+                    </select>
+                </div>
+
+                <div style="margin: 16px 0;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Põhjendus (kohustuslik, min 5 tähemärki):</label>
+                    <textarea id="statusChangeReason" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #d1d5db; min-height: 80px;" placeholder="Kirjelda, miks muudad staatust..."></textarea>
+                    <p id="reasonError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;">Põhjendus peab olema vähemalt 5 tähemärki pikk</p>
+                </div>
+
+                <div class="modal-actions" style="margin-top: 24px;">
+                    <button class="btn-primary" onclick="window.incidentDetailActions.confirmStatusChange()" style="flex: 1;">
+                        Salvesta
+                    </button>
+                    <button class="btn-secondary" onclick="window.incidentDetailActions.cancelStatusChange()" style="flex: 1;">
+                        Tühista
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(dialog);
+}
+
+// Confirm status change
+export function confirmStatusChange() {
+    const newStatus = document.getElementById('newStatusSelect').value;
+    const reason = document.getElementById('statusChangeReason').value.trim();
+    const reasonError = document.getElementById('reasonError');
+
+    // Validate reason
+    if (reason.length < 5) {
+        reasonError.style.display = 'block';
+        return;
+    }
+
+    // Don't allow changing to same status
+    if (newStatus === currentIncident.status) {
+        alert('Uus staatus on sama mis praegune!');
+        return;
+    }
+
+    // Update incident
+    currentIncident.status = newStatus;
+    currentIncident.updatedAt = new Date().toISOString();
+
+    // Set timing fields based on status
+    const now = new Date().toISOString();
+    if (newStatus === 'CONTAINED' && !currentIncident.tContainment) {
+        currentIncident.tContainment = now;
+    } else if (newStatus === 'RESOLVED' && !currentIncident.tResolution) {
+        currentIncident.tResolution = now;
+    } else if (newStatus === 'CLOSED' && !currentIncident.tClosed) {
+        currentIncident.tClosed = now;
+    }
+
+    // Add timeline action
+    currentIncident.actions.push({
+        timestamp: now,
+        user: 'Kasutaja',
+        action: `Staatus muudetud: ${getStatusText(currentIncident.status)} - ${reason}`,
+        category: 'STATUS_CHANGE'
+    });
+
+    // Save to localStorage
+    const { saveIncident } = window;
+    if (saveIncident) {
+        saveIncident(currentIncident);
+    }
+
+    // Close dialog
+    const dialog = document.getElementById('faas2StatusDialog');
+    if (dialog) {
+        dialog.remove();
+    }
+
+    // Update context box
+    if (typeof window.updateContextBox === 'function') {
+        window.updateContextBox();
+    }
+
+    // Re-render incident detail
+    renderIncidentDetail();
+
+    console.log(`[FAAS2] Status changed to ${newStatus}: ${reason}`);
+}
+
+// Cancel status change
+export function cancelStatusChange() {
+    const dialog = document.getElementById('faas2StatusDialog');
+    if (dialog) {
+        dialog.remove();
+    }
+}
+
+// FAAS2: Close incident with confirmation and reason
+export function closeIncident() {
+    if (!currentIncident) return;
+
+    // Create confirmation dialog
+    const existingDialog = document.getElementById('faas2CloseDialog');
+    if (existingDialog) {
+        existingDialog.remove();
+    }
+
+    const dialog = document.createElement('div');
+    dialog.id = 'faas2CloseDialog';
+    dialog.className = 'modal';
+    dialog.style.display = 'flex';
+    dialog.innerHTML = `
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <h2>Sulge intsident</h2>
+            </div>
+            <div class="modal-body">
+                <p><strong>Intsident:</strong> ${currentIncident.scenarioName}</p>
+                <p><strong>ID:</strong> ${currentIncident.id}</p>
+
+                <div style="margin: 16px 0;">
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Põhjendus sulgemiseks (kohustuslik, min 5 tähemärki):</label>
+                    <textarea id="closeReason" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #d1d5db; min-height: 80px;" placeholder="Kirjelda, miks sulged intsidendi..."></textarea>
+                    <p id="closeReasonError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;">Põhjendus peab olema vähemalt 5 tähemärki pikk</p>
+                </div>
+
+                <p style="font-size: 14px; color: #6b7280; margin-top: 16px;">
+                    Kas oled kindel, et soovid selle intsidendi sulgeda?
+                </p>
+
+                <div class="modal-actions" style="margin-top: 24px;">
+                    <button class="btn-primary" onclick="window.incidentDetailActions.confirmClose()" style="flex: 1; background: #dc2626;">
+                        Sulge intsident
+                    </button>
+                    <button class="btn-secondary" onclick="window.incidentDetailActions.cancelClose()" style="flex: 1;">
+                        Tühista
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+
+    document.body.appendChild(dialog);
+}
+
+// Confirm close
+export function confirmClose() {
+    const reason = document.getElementById('closeReason').value.trim();
+    const reasonError = document.getElementById('closeReasonError');
+
+    // Validate reason
+    if (reason.length < 5) {
+        reasonError.style.display = 'block';
+        return;
+    }
+
+    // Update incident
+    const now = new Date().toISOString();
+    currentIncident.status = 'CLOSED';
+    currentIncident.tClosed = now;
+    currentIncident.updatedAt = now;
+
+    // Add timeline action
+    currentIncident.actions.push({
+        timestamp: now,
+        user: 'Kasutaja',
+        action: `Intsident suletud: ${reason}`,
+        category: 'CLOSURE'
+    });
+
+    // Save to localStorage
+    const { saveIncident } = window;
+    if (saveIncident) {
+        saveIncident(currentIncident);
+    }
+
+    // Close dialog
+    const dialog = document.getElementById('faas2CloseDialog');
+    if (dialog) {
+        dialog.remove();
+    }
+
+    // Update context box
+    if (typeof window.updateContextBox === 'function') {
+        window.updateContextBox();
+    }
+
+    alert('Intsident suletud!');
+
+    // Navigate back to incidents list
+    if (window.goBack) {
+        window.goBack();
+    }
+
+    console.log(`[FAAS2] Incident closed: ${reason}`);
+}
+
+// Cancel close
+export function cancelClose() {
+    const dialog = document.getElementById('faas2CloseDialog');
+    if (dialog) {
+        dialog.remove();
+    }
+}
+
 // Incident detail actions (exposed globally)
 export const incidentDetailActions = {
     loadIncident: loadIncidentDetail,
     switchTab: switchTab,
     exportCurrent: exportCurrentIncident,
-    updateStatus: () => {
-        alert('Staatuse uuendamine tuleb järgmises faasis');
-    }
+    updateStatus: updateIncidentStatus,
+    confirmStatusChange: confirmStatusChange,
+    cancelStatusChange: cancelStatusChange,
+    closeIncident: closeIncident,
+    confirmClose: confirmClose,
+    cancelClose: cancelClose
 };
 
 console.log('IncidentDetailPage.js loaded');

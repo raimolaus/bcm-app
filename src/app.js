@@ -36,7 +36,7 @@ import { initIncidentDetailPage, incidentDetailActions } from './pages/IncidentD
 // Import data
 import { scenarios, plans } from './data/crisis-data.js';
 import { contacts } from './data/contacts.js';
-import { loadIncidents, IncidentStatus } from './data/incidents.js';
+import { loadIncidents, IncidentStatus, saveIncident } from './data/incidents.js';
 
 // Import legacy scripts (temporarily keep crisis-app and plans-app until fully refactored)
 // These will be loaded as classic scripts for now
@@ -153,6 +153,7 @@ function initializeApp() {
     window.contacts = contacts;
     window.loadIncidents = loadIncidents;
     window.IncidentStatus = IncidentStatus;
+    window.saveIncident = saveIncident;
 
     // Render initial content
     renderContacts();
