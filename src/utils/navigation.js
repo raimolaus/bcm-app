@@ -14,16 +14,7 @@ export function navigateTo(pageId, skipHistory = false) {
     // Get current page before navigation
     const currentPageId = getCurrentPage();
 
-    // Check if crisis mode blocks navigation
-    if (window.isCrisisModeActive && window.isCrisisModeActive()) {
-        const crisisPages = ['crisisModePage', 'scenarioDetailPage', 'incidentLogPage'];
-        const isLeavingCrisis = crisisPages.includes(currentPageId) && !crisisPages.includes(pageId);
-
-        if (isLeavingCrisis) {
-            alert('🚨 KRIIS ON AKTIIVNE!\n\nKriisirežiimist ei saa väljuda, kuni kriis on lõpetatud.\n\nKasuta "Lõpeta kriis" nuppu kriisirežiimi lehel.');
-            return false;
-        }
-    }
+    // FAAS2: Navigation is never blocked (legacy crisis mode guard removed)
 
     // Add to history (if not going back and not same page)
     if (!skipHistory && currentPageId && currentPageId !== pageId) {

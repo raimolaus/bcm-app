@@ -21,15 +21,15 @@ export function activateCrisisMode() {
 
     // Add to log
     if (window.addToLog) {
-        window.addToLog('INFO', 'KRIISIREŽIIM AKTIVEERITUD');
+        window.addToLog('INFO', 'Intsidendi halduse vaade avatud');
     }
 
     console.log('🚨 Crisis mode ACTIVATED');
 }
 
-// Deactivate crisis mode
+// Deactivate crisis mode (legacy function - kept for compatibility)
 export function deactivateCrisisMode() {
-    if (!confirm('Kas oled kindel, et soovid kriisirežiimi lõpetada?\n\nSee deaktiveerib kriisioleku ja lubab tavapärase navigatsiooni.')) {
+    if (!confirm('Kas oled kindel, et soovid intsidendi halduse vaate sulgeda?')) {
         return;
     }
 
@@ -42,7 +42,7 @@ export function deactivateCrisisMode() {
 
     // Add to log
     if (window.addToLog) {
-        window.addToLog('INFO', 'Kriisirežiim lõpetatud');
+        window.addToLog('INFO', 'Intsidendi halduse vaade suletud');
     }
 
     console.log('✅ Crisis mode DEACTIVATED');
@@ -63,7 +63,7 @@ export function updateCrisisModeUI() {
                     <line x1="12" y1="9" x2="12" y2="13"/>
                     <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
-                KRIIS AKTIIVNE
+                INTSIDENT AKTIIVNE
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 14px; height: 14px; margin-left: 4px;">
                     <circle cx="12" cy="12" r="10"/>
                     <line x1="15" y1="9" x2="9" y2="15"/>
@@ -80,14 +80,14 @@ export function updateCrisisModeUI() {
                     <line x1="12" y1="9" x2="12" y2="13"/>
                     <line x1="12" y1="17" x2="12.01" y2="17"/>
                 </svg>
-                Kriisirežiim
+                Ava intsident
             `;
             // Change onclick back to activate
             crisisBtnSmall.setAttribute('onclick', 'activateCrisisMode()');
         }
     }
 
-    // Update crisis banner
+    // Update crisis banner (if exists - legacy element)
     const crisisBanner = document.getElementById('crisisBanner');
     if (crisisBanner) {
         if (isActive) {
@@ -97,7 +97,7 @@ export function updateCrisisModeUI() {
             // Update text to show it's active
             const bannerH1 = crisisBanner.querySelector('h1');
             if (bannerH1) {
-                bannerH1.innerHTML = 'KRIIS AKTIIVNE - KLIKKA LÕPETAMISEKS';
+                bannerH1.innerHTML = 'INTSIDENT KÄSITLEMISEL - KLIKKA LÕPETAMISEKS';
             }
         } else {
             crisisBanner.classList.remove('crisis-active');
@@ -106,23 +106,15 @@ export function updateCrisisModeUI() {
             // Restore original text
             const bannerH1 = crisisBanner.querySelector('h1');
             if (bannerH1) {
-                bannerH1.textContent = 'Aktiveeri kriisirežiim';
+                bannerH1.textContent = 'Ava intsident';
             }
         }
     }
 }
 
-// Block navigation if crisis is active (called from navigation.js)
+// FAAS2: Navigation is never blocked (legacy function kept for compatibility)
 export function canNavigateAway(fromPage) {
-    const isActive = isCrisisModeActive();
-    const crisisPages = ['crisisModePage', 'scenarioDetailPage', 'incidentLogPage'];
-
-    // If crisis is active and trying to leave crisis pages
-    if (isActive && crisisPages.includes(fromPage)) {
-        alert('KRIIS ON AKTIIVNE!\n\nKriisirežiimist ei saa väljuda, kuni kriis on lõpetatud.\n\nKasuta "Lõpeta kriis" nuppu kriisirežiimi lehel.');
-        return false;
-    }
-
+    // Always allow navigation
     return true;
 }
 

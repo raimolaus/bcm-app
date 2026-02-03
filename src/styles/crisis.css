@@ -11,29 +11,40 @@
     box-shadow: 0 8px 24px rgba(211, 47, 47, 0.4);
 }
 
-/* Crisis Mode Header */
+/* Crisis Mode Header - FAAS2: Neutral styling (not red) */
 .crisis-mode-header {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 1rem;
+    padding: 1rem 1.5rem;
+    background: white;
+    border-bottom: 2px solid #e5e7eb;
+    position: sticky;
+    top: 0;
+    z-index: 100;
     margin-bottom: 32px;
-    background: linear-gradient(135deg, #d32f2f 0%, #c62828 100%);
-    color: white;
-    padding: 24px 32px;
-    border-radius: 16px;
-    box-shadow: 0 4px 12px rgba(211, 47, 47, 0.3);
 }
 
 .crisis-mode-header h1 {
-    font-size: 28px;
-    font-weight: 700;
-    margin-bottom: 4px;
-    letter-spacing: 0.5px;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: #1f2937;
+    letter-spacing: normal;
 }
 
 .crisis-mode-header p {
-    font-size: 16px;
-    opacity: 0.95;
+    font-size: 0.95rem;
+    color: #6b7280;
+    margin: 0.25rem 0 0;
+    opacity: 1;
+}
+
+/* Page subtitle styling */
+.page-subtitle {
+    margin: 0.25rem 0 0;
+    color: #6b7280;
+    font-size: 0.95rem;
 }
 
 .log-btn, .export-btn {
