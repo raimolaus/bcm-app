@@ -22,15 +22,7 @@
         </div>
 
         <div class="top-bar-center">
-            <!-- Small Crisis Button (visible on non-Home pages) -->
-            <button class="crisis-btn-small" id="crisisBtnSmall" onclick="activateCrisisMode()" style="display: none;">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 16px; height: 16px;">
-                    <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                    <line x1="12" y1="9" x2="12" y2="13"/>
-                    <line x1="12" y1="17" x2="12.01" y2="17"/>
-                </svg>
-                Kriisirežiim
-            </button>
+            <!-- Empty (crisis button removed in FAAS2) -->
         </div>
 
         <div class="top-bar-right">
@@ -55,23 +47,19 @@
         </div>
     </div>
 
-    <!-- Crisis Banner (only on Home page) -->
-    <div class="crisis-banner clickable" id="crisisBanner" onclick="activateCrisisMode()">
-        <div class="crisis-content">
-            <svg class="crisis-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-            <h1>Aktiveeri kriisirežiim</h1>
-        </div>
-        <p class="crisis-subtitle">Kiire juurdepääs kriitiliste plaanide ja kontaktidega</p>
-    </div>
-
     <!-- Main Container -->
     <main class="container" id="mainContent">
         <!-- Home Page -->
         <div class="page active" id="homePage">
+            <!-- FAAS2: Context Box -->
+            <div class="bcm-context-box normal" id="bcmContextBox">
+                <div class="bcm-context-title" id="bcmContextTitle">BUSINESS CONTINUITY MANAGEMENT</div>
+                <div class="bcm-context-sub" id="bcmContextSub"></div>
+            </div>
+
+            <!-- FAAS2: Open Incident CTA -->
+            <button class="btn-primary btn-open-incident" onclick="openNewIncidentFlow()">AVA INTSIDENT</button>
+
             <div class="cards-grid cards-grid-4">
                 <div class="card" onclick="navigateTo('plansPage')">
                     <div class="icon-circle icon-blue">

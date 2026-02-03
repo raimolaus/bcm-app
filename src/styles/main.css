@@ -1786,3 +1786,11 @@ body {
         grid-template-columns: 1fr;
     }
 }
+
+/* ===== FAAS2 STEP1: Context box + Open Incident CTA ===== */
+.bcm-context-box{padding:20px;border-radius:16px;border:1px solid #ddd;margin-bottom:16px;user-select:none;cursor:default}
+.bcm-context-box.normal{background:#fff;color:#111}
+.bcm-context-box.alert{background:#b91c1c;color:#fff}
+.bcm-context-title{font-size:22px;font-weight:700}
+.bcm-context-sub{font-size:14px;opacity:.9;margin-top:4px}
+.btn-open-incident{width:100%;margin:16px 0;font-size:18px;padding:16px;border-radius:16px}

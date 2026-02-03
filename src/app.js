@@ -86,6 +86,11 @@ function initializeApp() {
     window.isCrisisModeActive = isCrisisModeActive;
     window.updateCrisisModeUI = updateCrisisModeUI;
 
+    // FAAS2: New incident flow
+    window.openNewIncidentFlow = function () {
+        console.log('[FAAS2] openNewIncidentFlow() called - implement in STEP2');
+    };
+
     // Incident integration
     window.createIncidentFromScenario = createIncidentFromScenario;
     window.updateIncidentChecklist = updateIncidentChecklist;
