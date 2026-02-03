@@ -169,11 +169,79 @@ function initializeApp() {
     console.log(`📊 Loaded: ${scenarios.length} scenarios, ${plans.length} plans, ${contacts.length} contacts`);
 }
 
+// ===== FAAS2 UI FINALIZE: Dynamic home page state management =====
+
+// Get active incident count
+function getActiveIncidentCount() {
+    const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+    return incidents.filter(i => i.status && i.status !== 'CLOSED').length;
+}
+
+// Update home page UI based on incident state
+function updateHomeUI() {
+    const count = getActiveIncidentCount();
+
+    const statusOk = document.getElementById('statusOk');
+    const context = document.getElementById('incidentContext');
+    const countEl = document.getElementById('activeIncidentCount');
+
+    if (!statusOk || !context || !countEl) {
+        console.warn('[FAAS2 UI] Home page status elements not found');
+        return;
+    }
+
+    if (count > 0) {
+        statusOk.style.display = 'none';
+        context.style.display = 'block';
+        countEl.textContent = count;
+        orderCardsForActiveIncident();
+    } else {
+        statusOk.style.display = 'inline-block';
+        context.style.display = 'none';
+        orderCardsForNormal();
+    }
+
+    console.log(`[FAAS2 UI] Home UI updated: ${count} active incidents`);
+}
+
+// Card ordering for normal state
+function orderCardsForNormal() {
+    reorderCards(['openIncident', 'plans', 'contacts', 'communication', 'logs']);
+}
+
+// Card ordering for active incident state
+function orderCardsForActiveIncident() {
+    reorderCards(['openIncident', 'logs', 'communication', 'contacts', 'plans']);
+}
+
+// Reorder cards in DOM
+function reorderCards(order) {
+    const container = document.getElementById('homeCards');
+    if (!container) {
+        console.warn('[FAAS2 UI] homeCards container not found');
+        return;
+    }
+
+    order.forEach(key => {
+        const el = container.querySelector(`[data-card="${key}"]`);
+        if (el) {
+            container.appendChild(el);
+        }
+    });
+}
+
+// Make updateHomeUI globally available
+window.updateHomeUI = updateHomeUI;
+
 // Wait for DOM to be ready
 if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initializeApp);
+    document.addEventListener('DOMContentLoaded', () => {
+        initializeApp();
+        updateHomeUI(); // Initialize home page state
+    });
 } else {
     initializeApp();
+    updateHomeUI(); // Initialize home page state
 }
 
 // Load legacy crisis script as module (contains ES6 imports)

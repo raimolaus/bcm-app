@@ -40,14 +40,32 @@
     <main class="container" id="mainContent">
         <!-- Home Page -->
         <div class="page active" id="homePage">
-            <!-- FAAS2: Context Box -->
-            <div class="bcm-context-box normal" id="bcmContextBox">
-                <div class="bcm-context-title" id="bcmContextTitle">BUSINESS CONTINUITY MANAGEMENT</div>
-                <div class="bcm-context-sub" id="bcmContextSub"></div>
+            <!-- FAAS2 UI: Status indicators (mutual exclusive) -->
+            <!-- Tavaolukord -->
+            <div class="status-pill status-ok" id="statusOk" style="display: inline-block;">
+                Kõik süsteemid töötavad tavapäraselt
             </div>
 
-            <div class="cards-grid cards-grid-4">
-                <div class="card" onclick="navigateTo('plansPage')">
+            <!-- Aktiivne intsident -->
+            <div class="incident-context" id="incidentContext" style="display: none;">
+                AKTIIVSED INTSIDENDID: <span id="activeIncidentCount">0</span>
+            </div>
+
+            <div class="cards-grid cards-grid-4" id="homeCards">
+
+                <div class="card card-action" data-card="openIncident" onclick="activateCrisisMode()">
+                    <div class="icon-circle icon-neutral">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <h2>AVA INTSIDENT</h2>
+                    <p>Vali hädaolukorra stsenaarium</p>
+                </div>
+
+                <div class="card" data-card="plans" onclick="navigateTo('plansPage')">
                     <div class="icon-circle icon-blue">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -58,7 +76,7 @@
                     <p>Business Continuity plaanide vaatamine ja otsing</p>
                 </div>
 
-                <div class="card" onclick="navigateTo('contactsPage')">
+                <div class="card" data-card="contacts" onclick="navigateTo('contactsPage')">
                     <div class="icon-circle icon-green">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -69,8 +87,8 @@
                     <p>Kriitilised kontaktid ja kommunikatsioon</p>
                 </div>
 
-                <div class="card" onclick="navigateTo('commPage')">
-                    <div class="icon-circle icon-orange">
+                <div class="card" data-card="communication" onclick="navigateTo('commPage')">
+                    <div class="icon-circle icon-amber">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                         </svg>
@@ -79,22 +97,7 @@
                     <p>Kommunikatsiooni plaanid ja kanalid</p>
                 </div>
 
-                <div class="card card-action" onclick="activateCrisisMode()">
-                    <div class="icon-circle icon-red">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                            <line x1="12" y1="9" x2="12" y2="13"/>
-                            <line x1="12" y1="17" x2="12.01" y2="17"/>
-                        </svg>
-                    </div>
-                    <h2>AVA INTSIDENT</h2>
-                    <p>Vali stsenaarium ja alusta juhtumi haldust</p>
-                </div>
-
-                <!-- ============================================ -->
-                <!-- VIIES KAART -->
-                <!-- ============================================ -->
-                <div class="card" onclick="navigateTo('incidentsPage')">
+                <div class="card" data-card="logs" onclick="navigateTo('incidentsPage')">
                     <div class="icon-circle icon-red">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -103,10 +106,8 @@
                     </div>
                     <h2>Logid & Intsidendid</h2>
                     <p>Intsidentide jälgimine ja raporteerimine</p>
-                    <div class="card-badge" id="activeIncidentsBadge" style="display: none;">
-                        <span class="active-incidents-count">0</span>
-                    </div>
                 </div>
+
             </div>
         </div>
 

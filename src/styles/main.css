@@ -1787,13 +1787,44 @@ body {
     }
 }
 
-/* ===== FAAS2 STEP1: Context box + Open Incident CTA ===== */
-.bcm-context-box{padding:20px;border-radius:16px;border:1px solid #ddd;margin-bottom:16px;user-select:none;cursor:default}
-.bcm-context-box.normal{background:#fff;color:#111}
-.bcm-context-box.alert{background:#b91c1c;color:#fff}
-.bcm-context-title{font-size:22px;font-weight:700}
-.bcm-context-sub{font-size:14px;opacity:.9;margin-top:4px}
-.btn-open-incident{width:100%;margin:16px 0;font-size:18px;padding:16px;border-radius:16px}
+/* ===== FAAS2 UI FINALIZE: Status indicators and icon colors ===== */
+
+/* Status Pill (normal state) */
+.status-pill {
+    display: inline-block;
+    padding: 8px 14px;
+    border-radius: 999px;
+    font-size: 14px;
+    margin-bottom: 16px;
+}
+
+.status-ok {
+    background: #e6f7ee;
+    color: #047857;
+    border: 1px solid #86efac;
+}
+
+/* Incident Context (active incident state) */
+.incident-context {
+    background: #b91c1c;
+    color: #ffffff;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+/* Icon color variations for cards */
+.icon-neutral {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.icon-amber {
+    background: #fef3c7;
+    color: #d97706;
+}
 
 /* Optional emphasis for the "AVA INTSIDENT" action card */
 .card.card-action h2 { letter-spacing: 0.2px; }
