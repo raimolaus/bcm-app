@@ -82,21 +82,19 @@ function initializeApp() {
     window.viewActiveIncidents = viewActiveIncidents;
 
     // Expose crisis mode functions
-    // IMPORTANT (UX/PRD): Do NOT override HomePage's activateCrisisMode()
-    // HomePage implements the required confirmation + REAL/TRAINING selection.
-    // If we override it here, the dialog disappears (regression observed in UX audit).
+    window.activateCrisisMode = activateCrisisMode;
     window.deactivateCrisisMode = deactivateCrisisMode;
     window.isCrisisModeActive = isCrisisModeActive;
     window.updateCrisisModeUI = updateCrisisModeUI;
 
     // FAAS2: New incident flow
     window.openNewIncidentFlow = function () {
-        // Delegate to the canonical flow (confirmation + REAL/TRAINING selection)
-        if (typeof window.activateCrisisMode === 'function') {
-            window.activateCrisisMode();
-            return;
-        }
-        console.warn('[FAAS2] activateCrisisMode() not available; falling back to scenario selection');
+        console.log('[FAAS2] openNewIncidentFlow() - Opening scenario selection');
+        // Store that we are in "new incident flow" mode
+        sessionStorage.setItem('faas2_incident_flow', 'true');
+        sessionStorage.removeItem('faas2_selected_scenario');
+        sessionStorage.removeItem('faas2_incident_mode');
+        // Navigate to crisis mode page (scenario selection)
         window.navigateTo('crisisModePage');
     };
 

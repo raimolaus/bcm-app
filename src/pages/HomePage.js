@@ -64,5 +64,3 @@ export function getIncidentMode() {
 
 // Make activateCrisisMode globally available for onclick
 window.activateCrisisMode = activateCrisisMode;
-// Expose incident mode getter for other modules / legacy scripts
-window.getIncidentMode = getIncidentMode;

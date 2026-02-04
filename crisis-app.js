@@ -14,74 +14,17 @@ let checklistStates = {};
 let currentIncidentMetrics = null;
 let currentIncidentLogId = null;
 
-// UX: Scenario detail changes must be explicitly saved (no auto-save).
-function ensureScenarioSaveButton() {
-    const header = document.querySelector('#scenarioDetailPage .scenario-detail-header');
-    if (!header) return;
-
-    // Avoid duplicates
-    if (document.getElementById('scenarioSaveBtn')) return;
-
-    const btn = document.createElement('button');
-    btn.id = 'scenarioSaveBtn';
-    btn.className = 'btn-primary';
-    btn.textContent = 'SALVESTA';
-    btn.style.marginLeft = 'auto';
-    btn.style.height = '44px';
-    btn.style.padding = '0 16px';
-    btn.onclick = () => saveScenarioProgress();
-
-    header.appendChild(btn);
-}
-
-function saveScenarioProgress() {
-    if (!currentIncidentLogId) {
-        alert('Salvestamine ebaõnnestus: intsidendi ID puudub. Ava intsident uuesti.');
-        return;
-    }
-
-    let incidents;
-    try {
-        incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
-        if (!Array.isArray(incidents)) incidents = [];
-    } catch {
-        incidents = [];
-    }
-
-    const idx = incidents.findIndex(i => i && i.id === currentIncidentLogId);
-    if (idx < 0) {
-        alert('Salvestamine ebaõnnestus: intsidenti ei leitud salvestusest.');
-        return;
-    }
-
-    incidents[idx].scenarioProgress = {
-        scenarioId: currentScenario?.id || null,
-        scenarioName: currentScenario?.name || null,
-        checklistStates: { ...checklistStates },
-        timeline: Array.isArray(incidentLog) ? [...incidentLog] : [],
-        savedAt: new Date().toISOString()
-    };
-    incidents[idx].updatedAt = new Date().toISOString();
-
-    localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
-
-    // Refresh derived UI if available
-    if (typeof window.updateHomeStatusAndList === 'function') window.updateHomeStatusAndList();
-    if (typeof window.updateIncidentsBadge === 'function') window.updateIncidentsBadge();
-
-    alert('Salvestatud');
-}
-
 // Render Scenarios Grid
 function renderScenarios() {
     const grid = document.getElementById('scenariosGrid');
     if (!grid) return;
 
-    // UX: Scenario selection must be scan-based (title + icon only). No long text, no severity badges.
     grid.innerHTML = scenarios.map(scenario => `
-        <div class="scenario-card" onclick="openScenario('${scenario.id}')">
+        <div class="scenario-card priority-${scenario.priority.toLowerCase()}" onclick="openScenario('${scenario.id}')">
             <div class="scenario-icon">${scenario.icon}</div>
             <h3>${scenario.name}</h3>
+            <p>${scenario.description}</p>
+            <span class="priority-badge">${getPriorityText(scenario.priority)}</span>
         </div>
     `).join('');
 }
@@ -101,11 +44,43 @@ function openScenario(scenarioId) {
     currentScenario = scenarios.find(s => s.id === scenarioId);
     if (!currentScenario) return;
 
-    // UX/PRD: Incident creation must be explicit and confirmed.
-    // Always show the confirmation dialog (REAL/TRAINING) before creating an incident.
-    sessionStorage.setItem('faas2_selected_scenario', scenarioId);
-    showIncidentConfirmationDialog(scenarioId, currentScenario);
-    return;
+    // ============================================
+    // FAAS2: Check if we are in new incident flow
+    // ============================================
+    const isNewIncidentFlow = sessionStorage.getItem('faas2_incident_flow') === 'true';
+
+    if (isNewIncidentFlow) {
+        // Store selected scenario
+        sessionStorage.setItem('faas2_selected_scenario', scenarioId);
+        // Show REAL/TRAINING confirmation dialog
+        showIncidentConfirmationDialog(scenarioId, currentScenario);
+        return; // Don't navigate yet
+    }
+    // ============================================
+
+    navigateTo('scenarioDetailPage');
+
+    // Update header
+    document.getElementById('scenarioTitle').textContent = currentScenario.name;
+    document.getElementById('scenarioDescription').textContent = currentScenario.description;
+
+    // Render blocks
+    renderQuickActions();
+
+    // Show/hide Incident Metrics block for cyber scenarios only
+    const metricsBlock = document.getElementById('incidentMetricsBlock');
+    if (isCyberScenario(scenarioId)) {
+        metricsBlock.style.display = 'block';
+        renderIncidentMetrics();
+    } else {
+        metricsBlock.style.display = 'none';
+    }
+
+    renderActionPlan();
+    renderCommunicationButtons();
+    renderScenarioContacts();
+
+    addToLog('ACTION', `Avatud stsenaarium: ${currentScenario.name}`);
 }
 
 // Render Quick Actions
@@ -521,10 +496,6 @@ function exportLog() {
 document.addEventListener('DOMContentLoaded', function() {
     console.log('BCM Crisis Mode initialized');
 
-    // UX: Remove the top-left status pill ("Häire" junn) globally.
-    const statusPill = document.getElementById('statusPill');
-    if (statusPill) statusPill.remove();
-
     // Override navigateTo for log page
     const originalNavigateTo = window.navigateTo;
     window.navigateTo = function(pageId) {
@@ -928,8 +899,6 @@ function confirmCreateIncident(scenarioId) {
     // Create incident with selected mode
     if (typeof window.createIncidentFromScenario === 'function') {
         const incident = window.createIncidentFromScenario(scenarioId, scenario);
-        // Store current incident id for explicit SAVE in scenario detail
-        currentIncidentLogId = incident || null;
 
         // Update isExercise flag based on mode
         if (incident) {
@@ -968,12 +937,6 @@ function confirmCreateIncident(scenarioId) {
     // Navigate to scenario detail page
     currentScenario = scenario;
     navigateTo('scenarioDetailPage');
-
-    // Ensure explicit SAVE is available in scenario detail
-    ensureScenarioSaveButton();
-
-    // Ensure explicit SAVE is available on scenario detail
-    ensureScenarioSaveButton();
 
     // Update header
     document.getElementById('scenarioTitle').textContent = currentScenario.name;
