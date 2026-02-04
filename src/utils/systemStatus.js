@@ -29,47 +29,53 @@ export function saveSystemStatus(status) {
 
 // Calculate automatic system status based on open incidents
 export function calculateAutoSystemStatus() {
-    const incidentLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    // ============================================
+    // UUENDATUD: Kasuta bcm_incidents võtit
+    // ============================================
+    const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
 
-    // Filter open incidents (not exercise mode)
-    const openRealIncidents = incidentLog.filter(entry =>
-        entry.status === IncidentStatus.OPEN &&
+    // Filter ACTIVE incidents (not exercise mode)
+    // Note: bcm_incidents kasutab 'ACTIVE' staatust, mitte 'OPEN'
+    const activeRealIncidents = incidents.filter(entry =>
+        (entry.status === 'ACTIVE' || entry.status === 'CONTAINED') &&
         !entry.isExercise
     );
 
     // Check if exercise mode is active
     const exerciseMode = isExerciseMode();
 
-    // Rule 1: If there's an open S0/S1 real incident -> ALERT
-    const criticalIncident = openRealIncidents.find(entry =>
-        entry.incidentMetrics &&
-        (entry.incidentMetrics.sLevel === SLevel.S0 || entry.incidentMetrics.sLevel === SLevel.S1)
+    // Rule 1: If there's an active S0/S1 real incident -> ALERT
+    const criticalIncident = activeRealIncidents.find(entry =>
+        entry.severity === 'S0' || entry.severity === 'S1' ||
+        (entry.incidentMetrics && (entry.incidentMetrics.sLevel === 'S0' || entry.incidentMetrics.sLevel === 'S1'))
     );
 
     if (criticalIncident) {
+        const severity = criticalIncident.severity || (criticalIncident.incidentMetrics && criticalIncident.incidentMetrics.sLevel) || 'S1';
         return {
             status: SystemStatusLevel.ALERT,
-            reason: `Aktiivne intsident: ${criticalIncident.scenarioName} (${criticalIncident.incidentMetrics.sLevel}), alates ${new Date(criticalIncident.createdAt).toLocaleString('et-EE')}`,
+            reason: `Aktiivne intsident: ${criticalIncident.scenarioName} (${severity}), alates ${new Date(criticalIncident.createdAt).toLocaleString('et-EE')}`,
             source: SystemStatusSource.AUTO
         };
     }
 
-    // Rule 2: If there's an open S2/S3 real incident -> WARNING
-    const warningIncident = openRealIncidents.find(entry =>
-        entry.incidentMetrics &&
-        (entry.incidentMetrics.sLevel === SLevel.S2 || entry.incidentMetrics.sLevel === SLevel.S3)
-    );
-
-    if (warningIncident) {
+    // Rule 2: If there are any active real incidents -> ALERT
+    if (activeRealIncidents.length > 0) {
+        const firstIncident = activeRealIncidents[0];
         return {
-            status: SystemStatusLevel.WARNING,
-            reason: `Aktiivne intsident: ${warningIncident.scenarioName} (${warningIncident.incidentMetrics.sLevel})`,
+            status: SystemStatusLevel.ALERT,
+            reason: `Aktiivne intsident: ${firstIncident.scenarioName}`,
             source: SystemStatusSource.AUTO
         };
     }
 
-    // Rule 3: If exercise mode is active and no open real incidents -> WARNING
-    if (exerciseMode && openRealIncidents.length === 0) {
+    // Rule 3: If exercise mode is active -> WARNING
+    const activeExercises = incidents.filter(entry =>
+        (entry.status === 'ACTIVE' || entry.status === 'CONTAINED') &&
+        entry.isExercise === true
+    );
+    
+    if (activeExercises.length > 0 || exerciseMode) {
         return {
             status: SystemStatusLevel.WARNING,
             reason: 'ÕPPUS režiim aktiivne',
@@ -77,7 +83,7 @@ export function calculateAutoSystemStatus() {
         };
     }
 
-    // Rule 4: No open real incidents and no exercise mode -> OK
+    // Rule 4: No active incidents -> OK
     return {
         status: SystemStatusLevel.OK,
         reason: 'Kõik kriitilised süsteemid töötavad tavapäraselt',

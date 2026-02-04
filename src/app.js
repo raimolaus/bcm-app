@@ -25,6 +25,15 @@ import {
     updateCrisisModeUI
 } from './utils/crisisMode.js';
 import { createIncidentFromScenario, updateIncidentChecklist, markActionComplete } from './utils/incident-integration.js';
+import {
+    initIncidentGate,
+    openScenarioWithGate,
+    hasActiveIncident,
+    getActiveIncident,
+    getActiveIncidentId,
+    clearActiveIncident,
+    updateIncidentBanner
+} from './utils/incidentGate.js';
 
 // Import pages
 import { initHomePage } from './pages/HomePage.js';
@@ -54,6 +63,7 @@ function initializeApp() {
     initLogger();
     initSystemStatus();
     initCrisisMode();
+    initIncidentGate();  // AINUKE koht kus intsidenti luuakse
     
     // Initialize pages
     initHomePage();
@@ -86,6 +96,14 @@ function initializeApp() {
     window.deactivateCrisisMode = deactivateCrisisMode;
     window.isCrisisModeActive = isCrisisModeActive;
     window.updateCrisisModeUI = updateCrisisModeUI;
+
+    // Expose incidentGate functions (AINUKE koht kus intsidenti luuakse)
+    window.openScenarioWithGate = openScenarioWithGate;
+    window.hasActiveIncident = hasActiveIncident;
+    window.getActiveIncident = getActiveIncident;
+    window.getActiveIncidentId = getActiveIncidentId;
+    window.clearActiveIncident = clearActiveIncident;
+    window.updateIncidentBanner = updateIncidentBanner;
 
     // FAAS2: New incident flow
     window.openNewIncidentFlow = function () {
