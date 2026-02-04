@@ -1,142 +1,274 @@
-# FRONTEND_GUIDELINES — UI disain ja komponendid
+# FRONTEND_GUIDELINES.md  
+## Business Continuity Management (BCM) App — Frontend & UI Guidelines (V1, Canonical)
+
+---
 
 ## JUHISED
 
-### Miks see dokument on olemas
-See dokument määrab BCM rakenduse **visuaalse ja kasutajaliidese standardi**. Tagab järjepidevuse ja aitab vältida juhuslikku UI drift'i.
+### Milleks see dokument on
+See dokument määratleb **frontend’i ja UI reeglid**, mille järgi BCM rakendust:
+- kujundatakse
+- muudetakse
+- täiendatakse
 
-### Kuidas seda kasutada
-- **Arendajad**: Kontrolli design token'eid enne uue komponendi loomist
-- **AI/Claude**: Kasuta siin määratud style'e ja komponente, ära invente uusi kui pole vaja
-- **Disainerid**: Uuenda token'eid kui disain muutub
+FRONTEND_GUIDELINES:
+- tagab visuaalse ja käitumusliku järjepidevuse
+- vähendab regressioone
+- hoiab kognitiivse koormuse madalana kriisiolukorras
 
-### Mis peab siin olema
-- ✅ **UI põhimõtted**: clarity, low cognitive load
-- ✅ **Design tokens**: värvid, typography, spacing, breakpoints
-- ✅ **Komponendid**: cards, buttons, pills, banners, forms
-- ✅ **Layout reeglid**: topbar, page structure
-- ✅ **Do/Don't list**: vältimaks UI drift'i
-
-### Mida siia ei tohi panna
-- ❌ Äriloogikat (kuulub PRD.md-sse ja APP_FLOW.md-sse)
-- ❌ Andmemudeleid (kuuluvad BACKEND_STRUCTURE.md-sse)
-- ❌ Implementatsiooni samme (kuuluvad IMPLEMENTATION_PLAN.md-sse)
+See dokument EI OLE:
+- disainimockup
+- CSS referents
+- komponentide koodiraamat
 
 ---
 
-## UI põhimõtted
+### Kuidas seda dokumenti kasutada
+- Kasuta enne UI muudatuste tegemist
+- Kasuta regressioonide hindamisel
+- AI peab seda käsitlema kui **kõrgema prioriteediga** kui esteetilised eelistused
 
-### 1. Selgus (Clarity)
-- Üks primaarne tegevus vaates
-- Selge hierarhia (title → subtitle → content)
-- Tühjad olekud peavad selgitama, mis puudub ja kuidas jätkata
-
-### 2. Madal kognitiivne koormus
-- Minimaalsed sammud eesmärgini
-- Explicit "Save" tegevused (mitte auto-save)
-- Kinnitusdialoogid destructive action'ite puhul
-
-### 3. Järjepidevus
-- Sama komponent näeb sama välja kõikjal
-- Värvid on semantilised (roheline = OK, punane = error/alert)
-- Spacing on ühtlane (kasuta spacing scale)
+Kui UI käitumine või välimus ei vasta sellele dokumendile, on tegemist:
+- kas bugi
+- või dokumenteerimata UI muudatusega
 
 ---
 
-## Design Tokens
-
-### Värvid (TODO: ekstrakteerida src/styles/main.css-ist)
-
-**Semantilised:**
-- Success Green: #16a34a (OK status)
-- Error/Alert Red: #b91c1c (AKTIIVSED INTSIDENDID)
-- Primary Blue: #2563eb (nupud, lingid)
-- Warning Amber: #f59e0b (hoiatused)
-
-**Neutral:**
-- White: #ffffff
-- Gray 200: #e5e7eb
-- Gray 500: #6b7280
-- Gray 900: #111827
-
-### Typography
-
-**Font Family:** -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif
-
-**Sizes:**
-- SM: 14px (body, forms)
-- MD: 16px (default)
-- LG: 18px (card titles)
-- XL: 24px (page headers)
-
-### Spacing Scale
-- SM: 8px
-- MD: 12px
-- LG: 16px
-- XL: 24px
-- 2XL: 32px
+### Kohustuslikud osad (kontrollnimekiri)
+- UI põhimõtted
+- Visuaalne hierarhia
+- Komponentide reeglid
+- Lehe struktuurireeglid
+- Värvid, tekst, spacing (koos TODO-dega)
+- Do / Don’t reeglid
 
 ---
 
-## Komponendid
-
-### Cards (Home page)
-```html
-<div class="card" data-card="[key]">
-  <div class="icon-circle icon-[color]">
-    [SVG]
-  </div>
-  <h2>[Title]</h2>
-  <p>[Description]</p>
-</div>
-```
-
-### Buttons
-- `.btn-primary` - sinine, primary actions
-- `.btn-secondary` - hall, secondary actions
-- `.btn-critical` - punane, destructive actions
-
-### Status Box (Home)
-```html
-<div class="home-status is-normal|is-active">
-  <div class="home-status-title">[Text]</div>
-</div>
-```
-
-### Badge
-```html
-<span class="badge">[Count]</span>
-```
+### Out of scope
+- Brändingu juhised
+- Täielik disainisüsteem
+- Animatsioonide disain
+- Kolmandate osapoolte UI komponendid
 
 ---
 
-## Layout reeglid
+## 1. Üldised UI põhimõtted
 
-### Top Bar
-- Fixed, height 60px
-- White background, border-bottom
+### 1.1 Selgus enne ilu
+- UI peab olema **üheselt mõistetav**, mitte “ilus”
+- Kriisiolukorras ei tohi kasutaja:
+  - mõelda, mida vajutada
+  - otsida infot
+  - tõlgendada värvide tähendust
 
-### Home Page
-- Status kast esimesena
-- 4-column cards grid (responsive: 2-col, 1-col)
-
----
-
-## Do's and Don'ts
-
-### ✅ DO
-- Kasuta spacing scale
-- Järgi komponente
-- Testi mobile'is
-- Lisa tühja oleku tekst
-
-### ❌ DON'T
-- Ära inventi uusi värve
-- Ära kasuta inline style'e (välja arvatud dynamic)
-- Ära loo uusi font size'e
-- Ära kasuta random spacing
+### 1.2 Madal kognitiivne koormus
+- Ühel vaatel:
+  - üks peamine tegevus
+  - piiratud arv visuaalseid aktsente
+- Väldi:
+  - liigseid värve
+  - paralleelseid CTA-sid
+  - dekoratiivseid elemente
 
 ---
 
-**Viimati uuendatud:** 2026-02-04
-**Seotud dokumendid:** PRD.md, APP_FLOW.md
+## 2. Visuaalne hierarhia (väga oluline)
+
+### 2.1 Globaalne hierarhia
+1. **Olek / kontekst** (nt avalehe staatuskast)
+2. **Peamine tegevus** (nt AVA INTSIDENT)
+3. Sekundaarsed tegevused
+4. Informatiivne sisu
+
+See järjekord peab olema tajutav:
+- suuruse
+- värvi
+- asukoha
+
+---
+
+### 2.2 Olekupõhine hierarhia
+- Olek (nt ACTIVE intsident) peab:
+  - olema alati nähtav
+  - olema visuaalselt domineeriv
+- Olek EI OLE:
+  - klikitav
+  - navigeeriv element
+
+---
+
+## 3. Värvide kasutamise reeglid
+
+### 3.1 Semantiline värvikasutus
+Värvidel on **fikseeritud tähendus**:
+
+- **Punane**
+  - ACTIVE intsident
+  - kohene tähelepanu
+- **Roheline**
+  - tavapärane olukord
+  - puuduvad ACTIVE intsidentid
+- **Hall / neutraalne**
+  - informatiivne sisu
+  - mitteaktiivsed elemendid
+
+Punast EI TOHI kasutada:
+- dekoratsioonina
+- nupul, mis ei loo ega halda intsidenti
+- informatiivse rõhutuse jaoks
+
+---
+
+### 3.2 TODO: täpsed värvikoodid
+- TODO: extract exact hex values from olemasolevatest CSS failidest  
+  (nt `plans-styles.css`, `main.css`, `index.html`)
+
+---
+
+## 4. Tüpograafia
+
+### 4.1 Teksti rollid
+- Pealkirjad:
+  - tähistavad sektsioone
+  - EI sisalda tegevusi
+- Nupud:
+  - kirjeldavad tegevust
+  - kasutavad verbi (“AVA”, “SALVESTA”)
+
+---
+
+### 4.2 TODO: font ja suurused
+- TODO: dokumenteerida:
+  - põhifont
+  - pealkirjade suurused
+  - nuputeksti suurus  
+  olemasoleva CSS põhjal
+
+---
+
+## 5. Spacing ja paigutus
+
+### 5.1 Paigutuse põhimõtted
+- Kasuta järjepidevat vertikaalset rütmi
+- Ära “pressi” elemente kokku
+- Tühjus on lubatud ja soovitatav
+
+### 5.2 TODO: spacing scale
+- TODO: defineeri lihtne skaala (nt 4 / 8 / 16 / 24 px)
+- TODO: kinnita skaala olemasoleva CSS järgi
+
+---
+
+## 6. Põhikomponendid ja nende reeglid
+
+### 6.1 Kaardid (Cards)
+- Kasutatakse:
+  - navigeerimiseks
+  - ülevaatlikuks info esituseks
+- Kaart:
+  - EI sisalda kriitilist olekuteksti
+  - EI muutu punaseks ilma põhjuseta
+
+---
+
+### 6.2 Nupud (Buttons)
+
+#### Primaarne nupp
+- Kasutatakse:
+  - peamise tegevuse jaoks vaates
+- Nt: AVA INTSIDENT, SAVE
+
+#### Sekundaarne nupp
+- Vähem rõhutatud
+- Ei konkureeri primaarsega
+
+---
+
+### 6.3 Badged ja sildid
+- Badge:
+  - näitab kogust või olekut
+  - EI ole klikitav
+- Badge’i tähendus peab olema üheselt mõistetav
+  - nt Logide badge = mitte-SULETUD intsidentide arv
+
+---
+
+### 6.4 Staatuskast (Home)
+- Suur, domineeriv
+- Mitte klikitav
+- Värv sõltub ainult intsidendi olekust
+- Ei tohi sisaldada tegevusnuppe
+
+---
+
+## 7. Lehe struktuurireeglid
+
+### 7.1 Püsivad elemendid
+- Ülemine nav / struktuur:
+  - püsiv
+  - ei muutu olekupõhiselt
+
+### 7.2 Kontekstuaalsed elemendid
+- Staatuskast:
+  - kuvatakse ainult avalehel
+- Intsidendi spetsiifilised tegevused:
+  - ainult detailvaates
+
+---
+
+## 8. Vormid ja salvestamine
+
+### 8.1 SAVE käitumine
+- SAVE:
+  - salvestab
+  - EI sulge vaadet
+  - EI muuda staatust automaatselt
+
+### 8.2 Vormide ootused
+- Vormid võivad olla:
+  - osaliselt täidetud
+- Puuduv validatsioon:
+  - ei tohi andmeid kustutada
+
+---
+
+## 9. Otsuspunktide nähtavus (õppetund Claude’i APP_FLOW-st)
+
+- Kriitilised otsused:
+  - peavad olema selgelt nähtavad
+  - ei tohi olla peidetud
+- Katkestamise võimalus:
+  - peab olema alati olemas
+- Kinnitused:
+  - peavad eelnema pöördumatutele tegevustele
+
+---
+
+## 10. Accessibility (baastase)
+
+- Tekst ja taust:
+  - piisav kontrast
+- Nupud:
+  - selge klikiala
+- Värv EI OLE ainus info kandja
+
+---
+
+## 11. Do / Don’t
+
+### DO
+- Kasuta värve semantiliselt
+- Hoia üks peamine tegevus vaates
+- Kasuta kinnitusi kriitiliste tegevuste puhul
+- Hoia olek alati nähtavana
+
+### DON’T
+- Ära kasuta punast dekoratsioonina
+- Ära muuda olekut klikitavaks
+- Ära lisa uusi UI mustreid ilma juhendit uuendamata
+- Ära “ilususta” kriisiinfot
+
+---
+
+**FRONTEND_GUIDELINES.md (V1) on kanoniline UI reeglite dokument.**  
+Kõik UI muudatused peavad olema sellega kooskõlas.

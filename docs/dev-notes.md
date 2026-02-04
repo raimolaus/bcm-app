@@ -1,21 +1,53 @@
-# Dev Notes
+# dev-notes.md  
+## BCM App — Development Notes, Experiments & Rationale (V1.1)
 
-## LocalStorage võtmete konventsioon
-Näited (täpsusta vastavalt koodile):
-- `bcm_incidents`
-- `bcm_system_status`
-- `bcm_exercise_mode`
+---
 
-## Tüüpilised “gotchas”
-- DOM elementide olemasolu kontroll (eriti, kui lehed on conditionally renderdatud)
-- duplikaat incidentite vältimine (create vs update)
-- ÕPPUS flag’i järjepidevus kõigis töövoogudes
+## MIS SEE DOKUMENT ON (JA EI OLE)
 
-## Kuidas lisada sisu
-- Uus stsenaarium: lisa scenarios andmefaili / andmestruktuuri
-- Uus plaan: lisa plans andmefaili / struktuuri
-- UI tekstid: `index.html`
+### On
+- arendaja ja AI ühine mõttepaber
+- otsuste põhjenduste ja alternatiivide logi
+- koht, kuhu panna:
+  - state machine mõttekäigud
+  - praktilised “gotchas”
+  - katsetatud, aga hüljatud ideed
+  - tehnilised märkused, mis ei sobi canonical dokumentidesse
 
-## Debug
-- LocalStorage clear = reset
-- Console log aitab kiiresti flow’d jälgida
+### Ei ole
+- canonical tõeallikas
+- PRD
+- arhitektuurikirjeldus
+- nõuete dokument
+
+Kui dev-notes on vastuolus canonical dokumentidega:
+👉 **canonical dokumendid võidavad alati**.
+
+---
+
+## 1. Miks BACKEND = LocalStorage (ja miks see on okei)
+
+### Mõttearendus
+- Backend lisaks:
+  - autentimise
+  - rollimudeli
+  - serveri hoolduse
+  - deploy-kompleksuse
+- BCM äpi eesmärk on:
+  - kriisi ajal *töötada*, mitte *sünkroniseerida*
+
+### Järeldus
+- LocalStorage:
+  - on piisav
+  - on offline
+  - on audititav (TXT export)
+- Puudused on teadlik kompromiss, mitte viga
+
+---
+
+## 2. Incident lifecycle — mõtteline state machine
+
+> NB: See EI OLE lukustatud loogika.  
+> See on mõtteharjutus.
+
+### Tüüpiline voog (kontseptuaalne)

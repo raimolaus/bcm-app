@@ -1,0 +1,141 @@
+BCM APP — PROGRESS TRACKER
+=========================
+
+PURPOSE
+-------
+This file tracks:
+- what is DONE
+- what is IN PROGRESS
+- what is NEXT
+
+Every time:
+- you finish a feature
+- you start a new session
+- you open a new terminal
+- you switch branches
+AI (and human) should read THIS FILE FIRST.
+
+Without this file: context loss.
+With this file: continuity.
+
+This file is intentionally simple.
+No formatting, no theory, no explanations.
+
+
+=========================
+CURRENT STATUS
+=========================
+
+OVERALL STATE
+-------------
+Canonical documentation layer is COMPLETE and LOCKED.
+Core focus now shifts to:
+- controlled iteration
+- bugfixes
+- small UX improvements
+- no feature creep
+
+
+=========================
+DONE
+=========================
+
+DOCUMENTATION (CANONICAL)
+------------------------
+- PRD.md
+- APP_FLOW.md
+- FRONTEND_GUIDELINES.md
+- BACKEND_STRUCTURE.md
+- TECH_STACK.md
+- IMPLEMENTATION_PLAN.md
+
+DOCUMENTATION (NON-CANONICAL)
+-----------------------------
+- dev-notes.md (V1.1)
+- README.md (V3)
+
+ARCHITECTURAL DECISIONS
+-----------------------
+- No backend (LocalStorage only)
+- No authentication / roles
+- Offline-first
+- Vanilla HTML / CSS / JS
+- Explicit SAVE (no auto-save)
+- Status derived from incidents (not stored separately)
+- Incident lifecycle kept flexible (ACTIVE / not-CLOSED / CLOSED)
+
+PROCESS
+-------
+- Canonical docs guide code, not vice versa
+- Claude / AI used only with explicit scope
+- Changes are small, controlled, documented
+
+
+=========================
+IN PROGRESS
+=========================
+
+CODEBASE STATE
+--------------
+- Code exists and runs
+- UI has been iteratively improved
+- Some inconsistencies and regressions may still exist
+- Needs systematic cleanup guided by canonical docs
+
+KNOWN RISK AREAS
+----------------
+- LocalStorage key drift (historical keys vs current usage)
+- State sync between Home, Log badge, Incident detail
+- UI regressions from earlier experiments
+- Missing or inconsistent SAVE behavior in some views
+
+
+=========================
+NEXT
+=========================
+
+IMMEDIATE NEXT STEPS
+-------------------
+1. Run through app manually using canonical docs as checklist:
+   - Home status logic
+   - Incident creation flow
+   - Log badge behavior
+   - SAVE behavior
+   - Incident closing
+
+2. Fix discrepancies where:
+   - code != documentation
+
+3. Log fixes in:
+   - docs/changes/YYYY-MM-DD.md
+
+
+SHORT-TERM TASKS
+----------------
+- Create initial docs/changes/YYYY-MM-DD.md
+- Optional: create claude.md (AI usage rules)
+- Optional: clean up unused JS / CSS leftovers
+
+
+LONGER-TERM (NOT COMMITTED)
+---------------------------
+- Improve print/export UX
+- Improve timeline readability
+- Minor UI polish (without changing hierarchy)
+
+
+=========================
+RULES
+=========================
+
+- Do NOT add features without PRD change
+- Do NOT refactor widely
+- Do NOT invent backend concepts
+- If confused: re-read PRD.md and APP_FLOW.md
+- Update this file whenever state changes
+
+
+LAST UPDATED
+------------
+Date: 2026-02-04
+By: Human + AI
