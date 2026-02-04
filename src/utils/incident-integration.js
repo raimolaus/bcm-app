@@ -13,6 +13,16 @@ export function createIncidentFromScenario(scenarioId, scenarioData) {
         // Create incident
         const incident = createIncident(scenarioId, scenarioData);
 
+        // Apply REAL/TRAINING selection (per-incident)
+        // Canonical UI flow sets the choice in window.getIncidentMode().
+        try {
+            const mode = (typeof window.getIncidentMode === 'function') ? window.getIncidentMode() : 'REAL';
+            incident.isExercise = String(mode).toUpperCase() === 'TRAINING';
+        } catch {
+            // Safe default: REAL
+            incident.isExercise = false;
+        }
+
         // Save to LocalStorage
         saveIncident(incident);
 

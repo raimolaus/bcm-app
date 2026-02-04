@@ -51,7 +51,23 @@ Kui UI käitumine või välimus ei vasta sellele dokumendile, on tegemist:
 - Kolmandate osapoolte UI komponendid
 
 ---
+## UI/UX CORE PRINCIPLES (LOCKED)
 
+These principles override all lower-level UI decisions.
+
+1. **State dominates UI**
+   - If there is an ACTIVE incident, its state must visually dominate the screen.
+   - The UI must never look calm when the situation is not.
+
+2. **One primary action per screen**
+   - Each view may have only one primary action.
+   - Secondary actions must never compete visually with the primary one.
+
+3. **No silent changes**
+   - The system must not change state or data without a clear visual indication.
+   - Background or implicit changes are not allowed in crisis-critical flows.
+
+---
 ## 1. Üldised UI põhimõtted
 
 ### 1.1 Selgus enne ilu

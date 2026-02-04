@@ -20,11 +20,9 @@ function renderScenarios() {
     if (!grid) return;
 
     grid.innerHTML = scenarios.map(scenario => `
-        <div class="scenario-card priority-${scenario.priority.toLowerCase()}" onclick="openScenario('${scenario.id}')">
+        <div class="scenario-card" onclick="openScenario('${scenario.id}')">
             <div class="scenario-icon">${scenario.icon}</div>
             <h3>${scenario.name}</h3>
-            <p>${scenario.description}</p>
-            <span class="priority-badge">${getPriorityText(scenario.priority)}</span>
         </div>
     `).join('');
 }
@@ -264,7 +262,7 @@ function renderIncidentLog() {
     }
 
     // Get stored incident log entries (with metrics)
-    const storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    const storedLog = JSON.parse(localStorage.getItem('bcm_incident_log') || '[]');
 
     if (storedLog.length === 0) {
         container.innerHTML = '<p class="empty-log">Logis pole veel kirjeid</p>';
@@ -334,8 +332,7 @@ function renderIncidentLog() {
                         `<button class="btn-secondary-sm" onclick="closeIncident('${entry.id}')">✓ Sulge intsident</button>` :
                         `<button class="btn-secondary-sm" onclick="reopenIncident('${entry.id}')">↻ Ava uuesti</button>`
                     }
-                    <button class="btn-secondary-sm" onclick="deleteLogEntry('${entry.id}')">🗑️ Kustuta</button>
-                </div>
+</div>
             </div>
         `;
     }).join('');
@@ -373,7 +370,7 @@ function getNotificationStatusText(status) {
 
 // View log entry details
 function viewLogEntry(entryId) {
-    const storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    const storedLog = JSON.parse(localStorage.getItem('bcm_incident_log') || '[]');
     const entry = storedLog.find(e => e.id === entryId);
 
     if (!entry) {
@@ -391,9 +388,9 @@ function deleteLogEntry(entryId) {
         return;
     }
 
-    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    let storedLog = JSON.parse(localStorage.getItem('bcm_incident_log') || '[]');
     storedLog = storedLog.filter(e => e.id !== entryId);
-    localStorage.setItem('incidentLog', JSON.stringify(storedLog));
+    localStorage.setItem('bcm_incident_log', JSON.stringify(storedLog));
 
     alert('Logikirje kustutatud');
     renderIncidentLog();
@@ -411,13 +408,13 @@ function closeIncident(entryId) {
         return;
     }
 
-    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    let storedLog = JSON.parse(localStorage.getItem('bcm_incident_log') || '[]');
     const entry = storedLog.find(e => e.id === entryId);
 
     if (entry) {
         entry.status = 'CLOSED';
         entry.updatedAt = new Date().toISOString();
-        localStorage.setItem('incidentLog', JSON.stringify(storedLog));
+        localStorage.setItem('bcm_incident_log', JSON.stringify(storedLog));
 
         alert('Intsident suletud');
         renderIncidentLog();
@@ -436,13 +433,13 @@ function reopenIncident(entryId) {
         return;
     }
 
-    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    let storedLog = JSON.parse(localStorage.getItem('bcm_incident_log') || '[]');
     const entry = storedLog.find(e => e.id === entryId);
 
     if (entry) {
         entry.status = 'OPEN';
         entry.updatedAt = new Date().toISOString();
-        localStorage.setItem('incidentLog', JSON.stringify(storedLog));
+        localStorage.setItem('bcm_incident_log', JSON.stringify(storedLog));
 
         alert('Intsident avatud');
         renderIncidentLog();
@@ -680,7 +677,7 @@ function saveIncidentMetrics() {
     }
 
     // Save to localStorage
-    localStorage.setItem('incidentLog', JSON.stringify(incidentLog));
+    localStorage.setItem('bcm_incident_log', JSON.stringify(incidentLog));
 
     currentIncidentMetrics = metrics;
 
@@ -782,7 +779,7 @@ function loadIncidentMetricsToForm() {
 
 // Load incident log from localStorage on startup
 document.addEventListener('DOMContentLoaded', function() {
-    const savedLog = localStorage.getItem('incidentLog');
+    const savedLog = localStorage.getItem('bcm_incident_log');
     if (savedLog) {
         try {
             incidentLog = JSON.parse(savedLog);
@@ -912,6 +909,11 @@ function confirmCreateIncident(scenarioId) {
 
         console.log(`[FAAS2] Incident created: ${incident} (${selectedIncidentMode})`);
 
+        // Store current incident id for SAVE actions
+        if (incident) {
+            sessionStorage.setItem('faas2_current_incident_id', incident);
+        }
+
         // Add timeline entry
         addToLog('SYSTEM_EVENT', `Intsident loodud: ${scenario.name} (${selectedIncidentMode})`);
     }
@@ -982,6 +984,46 @@ function cancelIncidentCreation() {
     }
 }
 
+
+// =============================================================================
+// FAAS2: EXPLICIT SAVE FOR SCENARIO DETAIL (NO AUTO-SAVE)
+// =============================================================================
+function saveScenarioIncident() {
+    const incidentId = sessionStorage.getItem('faas2_current_incident_id');
+
+    if (!incidentId) {
+        alert('Salvestamiseks puudub aktiivne intsident. Ava intsident kinnituse kaudu.');
+        return;
+    }
+
+    let incidents;
+    try {
+        incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+    } catch (e) {
+        incidents = [];
+    }
+
+    const idx = incidents.findIndex(i => i.id === incidentId);
+    if (idx < 0) {
+        alert('Intsidenti ei leitud salvestamiseks (ID: ' + incidentId + ')');
+        return;
+    }
+
+    incidents[idx].scenarioState = {
+        scenarioId: currentScenario ? currentScenario.id : null,
+        checklistStates: checklistStates || {},
+        incidentLog: incidentLog || []
+    };
+    incidents[idx].updatedAt = new Date().toISOString();
+
+    localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
+
+    // Persist global log view data (used by incident log page)
+    localStorage.setItem('bcm_incident_log', JSON.stringify(incidentLog || []));
+
+    alert('Salvestatud!');
+}
+
 // Expose all functions globally for onclick handlers
 // Note: activateCrisisMode and deactivateCrisisMode are now in src/utils/crisisMode.js
 window.renderScenarios = renderScenarios;
@@ -1000,3 +1042,4 @@ window.deleteLogEntry = deleteLogEntry;
 window.selectIncidentMode = selectIncidentMode;
 window.confirmCreateIncident = confirmCreateIncident;
 window.cancelIncidentCreation = cancelIncidentCreation;
+window.saveScenarioIncident = saveScenarioIncident;
