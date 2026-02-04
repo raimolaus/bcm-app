@@ -22,21 +22,10 @@
         </div>
 
         <div class="top-bar-center">
-            <!-- Small Crisis Button (visible on non-Home pages) -->
-</div>
+            <!-- Empty (crisis button removed in FAAS2) -->
+        </div>
 
         <div class="top-bar-right">
-            <!-- Exercise Mode Toggle -->
-            <div class="exercise-toggle">
-                <label class="toggle-label">
-                    <span class="toggle-text" id="exerciseText">ÕPPUS: VÄLJAS</span>
-                    <div class="toggle-switch">
-                        <input type="checkbox" id="exerciseToggle" onchange="toggleExerciseMode()">
-                        <span class="toggle-slider"></span>
-                    </div>
-                </label>
-            </div>
-
             <!-- Fixed Home Button -->
             <button class="home-btn-fixed" onclick="goHome()" id="homeBtn" style="display: none;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -47,25 +36,36 @@
         </div>
     </div>
 
-    <!-- Crisis Banner (only on Home page) -->
-    <div class="crisis-banner clickable" id="crisisBanner" onclick="activateCrisisMode()">
-        <div class="crisis-content">
-            <svg class="crisis-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
-                <line x1="12" y1="9" x2="12" y2="13"/>
-                <line x1="12" y1="17" x2="12.01" y2="17"/>
-            </svg>
-            <h1>Aktiveeri kriisirežiim</h1>
-        </div>
-        <p class="crisis-subtitle">Kiire juurdepääs kriitiliste plaanide ja kontaktidega</p>
-    </div>
-
     <!-- Main Container -->
     <main class="container" id="mainContent">
         <!-- Home Page -->
         <div class="page active" id="homePage">
-            <div class="cards-grid cards-grid-4">
-                <div class="card" onclick="navigateTo('plansPage')">
+            <!-- HOME STATUS (FAAS2 RESTORE) -->
+            <div class="home-status is-normal" id="homeStatusBox">
+                <div class="home-status-title" id="homeStatusTitle">OLUKORD: TAVAPÄRANE</div>
+                <div class="home-status-sub" id="homeStatusSub"></div>
+            </div>
+
+            <!-- ACTIVE INCIDENT LIST (FAAS2 RESTORE) -->
+            <div class="home-active-list" id="homeActiveList" style="display:none;">
+                <ul class="home-active-ul" id="homeActiveUl"></ul>
+            </div>
+
+            <div class="cards-grid cards-grid-4" id="homeCards">
+
+                <div class="card card-action" data-card="openIncident" onclick="activateCrisisMode()">
+                    <div class="icon-circle icon-neutral">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                            <line x1="12" y1="9" x2="12" y2="13"/>
+                            <line x1="12" y1="17" x2="12.01" y2="17"/>
+                        </svg>
+                    </div>
+                    <h2>AVA INTSIDENT</h2>
+                    <p>Vali hädaolukorra stsenaarium</p>
+                </div>
+
+                <div class="card" data-card="plans" onclick="navigateTo('plansPage')">
                     <div class="icon-circle icon-blue">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
@@ -76,7 +76,7 @@
                     <p>Business Continuity plaanide vaatamine ja otsing</p>
                 </div>
 
-                <div class="card" onclick="navigateTo('contactsPage')">
+                <div class="card" data-card="contacts" onclick="navigateTo('contactsPage')">
                     <div class="icon-circle icon-green">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
@@ -87,8 +87,8 @@
                     <p>Kriitilised kontaktid ja kommunikatsioon</p>
                 </div>
 
-                <div class="card" onclick="navigateTo('commPage')">
-                    <div class="icon-circle icon-orange">
+                <div class="card" data-card="communication" onclick="navigateTo('commPage')">
+                    <div class="icon-circle icon-amber">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                         </svg>
@@ -97,10 +97,7 @@
                     <p>Kommunikatsiooni plaanid ja kanalid</p>
                 </div>
 
-                <!-- ============================================ -->
-                <!-- NELJAS KAART - UUS! -->
-                <!-- ============================================ -->
-                <div class="card" onclick="navigateTo('incidentsPage')">
+                <div class="card" data-card="logs" onclick="navigateTo('incidentsPage')">
                     <div class="icon-circle icon-red">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
@@ -109,30 +106,9 @@
                     </div>
                     <h2>Logid & Intsidendid</h2>
                     <p>Intsidentide jälgimine ja raporteerimine</p>
-                    <div class="card-badge" id="activeIncidentsBadge" style="display: none;">
-                        <span class="active-incidents-count">0</span>
-                    </div>
+                    <span class="badge" id="incidentsBadge" style="display:none;">0</span>
                 </div>
-            </div>
-            <div class="system-status-card" id="systemStatusCard">
-                <div class="system-status-header">
-                    <div class="system-status-main">
-                        <svg class="status-icon" id="statusIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="12" cy="12" r="10"/>
-                            <line x1="12" y1="8" x2="12" y2="12"/>
-                            <line x1="12" y1="16" x2="12.01" y2="16"/>
-                        </svg>
-                        <div class="system-status-info">
-                            <h3>Süsteemi olek</h3>
-                            <p id="systemStatusReason">Kõik kriitilised süsteemid töötavad tavapäraselt</p>
-                            <span class="status-source" id="statusSource"></span>
-                        </div>
-                    </div>
-                    <button class="btn-link" onclick="openSystemStatusModal()">Määra olek</button>
-                </div>
-                <div id="systemStatusActions" style="display: none; margin-top: 12px;">
-                    <a href="#" onclick="viewActiveIncidents(); return false;" class="status-link">Vaata aktiivseid intsidente →</a>
-                </div>
+
             </div>
         </div>
 
@@ -194,7 +170,7 @@
                     </svg>
                 </button>
                 <div>
-                    <h1>KRIISIREŽIIM AKTIVEERITUD</h1>
+                    <h1>AVA INTSIDENT</h1>
                     <p>Vali hädaolukorra stsenaarium</p>
                 </div>
             </div>
@@ -213,7 +189,6 @@
                     <h1 id="scenarioTitle">Stsenaarium</h1>
                     <p id="scenarioDescription">Kirjeldus</p>
                 </div>
-                <button class="btn-primary" onclick="saveScenarioIncident()" id="scenarioSaveBtn">💾 Salvesta</button>
             </div>
             <div class="scenario-content">
                 <div class="action-block">
@@ -534,11 +509,14 @@
 
             <!-- ACTIONS -->
             <div class="incident-actions-bar">
-                <button class="btn-secondary" onclick="window.incidentActions.exportCurrent()">
+                <button class="btn-secondary" onclick="window.incidentDetailActions.exportCurrent()">
                     📄 Eksport
                 </button>
-                <button class="btn-primary" onclick="window.incidentActions.updateStatus()" id="updateStatusBtn">
+                <button class="btn-primary" onclick="window.incidentDetailActions.updateStatus()" id="updateStatusBtn">
                     ✏️ Uuenda staatus
+                </button>
+                <button class="btn-secondary" onclick="window.incidentDetailActions.closeIncident()" id="closeIncidentBtn" style="background: #dc2626; color: white; border-color: #dc2626;">
+                    🔒 Sulge intsident
                 </button>
             </div>
         </div>
