@@ -1828,3 +1828,65 @@ body {
 
 /* Optional emphasis for the "AVA INTSIDENT" action card */
 .card.card-action h2 { letter-spacing: 0.2px; }
+
+/* ===== FAAS2 RESTORE: Home Status Box (BIG) ===== */
+.home-status{
+    border-radius: 16px;
+    padding: 18px 22px;
+    margin: 18px auto 14px;
+    width: min(1100px, 92%);
+    color: #fff;
+    font-weight: 700;
+}
+
+.home-status.is-normal{ background:#16a34a; } /* roheline */
+.home-status.is-active{ background:#b91c1c; } /* punane */
+
+.home-status-title{
+    font-size: 24px;
+    line-height: 1.2;
+    letter-spacing: .2px;
+}
+
+.home-status-sub{
+    margin-top: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    opacity: .95;
+}
+
+/* Active incident list under status */
+.home-active-list{
+    width: min(1100px, 92%);
+    margin: 0 auto 16px;
+}
+
+.home-active-ul{
+    margin: 0;
+    padding: 0 0 0 18px;
+    color: #374151;
+    font-weight: 600;
+}
+
+.home-active-ul li{
+    margin: 6px 0;
+}
+
+/* Badge for Logid & Intsidendid card */
+.badge{
+    position:absolute;
+    top:14px;
+    right:14px;
+    min-width:22px;
+    height:22px;
+    border-radius:999px;
+    background:#b91c1c;
+    color:#fff;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:12px;
+    font-weight:700;
+    padding:0 6px;
+}
+.card{ position:relative; }

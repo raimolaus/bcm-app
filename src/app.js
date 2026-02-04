@@ -169,39 +169,97 @@ function initializeApp() {
     console.log(`📊 Loaded: ${scenarios.length} scenarios, ${plans.length} plans, ${contacts.length} contacts`);
 }
 
-// ===== FAAS2 UI FINALIZE: Dynamic home page state management =====
+// ===== FAAS2 RESTORE: Dynamic home page state management =====
 
-// Get active incident count
-function getActiveIncidentCount() {
-    const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
-    return incidents.filter(i => i.status && i.status !== 'CLOSED').length;
+// Safe load incidents
+function loadIncidentsSafe() {
+    try {
+        const raw = localStorage.getItem('bcm_incidents');
+        const arr = JSON.parse(raw || '[]');
+        return Array.isArray(arr) ? arr : [];
+    } catch {
+        return [];
+    }
 }
 
-// Update home page UI based on incident state
-function updateHomeUI() {
-    const count = getActiveIncidentCount();
+// Count ACTIVE incidents (status === 'ACTIVE')
+function countActiveIncidents(incidents) {
+    return incidents.filter(i => (String(i.status || '')).toUpperCase() === 'ACTIVE').length;
+}
 
-    const statusOk = document.getElementById('statusOk');
-    const context = document.getElementById('incidentContext');
-    const countEl = document.getElementById('activeIncidentCount');
+// Count NOT CLOSED incidents (status !== 'CLOSED')
+function countNotClosedIncidents(incidents) {
+    return incidents.filter(i => (String(i.status || '')).toUpperCase() !== 'CLOSED').length;
+}
 
-    if (!statusOk || !context || !countEl) {
-        console.warn('[FAAS2 UI] Home page status elements not found');
+// Update home status box and active incidents list
+function updateHomeStatusAndList() {
+    const incidents = loadIncidentsSafe();
+    const activeCount = countActiveIncidents(incidents);
+
+    const statusBox = document.getElementById('homeStatusBox');
+    const title = document.getElementById('homeStatusTitle');
+    const sub = document.getElementById('homeStatusSub');
+
+    const listWrap = document.getElementById('homeActiveList');
+    const ul = document.getElementById('homeActiveUl');
+
+    if (!statusBox || !title) {
+        console.warn('[FAAS2 RESTORE] Home status elements not found');
         return;
     }
 
-    if (count > 0) {
-        statusOk.style.display = 'none';
-        context.style.display = 'block';
-        countEl.textContent = count;
+    if (activeCount > 0) {
+        statusBox.classList.remove('is-normal');
+        statusBox.classList.add('is-active');
+        title.textContent = `AKTIIVSED INTSIDENDID: ${activeCount}`;
+        if (sub) sub.textContent = '';
+
+        // Render active incident names
+        if (listWrap && ul) {
+            const active = incidents.filter(i => (String(i.status || '')).toUpperCase() === 'ACTIVE');
+            ul.innerHTML = '';
+            active.forEach(i => {
+                const name = i.title || i.name || i.scenarioName || i.type || 'Intsident';
+                const li = document.createElement('li');
+                li.textContent = name;
+                ul.appendChild(li);
+            });
+            listWrap.style.display = active.length ? 'block' : 'none';
+        }
+
         orderCardsForActiveIncident();
     } else {
-        statusOk.style.display = 'inline-block';
-        context.style.display = 'none';
+        statusBox.classList.remove('is-active');
+        statusBox.classList.add('is-normal');
+        title.textContent = 'OLUKORD: TAVAPÄRANE';
+        if (sub) sub.textContent = '';
+
+        if (listWrap) listWrap.style.display = 'none';
+        if (ul) ul.innerHTML = '';
+
         orderCardsForNormal();
     }
 
-    console.log(`[FAAS2 UI] Home UI updated: ${count} active incidents`);
+    console.log(`[FAAS2 RESTORE] Home status updated: ${activeCount} active incidents`);
+}
+
+// Update incidents badge (shows NOT CLOSED count)
+function updateIncidentsBadge() {
+    const incidents = loadIncidentsSafe();
+    const notClosed = countNotClosedIncidents(incidents);
+
+    const badge = document.getElementById('incidentsBadge');
+    if (!badge) return;
+
+    if (notClosed > 0) {
+        badge.textContent = String(notClosed);
+        badge.style.display = 'flex';
+    } else {
+        badge.style.display = 'none';
+    }
+
+    console.log(`[FAAS2 RESTORE] Badge updated: ${notClosed} not-closed incidents`);
 }
 
 // Card ordering for normal state
@@ -218,7 +276,7 @@ function orderCardsForActiveIncident() {
 function reorderCards(order) {
     const container = document.getElementById('homeCards');
     if (!container) {
-        console.warn('[FAAS2 UI] homeCards container not found');
+        console.warn('[FAAS2 RESTORE] homeCards container not found');
         return;
     }
 
@@ -230,18 +288,21 @@ function reorderCards(order) {
     });
 }
 
-// Make updateHomeUI globally available
-window.updateHomeUI = updateHomeUI;
+// Make functions globally available
+window.updateHomeStatusAndList = updateHomeStatusAndList;
+window.updateIncidentsBadge = updateIncidentsBadge;
 
 // Wait for DOM to be ready
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => {
         initializeApp();
-        updateHomeUI(); // Initialize home page state
+        updateHomeStatusAndList();
+        updateIncidentsBadge();
     });
 } else {
     initializeApp();
-    updateHomeUI(); // Initialize home page state
+    updateHomeStatusAndList();
+    updateIncidentsBadge();
 }
 
 // Load legacy crisis script as module (contains ES6 imports)

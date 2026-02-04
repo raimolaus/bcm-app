@@ -433,9 +433,12 @@ export function confirmStatusChange() {
         dialog.remove();
     }
 
-    // Update context box
-    if (typeof window.updateContextBox === 'function') {
-        window.updateContextBox();
+    // FAAS2 RESTORE: Update home status and badge
+    if (typeof window.updateHomeStatusAndList === 'function') {
+        window.updateHomeStatusAndList();
+    }
+    if (typeof window.updateIncidentsBadge === 'function') {
+        window.updateIncidentsBadge();
     }
 
     // Re-render incident detail
@@ -537,9 +540,12 @@ export function confirmClose() {
         dialog.remove();
     }
 
-    // Update context box
-    if (typeof window.updateContextBox === 'function') {
-        window.updateContextBox();
+    // FAAS2 RESTORE: Update home status and badge
+    if (typeof window.updateHomeStatusAndList === 'function') {
+        window.updateHomeStatusAndList();
+    }
+    if (typeof window.updateIncidentsBadge === 'function') {
+        window.updateIncidentsBadge();
     }
 
     alert('Intsident suletud!');

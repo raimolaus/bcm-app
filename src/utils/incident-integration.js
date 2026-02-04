@@ -26,6 +26,14 @@ export function createIncidentFromScenario(scenarioId, scenarioData) {
             window.renderIncidentsList();
         }
 
+        // FAAS2 RESTORE: Update home status and badge
+        if (typeof window.updateHomeStatusAndList === 'function') {
+            window.updateHomeStatusAndList();
+        }
+        if (typeof window.updateIncidentsBadge === 'function') {
+            window.updateIncidentsBadge();
+        }
+
         return incident.id;
 
     } catch (error) {
