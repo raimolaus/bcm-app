@@ -14,11 +14,70 @@ let checklistStates = {};
 let currentIncidentMetrics = null;
 let currentIncidentLogId = null;
 
+// UX: Scenario detail changes must be explicitly saved (no auto-save).
+function ensureScenarioSaveButton() {
+    const header = document.querySelector('#scenarioDetailPage .scenario-detail-header');
+    if (!header) return;
+
+    // Avoid duplicates
+    if (document.getElementById('scenarioSaveBtn')) return;
+
+    const btn = document.createElement('button');
+    btn.id = 'scenarioSaveBtn';
+    btn.className = 'btn-primary';
+    btn.textContent = 'SALVESTA';
+    btn.style.marginLeft = 'auto';
+    btn.style.height = '44px';
+    btn.style.padding = '0 16px';
+    btn.onclick = () => saveScenarioProgress();
+
+    header.appendChild(btn);
+}
+
+function saveScenarioProgress() {
+    if (!currentIncidentLogId) {
+        alert('Salvestamine ebaõnnestus: intsidendi ID puudub. Ava intsident uuesti.');
+        return;
+    }
+
+    let incidents;
+    try {
+        incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+        if (!Array.isArray(incidents)) incidents = [];
+    } catch {
+        incidents = [];
+    }
+
+    const idx = incidents.findIndex(i => i && i.id === currentIncidentLogId);
+    if (idx < 0) {
+        alert('Salvestamine ebaõnnestus: intsidenti ei leitud salvestusest.');
+        return;
+    }
+
+    incidents[idx].scenarioProgress = {
+        scenarioId: currentScenario?.id || null,
+        scenarioName: currentScenario?.name || null,
+        checklistStates: { ...checklistStates },
+        timeline: Array.isArray(incidentLog) ? [...incidentLog] : [],
+        savedAt: new Date().toISOString()
+    };
+    incidents[idx].updatedAt = new Date().toISOString();
+
+    localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
+
+    // Refresh derived UI if available
+    if (typeof window.updateHomeStatusAndList === 'function') window.updateHomeStatusAndList();
+    if (typeof window.updateIncidentsBadge === 'function') window.updateIncidentsBadge();
+
+    alert('Salvestatud');
+}
+
 // Render Scenarios Grid
 function renderScenarios() {
     const grid = document.getElementById('scenariosGrid');
     if (!grid) return;
 
+    // UX: Scenario selection must be scan-based (title + icon only). No long text, no severity badges.
     grid.innerHTML = scenarios.map(scenario => `
         <div class="scenario-card" onclick="openScenario('${scenario.id}')">
             <div class="scenario-icon">${scenario.icon}</div>
@@ -42,43 +101,11 @@ function openScenario(scenarioId) {
     currentScenario = scenarios.find(s => s.id === scenarioId);
     if (!currentScenario) return;
 
-    // ============================================
-    // FAAS2: Check if we are in new incident flow
-    // ============================================
-    const isNewIncidentFlow = sessionStorage.getItem('faas2_incident_flow') === 'true';
-
-    if (isNewIncidentFlow) {
-        // Store selected scenario
-        sessionStorage.setItem('faas2_selected_scenario', scenarioId);
-        // Show REAL/TRAINING confirmation dialog
-        showIncidentConfirmationDialog(scenarioId, currentScenario);
-        return; // Don't navigate yet
-    }
-    // ============================================
-
-    navigateTo('scenarioDetailPage');
-
-    // Update header
-    document.getElementById('scenarioTitle').textContent = currentScenario.name;
-    document.getElementById('scenarioDescription').textContent = currentScenario.description;
-
-    // Render blocks
-    renderQuickActions();
-
-    // Show/hide Incident Metrics block for cyber scenarios only
-    const metricsBlock = document.getElementById('incidentMetricsBlock');
-    if (isCyberScenario(scenarioId)) {
-        metricsBlock.style.display = 'block';
-        renderIncidentMetrics();
-    } else {
-        metricsBlock.style.display = 'none';
-    }
-
-    renderActionPlan();
-    renderCommunicationButtons();
-    renderScenarioContacts();
-
-    addToLog('ACTION', `Avatud stsenaarium: ${currentScenario.name}`);
+    // UX/PRD: Incident creation must be explicit and confirmed.
+    // Always show the confirmation dialog (REAL/TRAINING) before creating an incident.
+    sessionStorage.setItem('faas2_selected_scenario', scenarioId);
+    showIncidentConfirmationDialog(scenarioId, currentScenario);
+    return;
 }
 
 // Render Quick Actions
@@ -262,7 +289,7 @@ function renderIncidentLog() {
     }
 
     // Get stored incident log entries (with metrics)
-    const storedLog = JSON.parse(localStorage.getItem('bcm_incident_log') || '[]');
+    const storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
 
     if (storedLog.length === 0) {
         container.innerHTML = '<p class="empty-log">Logis pole veel kirjeid</p>';
@@ -332,7 +359,8 @@ function renderIncidentLog() {
                         `<button class="btn-secondary-sm" onclick="closeIncident('${entry.id}')">✓ Sulge intsident</button>` :
                         `<button class="btn-secondary-sm" onclick="reopenIncident('${entry.id}')">↻ Ava uuesti</button>`
                     }
-</div>
+                    <button class="btn-secondary-sm" onclick="deleteLogEntry('${entry.id}')">🗑️ Kustuta</button>
+                </div>
             </div>
         `;
     }).join('');
@@ -370,7 +398,7 @@ function getNotificationStatusText(status) {
 
 // View log entry details
 function viewLogEntry(entryId) {
-    const storedLog = JSON.parse(localStorage.getItem('bcm_incident_log') || '[]');
+    const storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
     const entry = storedLog.find(e => e.id === entryId);
 
     if (!entry) {
@@ -388,9 +416,9 @@ function deleteLogEntry(entryId) {
         return;
     }
 
-    let storedLog = JSON.parse(localStorage.getItem('bcm_incident_log') || '[]');
+    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
     storedLog = storedLog.filter(e => e.id !== entryId);
-    localStorage.setItem('bcm_incident_log', JSON.stringify(storedLog));
+    localStorage.setItem('incidentLog', JSON.stringify(storedLog));
 
     alert('Logikirje kustutatud');
     renderIncidentLog();
@@ -408,13 +436,13 @@ function closeIncident(entryId) {
         return;
     }
 
-    let storedLog = JSON.parse(localStorage.getItem('bcm_incident_log') || '[]');
+    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
     const entry = storedLog.find(e => e.id === entryId);
 
     if (entry) {
         entry.status = 'CLOSED';
         entry.updatedAt = new Date().toISOString();
-        localStorage.setItem('bcm_incident_log', JSON.stringify(storedLog));
+        localStorage.setItem('incidentLog', JSON.stringify(storedLog));
 
         alert('Intsident suletud');
         renderIncidentLog();
@@ -433,13 +461,13 @@ function reopenIncident(entryId) {
         return;
     }
 
-    let storedLog = JSON.parse(localStorage.getItem('bcm_incident_log') || '[]');
+    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
     const entry = storedLog.find(e => e.id === entryId);
 
     if (entry) {
         entry.status = 'OPEN';
         entry.updatedAt = new Date().toISOString();
-        localStorage.setItem('bcm_incident_log', JSON.stringify(storedLog));
+        localStorage.setItem('incidentLog', JSON.stringify(storedLog));
 
         alert('Intsident avatud');
         renderIncidentLog();
@@ -492,6 +520,10 @@ function exportLog() {
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', function() {
     console.log('BCM Crisis Mode initialized');
+
+    // UX: Remove the top-left status pill ("Häire" junn) globally.
+    const statusPill = document.getElementById('statusPill');
+    if (statusPill) statusPill.remove();
 
     // Override navigateTo for log page
     const originalNavigateTo = window.navigateTo;
@@ -677,7 +709,7 @@ function saveIncidentMetrics() {
     }
 
     // Save to localStorage
-    localStorage.setItem('bcm_incident_log', JSON.stringify(incidentLog));
+    localStorage.setItem('incidentLog', JSON.stringify(incidentLog));
 
     currentIncidentMetrics = metrics;
 
@@ -779,7 +811,7 @@ function loadIncidentMetricsToForm() {
 
 // Load incident log from localStorage on startup
 document.addEventListener('DOMContentLoaded', function() {
-    const savedLog = localStorage.getItem('bcm_incident_log');
+    const savedLog = localStorage.getItem('incidentLog');
     if (savedLog) {
         try {
             incidentLog = JSON.parse(savedLog);
@@ -896,6 +928,8 @@ function confirmCreateIncident(scenarioId) {
     // Create incident with selected mode
     if (typeof window.createIncidentFromScenario === 'function') {
         const incident = window.createIncidentFromScenario(scenarioId, scenario);
+        // Store current incident id for explicit SAVE in scenario detail
+        currentIncidentLogId = incident || null;
 
         // Update isExercise flag based on mode
         if (incident) {
@@ -908,11 +942,6 @@ function confirmCreateIncident(scenarioId) {
         }
 
         console.log(`[FAAS2] Incident created: ${incident} (${selectedIncidentMode})`);
-
-        // Store current incident id for SAVE actions
-        if (incident) {
-            sessionStorage.setItem('faas2_current_incident_id', incident);
-        }
 
         // Add timeline entry
         addToLog('SYSTEM_EVENT', `Intsident loodud: ${scenario.name} (${selectedIncidentMode})`);
@@ -939,6 +968,12 @@ function confirmCreateIncident(scenarioId) {
     // Navigate to scenario detail page
     currentScenario = scenario;
     navigateTo('scenarioDetailPage');
+
+    // Ensure explicit SAVE is available in scenario detail
+    ensureScenarioSaveButton();
+
+    // Ensure explicit SAVE is available on scenario detail
+    ensureScenarioSaveButton();
 
     // Update header
     document.getElementById('scenarioTitle').textContent = currentScenario.name;
@@ -984,46 +1019,6 @@ function cancelIncidentCreation() {
     }
 }
 
-
-// =============================================================================
-// FAAS2: EXPLICIT SAVE FOR SCENARIO DETAIL (NO AUTO-SAVE)
-// =============================================================================
-function saveScenarioIncident() {
-    const incidentId = sessionStorage.getItem('faas2_current_incident_id');
-
-    if (!incidentId) {
-        alert('Salvestamiseks puudub aktiivne intsident. Ava intsident kinnituse kaudu.');
-        return;
-    }
-
-    let incidents;
-    try {
-        incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
-    } catch (e) {
-        incidents = [];
-    }
-
-    const idx = incidents.findIndex(i => i.id === incidentId);
-    if (idx < 0) {
-        alert('Intsidenti ei leitud salvestamiseks (ID: ' + incidentId + ')');
-        return;
-    }
-
-    incidents[idx].scenarioState = {
-        scenarioId: currentScenario ? currentScenario.id : null,
-        checklistStates: checklistStates || {},
-        incidentLog: incidentLog || []
-    };
-    incidents[idx].updatedAt = new Date().toISOString();
-
-    localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
-
-    // Persist global log view data (used by incident log page)
-    localStorage.setItem('bcm_incident_log', JSON.stringify(incidentLog || []));
-
-    alert('Salvestatud!');
-}
-
 // Expose all functions globally for onclick handlers
 // Note: activateCrisisMode and deactivateCrisisMode are now in src/utils/crisisMode.js
 window.renderScenarios = renderScenarios;
@@ -1042,4 +1037,3 @@ window.deleteLogEntry = deleteLogEntry;
 window.selectIncidentMode = selectIncidentMode;
 window.confirmCreateIncident = confirmCreateIncident;
 window.cancelIncidentCreation = cancelIncidentCreation;
-window.saveScenarioIncident = saveScenarioIncident;
