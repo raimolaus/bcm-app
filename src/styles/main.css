@@ -1833,8 +1833,8 @@ body {
 .home-status{
     border-radius: 16px;
     padding: 18px 22px;
-    margin: 18px auto 14px;
-    width: min(1100px, 92%);
+    margin: 18px 0 14px;
+    width: 100%;
     color: #fff;
     font-weight: 700;
 }
