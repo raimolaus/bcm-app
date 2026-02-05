@@ -53,6 +53,58 @@ import { loadIncidents, IncidentStatus, saveIncident } from './data/incidents.js
 console.log('🚀 BCM Application Starting...');
 console.log('Version: 0.2 Modular');
 
+// ===== BROWSER BACK BUTTON SUPPORT =====
+// Store navigation history for browser back button
+let navigationHistory = ['homePage'];
+
+// Enhanced navigateTo with history support
+function navigateToWithHistory(pageId) {
+    // Add to history if not going back
+    if (!window._isGoingBack) {
+        navigationHistory.push(pageId);
+        history.pushState({ pageId: pageId }, '', `#${pageId}`);
+    }
+    window._isGoingBack = false;
+    
+    // Call original navigateTo
+    navigateTo(pageId);
+}
+
+// Enhanced goBack with history support  
+function goBackWithHistory() {
+    if (navigationHistory.length > 1) {
+        navigationHistory.pop(); // Remove current
+        const previousPage = navigationHistory[navigationHistory.length - 1];
+        window._isGoingBack = true;
+        navigateTo(previousPage);
+    } else {
+        navigateTo('homePage');
+    }
+}
+
+// Listen for browser back/forward buttons
+window.addEventListener('popstate', function(event) {
+    if (event.state && event.state.pageId) {
+        window._isGoingBack = true;
+        navigateTo(event.state.pageId);
+        // Update history array
+        const idx = navigationHistory.lastIndexOf(event.state.pageId);
+        if (idx >= 0) {
+            navigationHistory = navigationHistory.slice(0, idx + 1);
+        }
+    } else {
+        // No state, go home
+        window._isGoingBack = true;
+        navigateTo('homePage');
+        navigationHistory = ['homePage'];
+    }
+});
+
+// Set initial state
+if (!history.state) {
+    history.replaceState({ pageId: 'homePage' }, '', '#homePage');
+}
+
 // Initialize all systems
 function initializeApp() {
     console.log('Initializing systems...');
@@ -73,8 +125,9 @@ function initializeApp() {
     initIncidentDetailPage();
 
     // Expose functions globally for onclick handlers
-    window.navigateTo = navigateTo;
-    window.goBack = goBack;
+    // Use history-enabled versions for browser back button support
+    window.navigateTo = navigateToWithHistory;
+    window.goBack = goBackWithHistory;
     window.goHome = goHome;
     window.plansActions = plansActions;
     window.incidentActions = incidentActions;

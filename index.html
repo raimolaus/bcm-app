@@ -55,7 +55,7 @@
                         </svg>
                     </div>
                     <h2>AVA INTSIDENT</h2>
-                    <p>Vali hÃ¤daolukorra stsenaarium</p>
+                    <p>Vali hädaolukorra stsenaarium</p>
                 </div>
 
                 <div class="card" data-card="plans" onclick="navigateTo('plansPage')">
@@ -98,7 +98,7 @@
                         </svg>
                     </div>
                     <h2>Logid & Intsidendid</h2>
-                    <p>Intsidentide jÃ¤lgimine ja raporteerimine</p>
+                    <p>Intsidentide jälgimine ja raporteerimine</p>
                     <span class="badge" id="incidentsBadge" style="display:none;">0</span>
                 </div>
 
@@ -116,7 +116,7 @@
                 <h1>Kriitilised kontaktid</h1>
             </div>
             <div class="filter-bar">
-                <button class="filter-btn active" onclick="filterContacts('all')">KÃµik</button>
+                <button class="filter-btn active" onclick="filterContacts('all')">Kõik</button>
                 <button class="filter-btn" onclick="filterContacts('HHLA')">HHLA</button>
                 <button class="filter-btn" onclick="filterContacts('HTK')">HTK</button>
                 <button class="filter-btn" onclick="filterContacts('CERT')">CERT-EE</button>
@@ -164,7 +164,7 @@
                 </button>
                 <div>
                     <h1>AVA INTSIDENT</h1>
-                    <p>Vali hÃ¤daolukorra stsenaarium</p>
+                    <p>Vali hädaolukorra stsenaarium</p>
                 </div>
             </div>
             <div class="scenarios-grid" id="scenariosGrid"></div>
@@ -191,7 +191,7 @@
 
                 <!-- Incident Metrics Block (only for cyber scenarios) -->
                 <div class="action-block" id="incidentMetricsBlock" style="display: none;">
-                    <h2>ðŸ“Š Intsidenti mÃµÃµtmed</h2>
+                    <h2>📊 Intsidenti mõõtmed</h2>
                     <div class="incident-metrics-content" id="incidentMetricsContent">
                         <!-- MVP Fields -->
                         <div class="metrics-section">
@@ -199,7 +199,7 @@
                                 <label for="t0Time">t0 (avastamise aeg)</label>
                                 <div class="t0-input-group">
                                     <input type="datetime-local" id="t0Time">
-                                    <button class="btn-secondary" onclick="setT0Now()">MÃ¤Ã¤ra praegune aeg</button>
+                                    <button class="btn-secondary" onclick="setT0Now()">Määra praegune aeg</button>
                                 </div>
                             </div>
 
@@ -209,12 +209,12 @@
                             </div>
 
                             <div class="metric-field">
-                                <label for="affectedDomain">MÃµjutatud domeen</label>
+                                <label for="affectedDomain">Mõjutatud domeen</label>
                                 <select id="affectedDomain" class="metric-select">
                                     <option value="">Vali...</option>
                                     <option value="IT">IT</option>
                                     <option value="OT">OT</option>
-                                    <option value="BOTH">MÃµlemad</option>
+                                    <option value="BOTH">Mõlemad</option>
                                     <option value="UNKNOWN">Teadmata</option>
                                 </select>
                             </div>
@@ -244,7 +244,7 @@
                                 <label for="spreadStatus">Leviku staatus</label>
                                 <select id="spreadStatus" class="metric-select">
                                     <option value="">Vali...</option>
-                                    <option value="ONGOING">KÃ¤ib</option>
+                                    <option value="ONGOING">Käib</option>
                                     <option value="LIMITED">Piiratud</option>
                                     <option value="STOPPED">Peatatud</option>
                                     <option value="UNKNOWN">Teadmata</option>
@@ -252,8 +252,8 @@
                             </div>
 
                             <div class="metric-field">
-                                <label for="shortDescription">LÃ¼hikirjeldus (1-2 lauset)</label>
-                                <textarea id="shortDescription" class="metric-textarea" rows="3" placeholder="Kirjelda intsidenti lÃ¼hidalt..."></textarea>
+                                <label for="shortDescription">Lühikirjeldus (1-2 lauset)</label>
+                                <textarea id="shortDescription" class="metric-textarea" rows="3" placeholder="Kirjelda intsidenti lühidalt..."></textarea>
                             </div>
 
                             <div class="metric-field">
@@ -320,16 +320,16 @@
                         <!-- Nice-to-have Fields (collapsible) -->
                         <div class="metrics-additional">
                             <button class="metrics-toggle" onclick="toggleAdditionalMetrics()">
-                                <span id="additionalMetricsToggleText">â–¶ NÃ¤ita lisavÃ¤ljad</span>
+                                <span id="additionalMetricsToggleText">â–¶ Näita lisaväljad</span>
                             </button>
                             <div id="additionalMetricsContent" style="display: none;">
                                 <div class="metric-field">
                                     <label for="reporter">Raporteerija / teataja</label>
-                                    <input type="text" id="reporter" class="metric-input" placeholder="Nimi vÃµi kontakt">
+                                    <input type="text" id="reporter" class="metric-input" placeholder="Nimi või kontakt">
                                 </div>
                                 <div class="metric-field">
-                                    <label for="systemLocation">SÃ¼steem/teenus/asukoht</label>
-                                    <input type="text" id="systemLocation" class="metric-input" placeholder="NÃ¤iteks: Server-01, TOS sÃ¼steem">
+                                    <label for="systemLocation">Süsteem/teenus/asukoht</label>
+                                    <input type="text" id="systemLocation" class="metric-input" placeholder="Näiteks: Server-01, TOS süsteem">
                                 </div>
                                 <div class="metric-field">
                                     <label for="nis2Relevant">NIS2 relevants</label>
@@ -340,12 +340,12 @@
                                     </select>
                                 </div>
                                 <div class="metric-field">
-                                    <label for="initialIndicators">Esmased indikaatorid/sÃ¼mptomid</label>
-                                    <textarea id="initialIndicators" class="metric-textarea" rows="3" placeholder="Kirjelda esmased sÃ¼mptomid..."></textarea>
+                                    <label for="initialIndicators">Esmased indikaatorid/sümptomid</label>
+                                    <textarea id="initialIndicators" class="metric-textarea" rows="3" placeholder="Kirjelda esmased sümptomid..."></textarea>
                                 </div>
                                 <div class="metric-field">
-                                    <label for="evidenceArtifacts">TÃµendid/artefaktid (lingid/ID-d)</label>
-                                    <textarea id="evidenceArtifacts" class="metric-textarea" rows="2" placeholder="NÃ¤iteks: SIEM alert ID, log faili nimi..."></textarea>
+                                    <label for="evidenceArtifacts">Tõendid/artefaktid (lingid/ID-d)</label>
+                                    <textarea id="evidenceArtifacts" class="metric-textarea" rows="2" placeholder="Näiteks: SIEM alert ID, log faili nimi..."></textarea>
                                 </div>
                                 <div class="metric-field">
                                     <label for="logger">Logija (kes kogub ajajoont)</label>
@@ -355,31 +355,23 @@
                         </div>
 
                         <div class="metrics-actions">
-                            <button class="btn-primary" onclick="saveIncidentMetrics()">ðŸ’¾ Salvesta</button>
-                            <button class="btn-secondary" onclick="clearIncidentMetrics()">ðŸ—‘ï¸ TÃ¼hjenda</button>
+                            <button class="btn-primary" onclick="saveIncidentMetrics()">💾 Salvesta</button>
+                            <button class="btn-secondary" onclick="clearIncidentMetrics()">🗑️ Tühjenda</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="action-block">
-                    <h2>ðŸ“‹ Tegevuskava</h2>
+                    <h2>📋 Tegevuskava</h2>
                     <div class="checklist" id="actionPlanChecklist"></div>
                 </div>
                 <div class="action-block">
-                    <h2>ðŸ“¢ Kommunikatsioon</h2>
+                    <h2>📢 Kommunikatsioon</h2>
                     <div id="communicationButtons"></div>
                 </div>
                 <div class="action-block">
-                    <h2>ðŸ“ž Kontaktid</h2>
+                    <h2>📞 Kontaktid</h2>
                     <div class="contacts-grid" id="scenarioContacts"></div>
-                </div>
-                
-                <!-- SALVESTA NUPP -->
-                <div class="scenario-save-section" id="scenarioSaveSection">
-                    <button class="btn-save-scenario" id="btnSaveScenario" onclick="window.saveScenarioData()">
-                        💾 SALVESTA
-                    </button>
-                    <span class="save-status" id="saveStatus"></span>
                 </div>
             </div>
         </div>
@@ -392,7 +384,7 @@
                         <path d="M19 12H5M12 19l-7-7 7-7"/>
                     </svg>
                 </button>
-                <h1>SÃ¼ndmuste Logi</h1>
+                <h1>Sündmuste Logi</h1>
                 <button class="log-btn" onclick="exportLog()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
@@ -421,13 +413,13 @@
             <!-- FILTERS -->
             <div class="incident-filters">
                 <button class="filter-btn active" onclick="window.incidentActions.filter('all')" data-filter="all">
-                    KÃµik <span class="count" id="countAll">0</span>
+                    Kõik <span class="count" id="countAll">0</span>
                 </button>
                 <button class="filter-btn" onclick="window.incidentActions.filter('active')" data-filter="active">
-                    ðŸ”´ Aktiivsed <span class="count" id="countActive">0</span>
+                    🔴 Aktiivsed <span class="count" id="countActive">0</span>
                 </button>
                 <button class="filter-btn" onclick="window.incidentActions.filter('exercise')" data-filter="exercise">
-                    ðŸŽ“ Ã•ppused <span class="count" id="countExercise">0</span>
+                    🎓 Õppused <span class="count" id="countExercise">0</span>
                 </button>
                 <button class="filter-btn" onclick="window.incidentActions.filter('closed')" data-filter="closed">
                     âœ… Suletud <span class="count" id="countClosed">0</span>
@@ -441,12 +433,12 @@
                     <select id="incidentSort" onchange="window.incidentActions.sort(this.value)">
                         <option value="date-desc">Uusim enne</option>
                         <option value="date-asc">Vanim enne</option>
-                        <option value="severity">TÃµsiduse jÃ¤rgi</option>
-                        <option value="status">Staatuse jÃ¤rgi</option>
+                        <option value="severity">Tõsiduse järgi</option>
+                        <option value="status">Staatuse järgi</option>
                     </select>
                 </div>
                 <button class="btn-secondary btn-small" onclick="window.incidentActions.exportAll()">
-                    ðŸ“„ Ekspordi kÃµik
+                    📄 Ekspordi kõik
                 </button>
             </div>
 
@@ -490,7 +482,7 @@
             <!-- TABS -->
             <div class="incident-tabs">
                 <button class="tab-btn active" onclick="window.incidentActions.switchTab('overview')" data-tab="overview">
-                    ðŸ“Š Ãœlevaade
+                    📊 Ülevaade
                 </button>
                 <button class="tab-btn" onclick="window.incidentActions.switchTab('timeline')" data-tab="timeline">
                     â±ï¸ Timeline
@@ -499,7 +491,7 @@
                     â˜‘ï¸ Tegevused
                 </button>
                 <button class="tab-btn" onclick="window.incidentActions.switchTab('notifications')" data-tab="notifications">
-                    ðŸ“¢ Teavitused
+                    📢 Teavitused
                 </button>
             </div>
 
@@ -511,13 +503,13 @@
             <!-- ACTIONS -->
             <div class="incident-actions-bar">
                 <button class="btn-secondary" onclick="window.incidentDetailActions.exportCurrent()">
-                    ðŸ“„ Eksport
+                    📄 Eksport
                 </button>
                 <button class="btn-primary" onclick="window.incidentDetailActions.updateStatus()" id="updateStatusBtn">
                     âœï¸ Uuenda staatus
                 </button>
                 <button class="btn-secondary" onclick="window.incidentDetailActions.closeIncident()" id="closeIncidentBtn" style="background: #dc2626; color: white; border-color: #dc2626;">
-                    ðŸ”’ Sulge intsident
+                    🔒 Sulge intsident
                 </button>
             </div>
         </div>
@@ -527,7 +519,7 @@
     <div class="modal" id="systemStatusModal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>MÃ¤Ã¤ra sÃ¼steemi olek</h2>
+                <h2>Määra süsteemi olek</h2>
                 <button class="modal-close" onclick="closeSystemStatusModal()">Ã—</button>
             </div>
             <div class="modal-body">
@@ -535,29 +527,29 @@
                     <div class="status-select-card ok" onclick="selectManualStatus('OK')">
                         <div class="status-select-icon">âœ“</div>
                         <div class="status-select-label">OK</div>
-                        <div class="status-select-desc">SÃ¼steemid tÃ¶Ã¶tavad tavapÃ¤raselt</div>
+                        <div class="status-select-desc">Süsteemid töötavad tavapäraselt</div>
                     </div>
                     <div class="status-select-card warning" onclick="selectManualStatus('WARNING')">
                         <div class="status-select-icon">âš </div>
                         <div class="status-select-label">HOIATUS</div>
-                        <div class="status-select-desc">VÃ¤ike hÃ¤ire vÃµi Ãµppus</div>
+                        <div class="status-select-desc">Väike häire või õppus</div>
                     </div>
                     <div class="status-select-card alert" onclick="selectManualStatus('ALERT')">
-                        <div class="status-select-icon">ðŸš¨</div>
+                        <div class="status-select-icon">🚨</div>
                         <div class="status-select-label">HÃ„IRE</div>
                         <div class="status-select-desc">Kriitiline olukord</div>
                     </div>
                 </div>
                 <div class="manual-status-form" id="manualStatusForm" style="display: none;">
-                    <label for="manualStatusReason">PÃµhjus (max 120 tÃ¤hemÃ¤rki):</label>
-                    <textarea id="manualStatusReason" maxlength="120" rows="3" placeholder="Kirjelda lÃ¼hidalt olukorda..."></textarea>
+                    <label for="manualStatusReason">Põhjus (max 120 tähemärki):</label>
+                    <textarea id="manualStatusReason" maxlength="120" rows="3" placeholder="Kirjelda lühidalt olukorda..."></textarea>
                     <div class="modal-actions">
                         <button class="btn-primary" onclick="saveManualStatus()">Salvesta</button>
-                        <button class="btn-secondary" onclick="closeSystemStatusModal()">TÃ¼hista</button>
+                        <button class="btn-secondary" onclick="closeSystemStatusModal()">Tühista</button>
                     </div>
                 </div>
                 <div class="manual-status-info">
-                    <p><strong>MÃ¤rkus:</strong> KÃ¤sitsi mÃ¤Ã¤ratud olek kehtib kuni taastamiseni vÃµi kuni tekib S0/S1 pÃ¤risintsident.</p>
+                    <p><strong>Märkus:</strong> Käsitsi määratud olek kehtib kuni taastamiseni või kuni tekib S0/S1 pärisintsident.</p>
                     <button class="btn-link" onclick="resetToAutoStatus()" id="resetAutoBtn" style="display: none;">Taasta automaatne olek</button>
                 </div>
             </div>
