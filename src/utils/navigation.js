@@ -4,6 +4,9 @@
 // Navigation history stack
 let navigationHistory = ['homePage'];
 
+// Flag to prevent double-handling of popstate
+let isHandlingPopstate = false;
+
 export function navigateTo(pageId, skipHistory = false) {
     const targetPage = document.getElementById(pageId);
     if (!targetPage) {
@@ -19,6 +22,12 @@ export function navigateTo(pageId, skipHistory = false) {
     // Add to history (if not going back and not same page)
     if (!skipHistory && currentPageId && currentPageId !== pageId) {
         navigationHistory.push(pageId);
+        
+        // Add to browser history for Back button support
+        if (!isHandlingPopstate) {
+            history.pushState({ pageId: pageId }, '', `#${pageId}`);
+        }
+        
         console.log(`📍 Navigation: ${currentPageId} → ${pageId}`);
         console.log(`📚 History stack:`, navigationHistory);
     }
@@ -144,6 +153,36 @@ export function initNavigation() {
     // Set up global functions for onclick handlers
     window.goBack = goBack;
     window.goHome = goHome;
+
+    // Set initial browser history state
+    if (!history.state) {
+        history.replaceState({ pageId: 'homePage' }, '', '#homePage');
+    }
+
+    // Listen for browser Back/Forward buttons
+    window.addEventListener('popstate', function(event) {
+        if (event.state && event.state.pageId) {
+            console.log(`🔙 Browser back/forward to: ${event.state.pageId}`);
+            isHandlingPopstate = true;
+            
+            // Update our history stack to match
+            const idx = navigationHistory.lastIndexOf(event.state.pageId);
+            if (idx >= 0) {
+                navigationHistory = navigationHistory.slice(0, idx + 1);
+            } else {
+                navigationHistory.push(event.state.pageId);
+            }
+            
+            navigateTo(event.state.pageId, true);
+            isHandlingPopstate = false;
+        } else {
+            // No state, go home
+            isHandlingPopstate = true;
+            navigationHistory = ['homePage'];
+            navigateTo('homePage', true);
+            isHandlingPopstate = false;
+        }
+    });
 
     // Initial update of navigation buttons
     updateNavigationButtons('homePage');

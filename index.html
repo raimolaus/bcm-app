@@ -185,7 +185,7 @@
             </div>
             <div class="scenario-content">
                 <div class="action-block">
-                    <h2>âš¡ Kiiretoimingud</h2>
+                    <h2>⚡ Kiiretoimingud</h2>
                     <div class="checklist" id="quickActionsChecklist"></div>
                 </div>
 
@@ -320,7 +320,7 @@
                         <!-- Nice-to-have Fields (collapsible) -->
                         <div class="metrics-additional">
                             <button class="metrics-toggle" onclick="toggleAdditionalMetrics()">
-                                <span id="additionalMetricsToggleText">â–¶ Näita lisaväljad</span>
+                                <span id="additionalMetricsToggleText">▶ Näita lisaväljad</span>
                             </button>
                             <div id="additionalMetricsContent" style="display: none;">
                                 <div class="metric-field">
@@ -373,6 +373,14 @@
                     <h2>📞 Kontaktid</h2>
                     <div class="contacts-grid" id="scenarioContacts"></div>
                 </div>
+                
+                <!-- SALVESTA NUPP -->
+                <div class="scenario-save-section" id="scenarioSaveSection">
+                    <button class="btn-save-scenario" id="btnSaveScenario" onclick="window.saveScenarioData()">
+                        💾 SALVESTA
+                    </button>
+                    <span class="save-status" id="saveStatus"></span>
+                </div>
             </div>
         </div>
 
@@ -419,7 +427,7 @@
                     🔴 Aktiivsed <span class="count" id="countActive">0</span>
                 </button>
                 <button class="filter-btn" onclick="window.incidentActions.filter('exercise')" data-filter="exercise">
-                    🎓 Õppused <span class="count" id="countExercise">0</span>
+                    🎓� Õppused <span class="count" id="countExercise">0</span>
                 </button>
                 <button class="filter-btn" onclick="window.incidentActions.filter('closed')" data-filter="closed">
                     âœ… Suletud <span class="count" id="countClosed">0</span>
@@ -463,7 +471,7 @@
                     <div class="incident-meta-badges">
                         <span class="status-badge" id="incidentStatusBadge">AKTIIVNE</span>
                         <span class="severity-badge" id="incidentSeverityBadge">S1</span>
-                        <span class="type-badge" id="incidentTypeBadge">PÃ„RIS</span>
+                        <span class="type-badge" id="incidentTypeBadge">PÄRIS</span>
                     </div>
                 </div>
             </div>
@@ -485,10 +493,10 @@
                     📊 Ülevaade
                 </button>
                 <button class="tab-btn" onclick="window.incidentActions.switchTab('timeline')" data-tab="timeline">
-                    â±ï¸ Timeline
+                    â±️ Timeline
                 </button>
                 <button class="tab-btn" onclick="window.incidentActions.switchTab('checklist')" data-tab="checklist">
-                    â˜‘ï¸ Tegevused
+                    â˜‘️ Tegevused
                 </button>
                 <button class="tab-btn" onclick="window.incidentActions.switchTab('notifications')" data-tab="notifications">
                     📢 Teavitused
@@ -506,7 +514,7 @@
                     📄 Eksport
                 </button>
                 <button class="btn-primary" onclick="window.incidentDetailActions.updateStatus()" id="updateStatusBtn">
-                    âœï¸ Uuenda staatus
+                    ✏️ Uuenda staatus
                 </button>
                 <button class="btn-secondary" onclick="window.incidentDetailActions.closeIncident()" id="closeIncidentBtn" style="background: #dc2626; color: white; border-color: #dc2626;">
                     🔒 Sulge intsident
@@ -525,18 +533,18 @@
             <div class="modal-body">
                 <div class="status-select-grid">
                     <div class="status-select-card ok" onclick="selectManualStatus('OK')">
-                        <div class="status-select-icon">âœ“</div>
+                        <div class="status-select-icon">✔</div>
                         <div class="status-select-label">OK</div>
                         <div class="status-select-desc">Süsteemid töötavad tavapäraselt</div>
                     </div>
                     <div class="status-select-card warning" onclick="selectManualStatus('WARNING')">
-                        <div class="status-select-icon">âš </div>
+                        <div class="status-select-icon">⚠</div>
                         <div class="status-select-label">HOIATUS</div>
                         <div class="status-select-desc">Väike häire või õppus</div>
                     </div>
                     <div class="status-select-card alert" onclick="selectManualStatus('ALERT')">
                         <div class="status-select-icon">🚨</div>
-                        <div class="status-select-label">HÃ„IRE</div>
+                        <div class="status-select-label">HÄIRE</div>
                         <div class="status-select-desc">Kriitiline olukord</div>
                     </div>
                 </div>

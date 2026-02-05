@@ -45,18 +45,34 @@ function openScenario(scenarioId) {
     if (!currentScenario) return;
 
     // ============================================
-    // FAAS2: Check if we are in new incident flow
+    // UUENDATUD: Kasuta alati incidentGate'd
     // ============================================
-    const isNewIncidentFlow = sessionStorage.getItem('faas2_incident_flow') === 'true';
-
-    if (isNewIncidentFlow) {
-        // Store selected scenario
-        sessionStorage.setItem('faas2_selected_scenario', scenarioId);
-        // Show REAL/TRAINING confirmation dialog
-        showIncidentConfirmationDialog(scenarioId, currentScenario);
-        return; // Don't navigate yet
+    
+    // Kui _skipGateDialog on true, siis tuleme gate'ist tagasi
+    // ja ei näita dialoog uuesti
+    if (window._skipGateDialog) {
+        // Jätka otse renderdamisega
+        renderScenarioPage(scenarioId);
+        return;
     }
-    // ============================================
+    
+    // Kasuta uut gate'i — see näitab kinnitusdialoogi
+    if (typeof window.openScenarioWithGate === 'function') {
+        window.openScenarioWithGate(scenarioId, currentScenario);
+        return;
+    }
+    
+    // Fallback (kui gate pole laetud)
+    console.warn('[CRISIS-APP] incidentGate not loaded, using old flow');
+    renderScenarioPage(scenarioId);
+}
+
+// Renderda stsenaariumi leht (kutsutakse pärast gate kinnitust)
+function renderScenarioPage(scenarioId) {
+    if (!currentScenario) {
+        currentScenario = scenarios.find(s => s.id === scenarioId);
+    }
+    if (!currentScenario) return;
 
     navigateTo('scenarioDetailPage');
 
@@ -79,6 +95,11 @@ function openScenario(scenarioId) {
     renderActionPlan();
     renderCommunicationButtons();
     renderScenarioContacts();
+
+    // Uuenda incident banner
+    if (typeof window.updateIncidentBanner === 'function') {
+        window.updateIncidentBanner();
+    }
 
     addToLog('ACTION', `Avatud stsenaarium: ${currentScenario.name}`);
 }
@@ -197,6 +218,23 @@ function renderScenarioContacts() {
 
 // Checklist Toggle
 function toggleChecklistItem(itemId, itemTitle) {
+    // ============================================
+    // UUENDATUD: Kontrolli kas intsident on aktiivne
+    // ============================================
+    const hasActive = typeof window.hasActiveIncident === 'function' && window.hasActiveIncident();
+    
+    if (!hasActive) {
+        // Preview mode — näita hoiatust ja ära salvesta
+        alert('⚠️ Intsident pole avatud!\n\nChecklistid salvestuvad ainult siis, kui intsident on aktiivne.');
+        
+        // Pööra checkbox tagasi
+        const checkbox = document.getElementById(itemId);
+        if (checkbox) {
+            checkbox.checked = !checkbox.checked;
+        }
+        return;
+    }
+    
     const checkbox = document.getElementById(itemId);
     const isChecked = checkbox.checked;
 
@@ -206,11 +244,60 @@ function toggleChecklistItem(itemId, itemTitle) {
     const item = checkbox.closest('.checklist-item');
     if (isChecked) {
         item.classList.add('checked');
-        addToLog('ACTION', `✓ ${itemTitle}`, getCurrentTimestamp());
+        addToLog('ACTION', `✔ ${itemTitle}`, getCurrentTimestamp());
     } else {
         item.classList.remove('checked');
         addToLog('INFO', `Eemaldatud linnuke: ${itemTitle}`);
     }
+    
+    // ============================================
+    // UUENDATUD: Salvesta incidenti
+    // ============================================
+    saveChecklistToIncident();
+}
+
+// ============================================
+// UUENDATUD: Salvesta checklist andmed incidenti
+// ============================================
+function saveChecklistToIncident() {
+    const incidentId = typeof window.getActiveIncidentId === 'function' ? window.getActiveIncidentId() : null;
+    if (!incidentId) return;
+    
+    // Loe incident
+    const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+    const incident = incidents.find(i => i.id === incidentId);
+    if (!incident) return;
+    
+    // Salvesta checklistStates
+    incident.checklistStates = checklistStates;
+    
+    // Arvuta progress
+    let quickCompleted = 0;
+    let quickTotal = 0;
+    let actionCompleted = 0;
+    let actionTotal = 0;
+    
+    Object.keys(checklistStates).forEach(key => {
+        if (key.startsWith('quick_')) {
+            quickTotal++;
+            if (checklistStates[key]) quickCompleted++;
+        } else if (key.startsWith('action_')) {
+            actionTotal++;
+            if (checklistStates[key]) actionCompleted++;
+        }
+    });
+    
+    incident.checklistProgress = {
+        quickActions: { completed: quickCompleted, total: quickTotal },
+        actionPlan: { completed: actionCompleted, total: actionTotal }
+    };
+    
+    incident.updatedAt = new Date().toISOString();
+    
+    // Salvesta tagasi
+    localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
+    
+    console.log('[CRISIS-APP] Checklist saved to incident:', incidentId);
 }
 
 // Communications
@@ -292,8 +379,8 @@ function renderIncidentLog() {
                     <span class="log-entry-id">${entry.id}</span>
                 </div>
                 <div class="log-entry-meta">
-                    <span>🕐 Loodud: ${createdDate.toLocaleString('et-EE')}</span>
-                    ${entry.updatedAt !== entry.createdAt ? `<span>🔄 Uuendatud: ${updatedDate.toLocaleString('et-EE')}</span>` : ''}
+                    <span>ðŸ• Loodud: ${createdDate.toLocaleString('et-EE')}</span>
+                    ${entry.updatedAt !== entry.createdAt ? `<span>ðŸ”„ Uuendatud: ${updatedDate.toLocaleString('et-EE')}</span>` : ''}
                 </div>
 
                 ${hasMetrics ? `
@@ -329,10 +416,10 @@ function renderIncidentLog() {
                 ` : ''}
 
                 <div class="log-entry-actions">
-                    <button class="btn-secondary-sm" onclick="viewLogEntry('${entry.id}')">👁️ Vaata</button>
+                    <button class="btn-secondary-sm" onclick="viewLogEntry('${entry.id}')">🕐️ Vaata</button>
                     ${status === 'OPEN' ?
-                        `<button class="btn-secondary-sm" onclick="closeIncident('${entry.id}')">✓ Sulge intsident</button>` :
-                        `<button class="btn-secondary-sm" onclick="reopenIncident('${entry.id}')">↻ Ava uuesti</button>`
+                        `<button class="btn-secondary-sm" onclick="closeIncident('${entry.id}')">✔ Sulge intsident</button>` :
+                        `<button class="btn-secondary-sm" onclick="reopenIncident('${entry.id}')">â†» Ava uuesti</button>`
                     }
                     <button class="btn-secondary-sm" onclick="deleteLogEntry('${entry.id}')">🗑️ Kustuta</button>
                 </div>
@@ -457,12 +544,12 @@ function reopenIncident(entryId) {
 
 function getLogTypeIcon(type) {
     const icons = {
-        'INFO': 'ℹ️',
-        'ACTION': '✓',
-        'COMMUNICATION': '📧',
-        'SYSTEM_EVENT': '⚙️'
+        'INFO': 'â„¹️',
+        'ACTION': '✔',
+        'COMMUNICATION': 'ðŸ“§',
+        'SYSTEM_EVENT': 'âš™️'
     };
-    return icons[type] || '•';
+    return icons[type] || 'â€¢';
 }
 
 function exportLog() {
@@ -540,7 +627,7 @@ function renderSLevelGrid() {
                 <h4>${level.name}</h4>
                 <p>${level.description}</p>
                 <div class="s-level-meta">
-                    <span>⏱️ ${level.response}</span>
+                    <span>â±️ ${level.response}</span>
                     <span>🎯 ${level.containment}</span>
                 </div>
             </div>
@@ -611,6 +698,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Save Incident Metrics
 function saveIncidentMetrics() {
+    // ============================================
+    // UUENDATUD: Kontrolli kas intsident on aktiivne
+    // ============================================
+    const hasActive = typeof window.hasActiveIncident === 'function' && window.hasActiveIncident();
+    const incidentId = typeof window.getActiveIncidentId === 'function' ? window.getActiveIncidentId() : null;
+    
+    if (!hasActive || !incidentId) {
+        alert('⚠️ Intsident pole avatud!\n\nMetrics salvestub ainult siis, kui intsident on aktiivne.');
+        return;
+    }
+
     if (!currentScenario) {
         alert('Palun vali esmalt stsenaarium');
         return;
@@ -662,37 +760,45 @@ function saveIncidentMetrics() {
 
     metrics.logger = document.getElementById('logger').value;
 
-    // Create or update incident log entry
-    let logEntry;
-    if (currentIncidentLogId) {
-        // Update existing
-        const existingIndex = incidentLog.findIndex(log => log.id === currentIncidentLogId);
-        if (existingIndex >= 0) {
-            logEntry = incidentLog[existingIndex];
-            logEntry.incidentMetrics = metrics;
-            logEntry.updatedAt = new Date().toISOString();
-        }
+    // ============================================
+    // UUENDATUD: Salvesta bcm_incidents võtmesse
+    // ============================================
+    const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+    const incident = incidents.find(i => i.id === incidentId);
+    
+    if (incident) {
+        incident.incidentMetrics = metrics;
+        incident.severity = selectedSLevel;
+        incident.updatedAt = new Date().toISOString();
+        
+        // Lisa timeline action
+        incident.actions = incident.actions || [];
+        incident.actions.push({
+            timestamp: new Date().toISOString(),
+            user: 'Kasutaja',
+            action: 'Intsidendi mõõtmed salvestatud',
+            category: 'METRICS'
+        });
+        
+        localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
+        
+        currentIncidentMetrics = metrics;
+
+        alert('Intsidendi mõõtmed salvestatud!');
+        addToLog('SYSTEM_EVENT', `💾 Intsidendi mõõtmed salvestatud (${incidentId})`);
+
+        console.log('[CRISIS-APP] Saved incident metrics:', incidentId, metrics);
     } else {
-        // Create new
-        logEntry = new IncidentLogEntry(currentScenario.id, currentScenario.name, metrics);
-        incidentLog.push(logEntry);
-        currentIncidentLogId = logEntry.id;
+        alert('Viga: Intsidenti ei leitud!');
+        console.error('[CRISIS-APP] Incident not found:', incidentId);
     }
 
-    // Save to localStorage
-    localStorage.setItem('incidentLog', JSON.stringify(incidentLog));
-
-    currentIncidentMetrics = metrics;
-
-    alert('Intsidenti mõõtmed salvestatud!');
-    addToLog('SYSTEM_EVENT', `💾 Intsidenti mõõtmed salvestatud (${logEntry.id})`);
-
-    console.log('Saved incident metrics:', metrics);
-    console.log('Saved log entry:', logEntry);
-
-    // Update system status after saving incident
-    if (window.updateSystemStatus) {
-        window.updateSystemStatus();
+    // Update system status and UI
+    if (typeof window.updateHomeStatusAndList === 'function') {
+        window.updateHomeStatusAndList();
+    }
+    if (typeof window.updateIncidentsBadge === 'function') {
+        window.updateIncidentsBadge();
     }
 }
 
@@ -822,7 +928,7 @@ function showIncidentConfirmationDialog(scenarioId, scenarioData) {
                 <p style="margin-bottom: 24px;">${scenarioData.description}</p>
 
                 <div style="margin-bottom: 24px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Režiim:</label>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">ReÅ¾iim:</label>
                     <div style="display: flex; gap: 12px;">
                         <button class="btn-mode-toggle active" id="modeReal" onclick="selectIncidentMode('REAL')" style="flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #3b82f6; background: #3b82f6; color: white; font-weight: 600; cursor: pointer;">
                             REAL
@@ -1000,3 +1106,85 @@ window.deleteLogEntry = deleteLogEntry;
 window.selectIncidentMode = selectIncidentMode;
 window.confirmCreateIncident = confirmCreateIncident;
 window.cancelIncidentCreation = cancelIncidentCreation;
+window.renderScenarioPage = renderScenarioPage;
+window.renderScenarioDetail = renderScenarioPage; // Alias for incidentGate
+
+// =============================================================================
+// SALVESTA NUPP — salvestab kõik stsenaariumi andmed
+// =============================================================================
+function saveScenarioData() {
+    // Kontrolli kas intsident on aktiivne
+    const hasActive = typeof window.hasActiveIncident === 'function' && window.hasActiveIncident();
+    const incidentId = typeof window.getActiveIncidentId === 'function' ? window.getActiveIncidentId() : null;
+    
+    if (!hasActive || !incidentId) {
+        alert('⚠️ Intsident pole avatud!\n\nAndmete salvestamiseks ava esmalt intsident.');
+        return;
+    }
+    
+    // Salvesta checklist
+    saveChecklistToIncident();
+    
+    // Salvesta metrics (kui on cyber stsenaarium)
+    if (currentScenario && isCyberScenario(currentScenario.id)) {
+        // Metrics salvestatakse ainult kui vorm on täidetud
+        if (selectedSLevel) {
+            saveIncidentMetricsQuiet();
+        }
+    }
+    
+    // Näita kinnitust
+    const statusEl = document.getElementById('saveStatus');
+    if (statusEl) {
+        statusEl.textContent = '✓ Salvestatud!';
+        statusEl.classList.add('show');
+        setTimeout(() => {
+            statusEl.classList.remove('show');
+        }, 3000);
+    }
+    
+    console.log('[CRISIS-APP] Scenario data saved for incident:', incidentId);
+}
+
+// Vaikne metrics salvestus (ilma alert'ita)
+function saveIncidentMetricsQuiet() {
+    const hasActive = typeof window.hasActiveIncident === 'function' && window.hasActiveIncident();
+    const incidentId = typeof window.getActiveIncidentId === 'function' ? window.getActiveIncidentId() : null;
+    
+    if (!hasActive || !incidentId || !currentScenario) return;
+    if (!selectedSLevel) return; // S-tase on kohustuslik
+
+    // Collect form data
+    const metrics = new IncidentMetrics();
+
+    const t0Value = document.getElementById('t0Time')?.value;
+    metrics.t0 = t0Value ? new Date(t0Value).toISOString() : null;
+    metrics.sLevel = selectedSLevel;
+    metrics.affectedDomain = document.getElementById('affectedDomain')?.value || '';
+    metrics.serviceDisruption = document.getElementById('serviceDisruption')?.value || '';
+    metrics.dataBreachSuspicion = document.getElementById('dataBreachSuspicion')?.value || '';
+    metrics.spreadStatus = document.getElementById('spreadStatus')?.value || '';
+    metrics.shortDescription = document.getElementById('shortDescription')?.value || '';
+
+    // Notifications
+    metrics.notifications.certEE.required = document.getElementById('certEE_required')?.value || 'TO_BE_ASSESSED';
+    metrics.notifications.certEE.status = document.getElementById('certEE_status')?.value || 'PLANNED';
+    metrics.notifications.dpoGDPR.required = document.getElementById('dpoGDPR_required')?.value || 'TO_BE_ASSESSED';
+    metrics.notifications.dpoGDPR.status = document.getElementById('dpoGDPR_status')?.value || 'PLANNED';
+    metrics.notifications.management.required = document.getElementById('management_required')?.value || 'TO_BE_ASSESSED';
+    metrics.notifications.management.status = document.getElementById('management_status')?.value || 'PLANNED';
+
+    // Save to bcm_incidents
+    const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+    const incident = incidents.find(i => i.id === incidentId);
+    
+    if (incident) {
+        incident.incidentMetrics = metrics;
+        incident.severity = selectedSLevel;
+        incident.updatedAt = new Date().toISOString();
+        localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
+    }
+}
+
+// Expose globally
+window.saveScenarioData = saveScenarioData;
