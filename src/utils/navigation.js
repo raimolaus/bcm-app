@@ -55,25 +55,16 @@ export function getCurrentPage() {
 }
 
 export function goBack() {
-    // Remove current page from history
-    if (navigationHistory.length > 1) {
-        navigationHistory.pop();
-        const previousPage = navigationHistory[navigationHistory.length - 1];
-        console.log(`⬅️ Going back to: ${previousPage}`);
-        console.log(`📚 History stack:`, navigationHistory);
-        navigateTo(previousPage, true); // Skip adding to history
-    } else {
-        // Fallback to home if history is empty
-        console.log(`🏠 No history, going home`);
-        goHome();
-    }
+    // Use browser history as single source of truth
+    console.log(`⬅️ Going back via browser history`);
+    history.back();
 }
 
 export function goHome() {
-    // Clear history and go to home
-    navigationHistory = ['homePage'];
+    // Navigate to home (adds to browser history)
     console.log(`🏠 Going home`);
-    navigateTo('homePage', true);
+    navigationHistory = ['homePage'];
+    navigateTo('homePage');
 }
 
 // Update navigation buttons visibility
