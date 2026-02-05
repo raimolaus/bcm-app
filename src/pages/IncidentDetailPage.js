@@ -328,16 +328,17 @@ function renderNotificationItem(name, notification) {
 
 // Check if we're in preview mode
 function checkIfPreviewMode() {
-    // Preview mode is active when:
-    // 1. window._previewMode is set, OR
-    // 2. incident was opened from gate in preview/cancel mode
-    if (window._previewMode) return true;
-
-    // Check if incident gate has an active incident
-    if (typeof window.hasActiveIncident === 'function') {
-        return !window.hasActiveIncident();
-    }
-
+    // IncidentDetailPage ALWAYS loads incident from localStorage.
+    // If we reached this point, the incident exists and is real (not preview).
+    //
+    // Preview mode is ONLY relevant for scenarioDetailPage (gate CANCEL flow),
+    // where user clicks TÜHISTA and views scenario without creating incident.
+    //
+    // IncidentDetailPage is accessed via:
+    // - Logs & Intsidendid (opens saved incident) -> NOT preview
+    // - Direct navigation with incidentId -> NOT preview
+    //
+    // Therefore, in IncidentDetailPage context, preview mode is NEVER true.
     return false;
 }
 
