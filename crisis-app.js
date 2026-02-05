@@ -9,10 +9,77 @@ import {
 } from './src/data/incident-types.js';
 
 let currentScenario = null;
-let incidentLog = [];
+let incidentLog = []; // LEGACY: will be migrated to bcm_incidents.actions
 let checklistStates = {};
 let currentIncidentMetrics = null;
 let currentIncidentLogId = null;
+
+// =============================================================================
+// INCIDENT ACTIONS HELPERS (bcm_incidents integration)
+// =============================================================================
+
+/**
+ * Get current active incident from bcm_incidents
+ */
+function getCurrentIncident() {
+    // Try from incidentGate first
+    if (typeof window.getActiveIncidentId === 'function') {
+        const activeId = window.getActiveIncidentId();
+        if (activeId) {
+            const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+            return incidents.find(i => i.id === activeId);
+        }
+    }
+
+    // Fallback: most recent active incident
+    const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+    return incidents
+        .filter(i => i.status === 'ACTIVE' || i.status === 'OPEN')
+        .sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))[0]
+        || null;
+}
+
+/**
+ * Load actions/timeline from current incident
+ */
+function loadIncidentActions() {
+    const incident = getCurrentIncident();
+    if (!incident) return [];
+    return incident.actions || [];
+}
+
+/**
+ * Add action to current incident's timeline
+ */
+function appendIncidentAction(type, message, timestamp = null) {
+    const incident = getCurrentIncident();
+    if (!incident) {
+        console.warn('[ACTION] No active incident, cannot append action');
+        return;
+    }
+
+    if (!incident.actions) {
+        incident.actions = [];
+    }
+
+    incident.actions.push({
+        timestamp: timestamp || new Date().toISOString(),
+        user: 'Kasutaja',
+        action: message,
+        category: type
+    });
+
+    incident.updatedAt = new Date().toISOString();
+
+    // Save back to bcm_incidents
+    const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+    const index = incidents.findIndex(i => i.id === incident.id);
+    if (index >= 0) {
+        incidents[index] = incident;
+        localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
+        console.log(`[ACTION] Saved action to incident ${incident.id}`);
+    }
+}
 
 // Render Scenarios Grid
 function renderScenarios() {
@@ -322,6 +389,11 @@ function makeCall(phoneNumber) {
 // Incident Log
 function addToLog(type, message, timestamp) {
     const time = timestamp || getCurrentTimestamp();
+
+    // NEW: Write to bcm_incidents.actions (canonical)
+    appendIncidentAction(type, message, time);
+
+    // LEGACY: Keep in-memory for backwards compatibility (will be phased out)
     incidentLog.push({
         type,
         message,
@@ -343,13 +415,8 @@ function renderIncidentLog() {
     const container = document.getElementById('logTimeline');
     if (!container) return;
 
-    if (incidentLog.length === 0) {
-        container.innerHTML = '<p class="empty-log">Logis pole veel kirjeid</p>';
-        return;
-    }
-
-    // Get stored incident log entries (with metrics)
-    const storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    // Load incidents from canonical source (bcm_incidents)
+    const storedLog = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
 
     if (storedLog.length === 0) {
         container.innerHTML = '<p class="empty-log">Logis pole veel kirjeid</p>';
@@ -458,7 +525,7 @@ function getNotificationStatusText(status) {
 
 // View log entry details
 function viewLogEntry(entryId) {
-    const storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    const storedLog = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
     const entry = storedLog.find(e => e.id === entryId);
 
     if (!entry) {
@@ -476,9 +543,9 @@ function deleteLogEntry(entryId) {
         return;
     }
 
-    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    let storedLog = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
     storedLog = storedLog.filter(e => e.id !== entryId);
-    localStorage.setItem('incidentLog', JSON.stringify(storedLog));
+    localStorage.setItem('bcm_incidents', JSON.stringify(storedLog));
 
     alert('Logikirje kustutatud');
     renderIncidentLog();
@@ -496,13 +563,13 @@ function closeIncident(entryId) {
         return;
     }
 
-    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    let storedLog = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
     const entry = storedLog.find(e => e.id === entryId);
 
     if (entry) {
         entry.status = 'CLOSED';
         entry.updatedAt = new Date().toISOString();
-        localStorage.setItem('incidentLog', JSON.stringify(storedLog));
+        localStorage.setItem('bcm_incidents', JSON.stringify(storedLog));
 
         alert('Intsident suletud');
         renderIncidentLog();
@@ -521,13 +588,13 @@ function reopenIncident(entryId) {
         return;
     }
 
-    let storedLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    let storedLog = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
     const entry = storedLog.find(e => e.id === entryId);
 
     if (entry) {
         entry.status = 'OPEN';
         entry.updatedAt = new Date().toISOString();
-        localStorage.setItem('incidentLog', JSON.stringify(storedLog));
+        localStorage.setItem('bcm_incidents', JSON.stringify(storedLog));
 
         alert('Intsident avatud');
         renderIncidentLog();
@@ -884,8 +951,104 @@ function loadIncidentMetricsToForm() {
     if (metrics.logger) document.getElementById('logger').value = metrics.logger;
 }
 
+// =============================================================================
+// MIGRATION: incidentLog → incident.actions (bcm_incidents)
+// =============================================================================
+
+/**
+ * One-time migration: move legacy incidentLog entries into bcm_incidents.actions
+ */
+function migrateIncidentLog() {
+    // Check if already migrated
+    if (localStorage.getItem('incidentLog_migrated_v1') === 'true') {
+        console.log('[MIGRATION] Already migrated incidentLog → skipping');
+        return;
+    }
+
+    console.log('[MIGRATION] Starting incidentLog → bcm_incidents migration...');
+
+    // Load legacy incidentLog
+    const legacyLog = JSON.parse(localStorage.getItem('incidentLog') || '[]');
+    if (legacyLog.length === 0) {
+        console.log('[MIGRATION] No legacy incidentLog data → marking as migrated');
+        localStorage.setItem('incidentLog_migrated_v1', 'true');
+        return;
+    }
+
+    // Load bcm_incidents
+    const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+    if (incidents.length === 0) {
+        console.warn('[MIGRATION] No incidents found in bcm_incidents → cannot migrate, skipping');
+        localStorage.setItem('incidentLog_migrated_v1', 'true');
+        return;
+    }
+
+    // Find target incident (most recent active/open)
+    const targetIncident = incidents
+        .filter(inc => inc.status === 'ACTIVE' || inc.status === 'OPEN')
+        .sort((a, b) => new Date(b.updatedAt || b.createdAt) - new Date(a.updatedAt || a.createdAt))[0]
+        || incidents[incidents.length - 1]; // fallback: last incident
+
+    if (!targetIncident) {
+        console.warn('[MIGRATION] No target incident found');
+        localStorage.setItem('incidentLog_migrated_v1', 'true');
+        return;
+    }
+
+    console.log(`[MIGRATION] Target incident: ${targetIncident.id}`);
+
+    // Initialize actions array if missing
+    if (!targetIncident.actions) {
+        targetIncident.actions = [];
+    }
+
+    // Dedupe: create set of existing action signatures
+    const existingSignatures = new Set(
+        targetIncident.actions.map(a =>
+            `${a.timestamp}|${a.category || a.type}|${a.action || a.message}`
+        )
+    );
+
+    // Migrate legacy entries
+    let migratedCount = 0;
+    legacyLog.forEach(entry => {
+        const signature = `${entry.timestamp}|${entry.type}|${entry.message}`;
+        if (!existingSignatures.has(signature)) {
+            targetIncident.actions.push({
+                timestamp: entry.timestamp || new Date().toISOString(),
+                user: entry.user || 'Kasutaja',
+                action: entry.message || '',
+                category: entry.type || 'ACTION'
+            });
+            migratedCount++;
+        }
+    });
+
+    // Sort actions by timestamp
+    targetIncident.actions.sort((a, b) =>
+        new Date(a.timestamp) - new Date(b.timestamp)
+    );
+
+    // Save back to bcm_incidents
+    targetIncident.updatedAt = new Date().toISOString();
+    const targetIndex = incidents.findIndex(i => i.id === targetIncident.id);
+    if (targetIndex >= 0) {
+        incidents[targetIndex] = targetIncident;
+    }
+    localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
+
+    // Mark as migrated
+    localStorage.setItem('incidentLog_migrated_v1', 'true');
+
+    console.log(`[MIGRATION] ✅ Migrated ${migratedCount} entries to incident ${targetIncident.id}`);
+    console.log(`[MIGRATION] Legacy incidentLog kept for safety (can be removed later)`);
+}
+
 // Load incident log from localStorage on startup
 document.addEventListener('DOMContentLoaded', function() {
+    // Run migration first
+    migrateIncidentLog();
+
     const savedLog = localStorage.getItem('incidentLog');
     if (savedLog) {
         try {
