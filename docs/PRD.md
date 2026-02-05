@@ -115,6 +115,15 @@ BCM äpp on teadlikult:
 - Süsteemide tehniline monitooring
 - Automaatne intsidentide tuvastus
 
+## Intsidendi avamise kinnitamine ja eelvaade
+
+- Intsident avatakse ainult pärast kasutaja kinnitust (dialoog) ja režiimi valikut (INTSIDENT / ÕPPUS).
+- Kui kasutaja valib dialoogis **TÜHISTA**, siis:
+  - kasutaja võib näha intsidendi **eelvaadet**
+  - eelvaates ei saa andmeid muuta (disabled)
+  - kasutaja saab intsidendi avada hiljem nupuga “AVA INTSIDENT”, mis küsib kinnituse uuesti
+
+
 ---
 
 ## 5. Funktsioonid ja acceptance criteria

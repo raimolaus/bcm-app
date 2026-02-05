@@ -258,6 +258,20 @@ Punast EI TOHI kasutada:
 - Kinnitused:
   - peavad eelnema pöördumatutele tegevustele
 
+## Eelvaate olek (Incident not opened)
+
+Kui kasutaja jõuab intsidendi vaatesse ilma avamist kinnitamata (eelvaade):
+- peab olema selge kollane teavitus (“EELVAADE — INTSIDENT POLE AVATUD”)
+- kõik sisendid on disabled (ei tohi lubada “vaikseid” muutusi)
+- vaates on ainult üks primaarne tegevus: “AVA INTSIDENT”
+- “AVA INTSIDENT” peab avama kinnituse dialoogi (ei tohi avada vaikimisi)
+
+See tagab:
+- no silent changes
+- one primary action per screen
+- state clarity
+
+
 ---
 
 ## 10. Accessibility (baastase)

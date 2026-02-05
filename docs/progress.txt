@@ -152,5 +152,12 @@ DONE:
 - claude.md finalized and validated
 - FRONTEND_GUIDELINES.md updated with UI/UX CORE PRINCIPLES (locked)
 
-NEXT:
-- UI/UX audit and refinement (Home, Incident Detail)
+DONE: 26.02.05
+- FAAS2 incident lifecycle stabilized (REAL/TRAINING gate, explicit SAVE)
+- Navigation and system status logic aligned with PRD
+- UX cleanup: removed misleading crisis UI elements
+- Canonical documentation finalized and locked
+next NEXT:
+- Post-FAAS2 audit: verify SAVE persistence in all incident views
+- Optional: cleanup legacy crisis-app.js vs src/ duplication
+

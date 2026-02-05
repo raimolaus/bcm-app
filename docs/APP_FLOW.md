@@ -135,7 +135,32 @@ APP_FLOW EI OLE:
 - Stsenaariumi valik
 
 ---
+## 6. Voog: Stsenaarium → kinnitusdialoog → eelvaade / avamine
 
+### Sammud
+1. Kasutaja valib stsenaariumi
+2. Kuvatakse kinnitusdialoog “Kas avada intsident?” ja režiimivalik:
+   - INTSIDENT (REAL)
+   - ÕPPUS (TRAINING)
+3. Kui kasutaja valib **AVA**:
+   - avatakse intsidendi vaade aktiivses olekus (editable)
+4. Kui kasutaja valib **TÜHISTA**:
+   - avatakse intsidendi vaade **eelvaatena** (mitte-aktiivne)
+   - vormielemendid on disabled (ei saa täita)
+   - kuvatakse kollane riba “EELVAADE — INTSIDENT POLE AVATUD”
+   - kuvatakse nupp “AVA INTSIDENT”
+
+### Otsuspunktid
+- AVA vs TÜHISTA
+- INTSIDENT vs ÕPPUS
+
+### Eelvaate käitumine
+- “AVA INTSIDENT” nupule vajutades avatakse **sama kinnitusdialoog uuesti**
+- Alles pärast “AVA” kinnitamist muutub intsident aktiivseks ja vormid editable’iks
+
+> TODO: kinnitada koodist, kas eelvaade loob LocalStorage’is eraldi “draft” kirje või on see ainult UI-state.
+
+---
 ## 6. Voog: Intsidentide logi kasutamine
 
 ### Sammud
@@ -238,6 +263,11 @@ APP_FLOW EI OLE:
 - Navigeerimisfunktsioon peab:
   - lubama alati tagasi minna
   - mitte lukustama kasutajat
+
+### Browser Back käitumine (ootus)
+- Kasutaja peab saama browseri Back nupuga loogiliselt tagasi liikuda.
+- Kui mõnel vaatel Back ei tööta, on see bug/regressioon ja vajab parandust.
+
 
 ---
 
