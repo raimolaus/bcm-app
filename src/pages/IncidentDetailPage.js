@@ -131,17 +131,31 @@ function renderTab(tabName) {
 }
 
 function renderOverviewTab() {
+    // Determine if fields can be edited
+    const isClosed = currentIncident.status === 'CLOSED';
+    const isPreview = checkIfPreviewMode();
+    const canEdit = !isClosed && !isPreview;
+
     return `
         <div class="incident-overview-grid">
             <div class="overview-section">
                 <h3>📊 Põhiinfo</h3>
                 <div class="overview-item">
-                    <span class="overview-label">t0 (Tuvastamine):</span>
-                    <span class="overview-value">${formatDateTime(currentIncident.t0)}</span>
+                    <label class="overview-label">t0 (Tuvastamine):</label>
+                    <input type="datetime-local"
+                           id="detailT0"
+                           class="overview-input"
+                           value="${currentIncident.t0 ? new Date(currentIncident.t0).toISOString().slice(0, 16) : ''}"
+                           ${canEdit ? '' : 'disabled'}>
                 </div>
                 <div class="overview-item">
-                    <span class="overview-label">Incident Commander:</span>
-                    <span class="overview-value">${currentIncident.incidentCommander || 'Määramata'}</span>
+                    <label class="overview-label">Incident Commander:</label>
+                    <input type="text"
+                           id="detailCommander"
+                           class="overview-input"
+                           value="${currentIncident.incidentCommander || ''}"
+                           placeholder="Nimi"
+                           ${canEdit ? '' : 'disabled'}>
                 </div>
                 <div class="overview-item">
                     <span class="overview-label">Tüüp:</span>
@@ -157,37 +171,72 @@ function renderOverviewTab() {
             <div class="overview-section">
                 <h3>💻 Mõju</h3>
                 <div class="overview-item">
-                    <span class="overview-label">Mõjutatud süsteemid:</span>
-                    <span class="overview-value">${currentIncident.impact?.affectedSystems?.join(', ') || 'Määramata'}</span>
+                    <label class="overview-label">Mõjutatud süsteemid:</label>
+                    <textarea id="detailAffectedSystems"
+                              class="overview-textarea"
+                              placeholder="Iga süsteem eraldi real"
+                              ${canEdit ? '' : 'disabled'}>${currentIncident.impact?.affectedSystems?.join('\n') || ''}</textarea>
                 </div>
                 <div class="overview-item">
-                    <span class="overview-label">Teenuse katkestus:</span>
-                    <span class="overview-value">${currentIncident.impact?.serviceInterruption ? '❌ Jah' : '✅ Ei'}</span>
+                    <label class="overview-label">
+                        <input type="checkbox"
+                               id="detailServiceInterruption"
+                               ${currentIncident.impact?.serviceInterruption ? 'checked' : ''}
+                               ${canEdit ? '' : 'disabled'}>
+                        Teenuse katkestus
+                    </label>
                 </div>
                 <div class="overview-item">
-                    <span class="overview-label">Andmeleke kahtlus:</span>
-                    <span class="overview-value">${currentIncident.impact?.dataLeakSuspected ? '⚠️ Jah' : '✅ Ei'}</span>
+                    <label class="overview-label">
+                        <input type="checkbox"
+                               id="detailDataLeakSuspected"
+                               ${currentIncident.impact?.dataLeakSuspected ? 'checked' : ''}
+                               ${canEdit ? '' : 'disabled'}>
+                        Andmeleke kahtlus
+                    </label>
                 </div>
             </div>
             ` : ''}
 
             <div class="overview-section">
                 <h3>👥 Meeskond</h3>
-                ${currentIncident.team && currentIncident.team.length > 0 ?
-                    currentIncident.team.map(member => `
-                        <div class="overview-item">
-                            <span class="overview-value">👤 ${member}</span>
-                        </div>
-                    `).join('') :
-                    '<p>Meeskond määramata</p>'
-                }
+                <div class="overview-item">
+                    <label class="overview-label">Meeskonna liikmed:</label>
+                    <textarea id="detailTeam"
+                              class="overview-textarea"
+                              placeholder="Iga liige eraldi real"
+                              ${canEdit ? '' : 'disabled'}>${currentIncident.team?.join('\n') || ''}</textarea>
+                </div>
             </div>
 
             <div class="overview-section">
                 <h3>📝 Kokkuvõte</h3>
-                <p>${currentIncident.summary || 'Kokkuvõte puudub'}</p>
+                <textarea id="detailSummary"
+                          class="overview-textarea overview-textarea-large"
+                          placeholder="Intsidendi kokkuvõte"
+                          ${canEdit ? '' : 'disabled'}>${currentIncident.summary || ''}</textarea>
             </div>
         </div>
+
+        ${canEdit ? `
+        <div class="overview-actions">
+            <button class="btn-primary" onclick="window.incidentDetailActions.saveDetail()">
+                💾 SALVESTA
+            </button>
+        </div>
+        ` : ''}
+
+        ${isPreview ? `
+        <div class="preview-warning">
+            ⚠️ EELVAADE — Intsident pole avatud. Väljad on lukustatud.
+        </div>
+        ` : ''}
+
+        ${isClosed && !isPreview ? `
+        <div class="closed-info">
+            🔒 Intsident on SULETUD. Väljad pole muudetavad.
+        </div>
+        ` : ''}
     `;
 }
 
@@ -275,6 +324,127 @@ function renderNotificationItem(name, notification) {
             ` : ''}
         </div>
     `;
+}
+
+// Check if we're in preview mode
+function checkIfPreviewMode() {
+    // Preview mode is active when:
+    // 1. window._previewMode is set, OR
+    // 2. incident was opened from gate in preview/cancel mode
+    if (window._previewMode) return true;
+
+    // Check if incident gate has an active incident
+    if (typeof window.hasActiveIncident === 'function') {
+        return !window.hasActiveIncident();
+    }
+
+    return false;
+}
+
+// Save incident detail changes
+export function saveIncidentDetail() {
+    if (!currentIncident) {
+        alert('Viga: Intsidenti ei leitud!');
+        return;
+    }
+
+    // Check if editing is allowed
+    const isClosed = currentIncident.status === 'CLOSED';
+    const isPreview = checkIfPreviewMode();
+
+    if (isClosed) {
+        alert('❌ SULETUD intsidenti ei saa muuta!');
+        return;
+    }
+
+    if (isPreview) {
+        alert('⚠️ Intsident pole avatud! Ava intsident enne muudatuste tegemist.');
+        return;
+    }
+
+    // Collect data from form
+    const t0Input = document.getElementById('detailT0');
+    const commanderInput = document.getElementById('detailCommander');
+    const summaryInput = document.getElementById('detailSummary');
+    const teamInput = document.getElementById('detailTeam');
+
+    // Update basic fields
+    if (t0Input && t0Input.value) {
+        currentIncident.t0 = new Date(t0Input.value).toISOString();
+    }
+
+    if (commanderInput) {
+        currentIncident.incidentCommander = commanderInput.value.trim();
+    }
+
+    if (summaryInput) {
+        currentIncident.summary = summaryInput.value.trim();
+    }
+
+    if (teamInput) {
+        const teamText = teamInput.value.trim();
+        currentIncident.team = teamText ? teamText.split('\n').map(m => m.trim()).filter(m => m) : [];
+    }
+
+    // Update impact fields (for cyber incidents)
+    if (currentIncident.type === 'CYBER') {
+        const affectedSystemsInput = document.getElementById('detailAffectedSystems');
+        const serviceInterruptionInput = document.getElementById('detailServiceInterruption');
+        const dataLeakInput = document.getElementById('detailDataLeakSuspected');
+
+        if (!currentIncident.impact) {
+            currentIncident.impact = {
+                affectedSystems: [],
+                serviceInterruption: false,
+                dataLeakSuspected: false
+            };
+        }
+
+        if (affectedSystemsInput) {
+            const systemsText = affectedSystemsInput.value.trim();
+            currentIncident.impact.affectedSystems = systemsText ? systemsText.split('\n').map(s => s.trim()).filter(s => s) : [];
+        }
+
+        if (serviceInterruptionInput) {
+            currentIncident.impact.serviceInterruption = serviceInterruptionInput.checked;
+        }
+
+        if (dataLeakInput) {
+            currentIncident.impact.dataLeakSuspected = dataLeakInput.checked;
+        }
+    }
+
+    // Update timestamp
+    currentIncident.updatedAt = new Date().toISOString();
+
+    // Add timeline action
+    currentIncident.actions.push({
+        timestamp: new Date().toISOString(),
+        user: 'Kasutaja',
+        action: 'Intsidendi detailid uuendatud',
+        category: 'UPDATE'
+    });
+
+    // Save to localStorage
+    const { saveIncident } = window;
+    if (saveIncident) {
+        saveIncident(currentIncident);
+    }
+
+    // Update UI
+    updateBadges();
+    updateProgress();
+
+    // Update home status and badge
+    if (typeof window.updateHomeStatusAndList === 'function') {
+        window.updateHomeStatusAndList();
+    }
+    if (typeof window.updateIncidentsBadge === 'function') {
+        window.updateIncidentsBadge();
+    }
+
+    alert('✅ Muudatused salvestatud!');
+    console.log('[DETAIL] Incident updated:', currentIncident.id);
 }
 
 // Helper functions
@@ -576,7 +746,8 @@ export const incidentDetailActions = {
     cancelStatusChange: cancelStatusChange,
     closeIncident: closeIncident,
     confirmClose: confirmClose,
-    cancelClose: cancelClose
+    cancelClose: cancelClose,
+    saveDetail: saveIncidentDetail
 };
 
 console.log('IncidentDetailPage.js loaded');
