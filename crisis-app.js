@@ -1108,3 +1108,83 @@ window.confirmCreateIncident = confirmCreateIncident;
 window.cancelIncidentCreation = cancelIncidentCreation;
 window.renderScenarioPage = renderScenarioPage;
 window.renderScenarioDetail = renderScenarioPage; // Alias for incidentGate
+
+// =============================================================================
+// SALVESTA NUPP — salvestab kõik stsenaariumi andmed
+// =============================================================================
+function saveScenarioData() {
+    // Kontrolli kas intsident on aktiivne
+    const hasActive = typeof window.hasActiveIncident === 'function' && window.hasActiveIncident();
+    const incidentId = typeof window.getActiveIncidentId === 'function' ? window.getActiveIncidentId() : null;
+    
+    if (!hasActive || !incidentId) {
+        alert('⚠️ Intsident pole avatud!\n\nAndmete salvestamiseks ava esmalt intsident.');
+        return;
+    }
+    
+    // Salvesta checklist
+    saveChecklistToIncident();
+    
+    // Salvesta metrics (kui on cyber stsenaarium)
+    if (currentScenario && isCyberScenario(currentScenario.id)) {
+        // Metrics salvestatakse ainult kui vorm on täidetud
+        if (selectedSLevel) {
+            saveIncidentMetricsQuiet();
+        }
+    }
+    
+    // Näita kinnitust
+    const statusEl = document.getElementById('saveStatus');
+    if (statusEl) {
+        statusEl.textContent = '✓ Salvestatud!';
+        statusEl.classList.add('show');
+        setTimeout(() => {
+            statusEl.classList.remove('show');
+        }, 3000);
+    }
+    
+    console.log('[CRISIS-APP] Scenario data saved for incident:', incidentId);
+}
+
+// Vaikne metrics salvestus (ilma alert'ita)
+function saveIncidentMetricsQuiet() {
+    const hasActive = typeof window.hasActiveIncident === 'function' && window.hasActiveIncident();
+    const incidentId = typeof window.getActiveIncidentId === 'function' ? window.getActiveIncidentId() : null;
+    
+    if (!hasActive || !incidentId || !currentScenario) return;
+    if (!selectedSLevel) return; // S-tase on kohustuslik
+
+    // Collect form data
+    const metrics = new IncidentMetrics();
+
+    const t0Value = document.getElementById('t0Time')?.value;
+    metrics.t0 = t0Value ? new Date(t0Value).toISOString() : null;
+    metrics.sLevel = selectedSLevel;
+    metrics.affectedDomain = document.getElementById('affectedDomain')?.value || '';
+    metrics.serviceDisruption = document.getElementById('serviceDisruption')?.value || '';
+    metrics.dataBreachSuspicion = document.getElementById('dataBreachSuspicion')?.value || '';
+    metrics.spreadStatus = document.getElementById('spreadStatus')?.value || '';
+    metrics.shortDescription = document.getElementById('shortDescription')?.value || '';
+
+    // Notifications
+    metrics.notifications.certEE.required = document.getElementById('certEE_required')?.value || 'TO_BE_ASSESSED';
+    metrics.notifications.certEE.status = document.getElementById('certEE_status')?.value || 'PLANNED';
+    metrics.notifications.dpoGDPR.required = document.getElementById('dpoGDPR_required')?.value || 'TO_BE_ASSESSED';
+    metrics.notifications.dpoGDPR.status = document.getElementById('dpoGDPR_status')?.value || 'PLANNED';
+    metrics.notifications.management.required = document.getElementById('management_required')?.value || 'TO_BE_ASSESSED';
+    metrics.notifications.management.status = document.getElementById('management_status')?.value || 'PLANNED';
+
+    // Save to bcm_incidents
+    const incidents = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
+    const incident = incidents.find(i => i.id === incidentId);
+    
+    if (incident) {
+        incident.incidentMetrics = metrics;
+        incident.severity = selectedSLevel;
+        incident.updatedAt = new Date().toISOString();
+        localStorage.setItem('bcm_incidents', JSON.stringify(incidents));
+    }
+}
+
+// Expose globally
+window.saveScenarioData = saveScenarioData;

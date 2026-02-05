@@ -218,8 +218,6 @@ function updateHomeStatusAndList() {
     const statusBox = document.getElementById('homeStatusBox');
     const title = document.getElementById('homeStatusTitle');
     const sub = document.getElementById('homeStatusSub');
-
-    const listWrap = document.getElementById('homeActiveList');
     const ul = document.getElementById('homeActiveUl');
 
     if (!statusBox || !title) {
@@ -233,8 +231,8 @@ function updateHomeStatusAndList() {
         title.textContent = `AKTIIVSED INTSIDENDID: ${activeCount}`;
         if (sub) sub.textContent = '';
 
-        // Render active incident names
-        if (listWrap && ul) {
+        // Render active incident names INSIDE the status box
+        if (ul) {
             const active = incidents.filter(i => (String(i.status || '')).toUpperCase() === 'ACTIVE');
             ul.innerHTML = '';
             active.forEach(i => {
@@ -243,7 +241,7 @@ function updateHomeStatusAndList() {
                 li.textContent = name;
                 ul.appendChild(li);
             });
-            listWrap.style.display = active.length ? 'block' : 'none';
+            ul.style.display = active.length ? 'block' : 'none';
         }
 
         orderCardsForActiveIncident();
@@ -253,8 +251,10 @@ function updateHomeStatusAndList() {
         title.textContent = 'OLUKORD: TAVAPÄRANE';
         if (sub) sub.textContent = '';
 
-        if (listWrap) listWrap.style.display = 'none';
-        if (ul) ul.innerHTML = '';
+        if (ul) {
+            ul.style.display = 'none';
+            ul.innerHTML = '';
+        }
 
         orderCardsForNormal();
     }
