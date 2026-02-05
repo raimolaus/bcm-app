@@ -123,6 +123,7 @@ BCM äpp on teadlikult:
   - eelvaates ei saa andmeid muuta (disabled)
   - kasutaja saab intsidendi avada hiljem nupuga “AVA INTSIDENT”, mis küsib kinnituse uuesti
 
+- Eelvaade ei ole iseseisev intsident ega loe ACTIVE intsidendina enne kinnitamist.
 
 ---
 
