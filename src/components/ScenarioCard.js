@@ -3,13 +3,11 @@
 
 export function renderScenarioCard(scenario) {
     const priorityClass = scenario.priority.toLowerCase();
-    
+
     return `
         <div class="scenario-card priority-${priorityClass}" onclick="window.scenarioActions.open('${scenario.id}')">
             <div class="scenario-icon">${scenario.icon}</div>
             <h3>${scenario.name}</h3>
-            <p>${scenario.description}</p>
-            <span class="priority-badge">${getPriorityText(scenario.priority)}</span>
         </div>
     `;
 }

@@ -23,8 +23,6 @@ function renderScenarios() {
         <div class="scenario-card priority-${scenario.priority.toLowerCase()}" onclick="openScenario('${scenario.id}')">
             <div class="scenario-icon">${scenario.icon}</div>
             <h3>${scenario.name}</h3>
-            <p>${scenario.description}</p>
-            <span class="priority-badge">${getPriorityText(scenario.priority)}</span>
         </div>
     `).join('');
 }
