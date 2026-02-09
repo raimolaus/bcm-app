@@ -160,11 +160,12 @@ Incident on BCM rakenduse keskne andmeüksus.
   - olema loetavad
 
 ### 4.2 Põhivõti
-- Soovituslik võti:  
-  `bcm_incidents_v1`
+- Kasutatav võti:
+  `bcm_incidents`
 
-> NB: Varasemad võtmed (`incidents`, `incidentLog` jms) võivad eksisteerida.  
-> Migratsioon peab olema toetatud.
+> NB: See on praegu kasutusel olev võti koodis (kinnitatud 2026-02-07).
+> Varasemad võtmed (`incidents`, `incidentLog` jms) võivad eksisteerida vanadest sessioonidest.
+> Migratsioon nendest võtmetest peab olema toetatud (kui implementeeritakse).
 
 ---
 

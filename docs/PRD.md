@@ -180,7 +180,7 @@ Koondvaade kõigist intsidendidest.
 
 ### 5.4 Intsidendi detailvaade
 
-**Kirjeldus**  
+**Kirjeldus**
 Ühe konkreetse intsidendi haldamise vaade.
 
 **Osad**
@@ -192,8 +192,17 @@ Koondvaade kõigist intsidendidest.
 
 **Acceptance criteria**
 - Intsidendi staatus ei muutu ilma kasutaja otsuseta
+- Staatuse muutmine nõuab:
+  - kinnitusdialoog
+  - uue staatuse valiku
+  - põhjendust (min 5 tähemärki)
+- Intsidendi sulgemine nõuab:
+  - kinnitusdialoog
+  - põhjendust (min 5 tähemärki)
 - Kõik muudatused on salvestatavad (SAVE)
+- SAVE ei sulge vaadet ega muuda staatust automaatselt
 - SULETUD intsident jääb logisse alles
+- SULETUD intsidendi välju ei saa muuta
 
 ---
 

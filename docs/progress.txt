@@ -137,14 +137,9 @@ RULES
 
 LAST UPDATED
 ------------
-Date: 2026-02-04
-By: Human + AI
-...
-
-
-LAST UPDATED
-------------
-Date: 2026-02-04 at 2:33PM By human, changes made:
+Date: 2026-02-07
+By: AI (Claude Opus 4.5)
+Changes: Comprehensive documentation update based on code audit
 
 
 DONE:
@@ -157,7 +152,17 @@ DONE: 26.02.05
 - Navigation and system status logic aligned with PRD
 - UX cleanup: removed misleading crisis UI elements
 - Canonical documentation finalized and locked
-next NEXT:
+
+DONE: 2026-02-07
+- Documentation updated to match current codebase (comprehensive audit)
+- PRD.md: added explicit acceptance criteria for status change and close incident flows
+- APP_FLOW.md: resolved TODO about preview mode, added flows for status change and close incident
+- BACKEND_STRUCTURE.md: corrected primary LocalStorage key name (bcm_incidents)
+- README.md: created root-level project overview with quick start and documentation guide
+- All changes verified against actual code implementation (incidentGate.js, IncidentDetailPage.js, etc.)
+
+NEXT:
 - Post-FAAS2 audit: verify SAVE persistence in all incident views
 - Optional: cleanup legacy crisis-app.js vs src/ duplication
+- Optional: verify incident metrics SAVE behavior matches documentation
 

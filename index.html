@@ -704,6 +704,14 @@
         </div>
     </div>
 
+    <!-- i18n Module Wiring -->
+    <script type="module">
+        import { t, setLang, getLang } from './src/i18n/index.js';
+        window.t = t;
+        window.setLang = setLang;
+        window.getLang = getLang;
+    </script>
+
     <!-- Main Application Script (ES6 Module) -->
     <script type="module" src="src/app.js"></script>
 </body>

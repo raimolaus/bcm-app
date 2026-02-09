@@ -228,7 +228,7 @@ function updateHomeStatusAndList() {
     if (activeCount > 0) {
         statusBox.classList.remove('is-normal');
         statusBox.classList.add('is-active');
-        title.textContent = `AKTIIVSED INTSIDENDID: ${activeCount}`;
+        title.textContent = window.t('home.status.active', { count: activeCount });
         if (sub) sub.textContent = '';
 
         // Render active incident names INSIDE the status box
@@ -248,7 +248,7 @@ function updateHomeStatusAndList() {
     } else {
         statusBox.classList.remove('is-active');
         statusBox.classList.add('is-normal');
-        title.textContent = 'OLUKORD: TAVAPÄRANE';
+        title.textContent = window.t('home.status.normal');
         if (sub) sub.textContent = '';
 
         if (ul) {

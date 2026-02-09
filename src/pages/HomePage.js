@@ -5,9 +5,61 @@ import { navigateTo } from '../utils/navigation.js';
 
 export function initHomePage() {
     console.log('Home page initialized');
-    
+
+    // Initialize i18n texts for Home page
+    initializeHomeTexts();
+
     // Set up card click handlers
     setupCardHandlers();
+}
+
+function initializeHomeTexts() {
+    // Initialize home status title
+    const statusTitle = document.getElementById('homeStatusTitle');
+    if (statusTitle && statusTitle.textContent.includes('OLUKORD')) {
+        // Only set if it's the normal status (not active incidents)
+        statusTitle.textContent = window.t('home.status.normal');
+    }
+
+    // Initialize card texts
+    const cards = [
+        {
+            selector: '[data-card="openIncident"]',
+            titleKey: 'home.card.openIncident.title',
+            descKey: 'home.card.openIncident.description'
+        },
+        {
+            selector: '[data-card="plans"]',
+            titleKey: 'home.card.plans.title',
+            descKey: 'home.card.plans.description'
+        },
+        {
+            selector: '[data-card="contacts"]',
+            titleKey: 'home.card.contacts.title',
+            descKey: 'home.card.contacts.description'
+        },
+        {
+            selector: '[data-card="communication"]',
+            titleKey: 'home.card.communication.title',
+            descKey: 'home.card.communication.description'
+        },
+        {
+            selector: '[data-card="logs"]',
+            titleKey: 'home.card.incidents.title',
+            descKey: 'home.card.incidents.description'
+        }
+    ];
+
+    cards.forEach(card => {
+        const element = document.querySelector(card.selector);
+        if (element) {
+            const h2 = element.querySelector('h2');
+            const p = element.querySelector('p');
+
+            if (h2) h2.textContent = window.t(card.titleKey);
+            if (p) p.textContent = window.t(card.descKey);
+        }
+    });
 }
 
 function setupCardHandlers() {

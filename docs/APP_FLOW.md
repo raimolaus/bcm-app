@@ -155,10 +155,12 @@ APP_FLOW EI OLE:
 - INTSIDENT vs ÕPPUS
 
 ### Eelvaate käitumine
-- “AVA INTSIDENT” nupule vajutades avatakse **sama kinnitusdialoog uuesti**
-- Alles pärast “AVA” kinnitamist muutub intsident aktiivseks ja vormid editable’iks
+- "AVA INTSIDENT" nupule vajutades avatakse **sama kinnitusdialoog uuesti**
+- Alles pärast "AVA" kinnitamist muutub intsident aktiivseks ja vormid editable'iks
 
-> TODO: kinnitada koodist, kas eelvaade loob LocalStorage’is eraldi “draft” kirje või on see ainult UI-state.
+**Tehniline märkus:**
+Eelvaade on puhtalt UI-state. LocalStorage'is intsidenti EI looda enne kinnitust.
+Pending stsenaarium hoitakse mälus (incidentGate.js), kuid püsivasse salvestusse kirjutatakse alles confirmAndCreate() käivitamisel.
 
 ---
 ## 6. Voog: Intsidentide logi kasutamine
@@ -221,21 +223,52 @@ APP_FLOW EI OLE:
 
 ---
 
-## 9. Voog: Intsidendi sulgemine
+## 9. Voog: Intsidendi staatuse muutmine
 
 ### Sammud
-1. Kasutaja muudab intsidendi staatuse SULETUD
-2. Muudatus salvestatakse
-3. Intsident jääb logisse alles
+1. Kasutaja vajutab "UUENDA STAATUS"
+2. Avaneb kinnitusdialoog:
+   - näidatakse praegust staatust
+   - küsitakse uut staatust (ACTIVE / CONTAINED / RESOLVED / CLOSED)
+   - nõutakse põhjendust (min 5 tähemärki)
+3. Kui kasutaja katkestab:
+   - voog lõpeb, muudatusi ei tehta
+4. Kui kasutaja kinnitab:
+   - staatus muutub
+   - põhjendus lisatakse timeline'i
+   - vaade värskendatakse
+
+### Ootused
+- Staatuse muutmine on alati teadlik tegevus
+- Põhjendus on kohustuslik (validation)
+- Timeline sisaldab muudatuse põhjust
+
+---
+
+## 10. Voog: Intsidendi sulgemine
+
+### Sammud
+1. Kasutaja vajutab "SULGE INTSIDENT"
+2. Avaneb kinnitusdialoog:
+   - näidatakse intsidendi infot
+   - nõutakse sulgemise põhjendust (min 5 tähemärki)
+3. Kui kasutaja katkestab:
+   - voog lõpeb, intsident jääb avatuks
+4. Kui kasutaja kinnitab:
+   - staatus muutub CLOSED
+   - põhjendus lisatakse timeline'i
+   - intsident jääb logisse alles, kuid ei ole enam muudetav
+   - kasutaja navigeeritakse tagasi logidesse
 
 ### Mõju
 - ACTIVE arv võib muutuda 0-ks
 - Home staatuskast võib muutuda roheliseks
 - Logide badge väheneb
+- Intsidendi välju ei saa enam muuta
 
 ---
 
-## 10. Tugivoogud: Plaanid, Kontaktid, Kommunikatsioon
+## 11. Tugivoogud: Plaanid, Kontaktid, Kommunikatsioon
 
 ### Üldine käitumine
 - Staatilised või pool-staatilised vaated
@@ -244,7 +277,7 @@ APP_FLOW EI OLE:
 
 ---
 
-## 11. Error- ja empty-state ootused
+## 12. Error- ja empty-state ootused
 
 - Kui LocalStorage on tühi:
   - kuvatakse tühjad loendid
@@ -256,7 +289,7 @@ APP_FLOW EI OLE:
 
 ---
 
-## 12. Navigeerimise konventsioon
+## 13. Navigeerimise konventsioon
 
 - Navigeerimine toimub loogiliste “page id”-dega
 - URL-e ei kasutata canonical tõena
