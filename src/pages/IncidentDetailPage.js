@@ -19,7 +19,7 @@ export function loadIncidentDetail(incidentId) {
 
     if (!currentIncident) {
         console.error('Incident not found:', incidentId);
-        alert('Intsidenti ei leitud!');
+        alert(window.t('incident.notFound'));
         if (window.goBack) window.goBack();
         return;
     }
@@ -65,7 +65,7 @@ function updateBadges() {
     }
 
     if (typeBadge) {
-        typeBadge.textContent = currentIncident.isExercise ? '🎓 ÕPPUS' : '⚠️ PÄRIS';
+        typeBadge.textContent = currentIncident.isExercise ? '🎓 ' + window.t('incident.type.exercise') : '⚠️ ' + window.t('incident.type.real');
         typeBadge.className = `type-badge ${currentIncident.isExercise ? 'type-exercise' : 'type-real'}`;
     }
 }
@@ -82,7 +82,7 @@ function updateProgress() {
     }
 
     if (progressText) {
-        progressText.textContent = `${progress}% valmis`;
+        progressText.textContent = window.t('incident.progress', { progress });
     }
 
     if (progressSteps) {
@@ -90,7 +90,7 @@ function updateProgress() {
         const plan = currentIncident.checklistProgress.actionPlan;
         const total = quick.completed + plan.completed;
         const max = quick.total + plan.total;
-        progressSteps.textContent = `${total}/${max} sammud`;
+        progressSteps.textContent = window.t('incident.progressSteps', { completed: total, total: max });
     }
 }
 
@@ -126,7 +126,7 @@ function renderTab(tabName) {
             content.innerHTML = renderNotificationsTab();
             break;
         default:
-            content.innerHTML = '<p>Tab sisu tuleb varsti...</p>';
+            content.innerHTML = `<p>${window.t('incident.tab.coming')}</p>`;
     }
 }
 
@@ -139,9 +139,9 @@ function renderOverviewTab() {
     return `
         <div class="incident-overview-grid">
             <div class="overview-section">
-                <h3>📊 Põhiinfo</h3>
+                <h3>${window.t('incident.overview.basicInfo')}</h3>
                 <div class="overview-item">
-                    <label class="overview-label">t0 (Tuvastamine):</label>
+                    <label class="overview-label">${window.t('incident.overview.t0')}</label>
                     <input type="datetime-local"
                            id="detailT0"
                            class="overview-input"
@@ -149,32 +149,32 @@ function renderOverviewTab() {
                            ${canEdit ? '' : 'disabled'}>
                 </div>
                 <div class="overview-item">
-                    <label class="overview-label">Incident Commander:</label>
+                    <label class="overview-label">${window.t('incident.overview.commander')}</label>
                     <input type="text"
                            id="detailCommander"
                            class="overview-input"
                            value="${currentIncident.incidentCommander || ''}"
-                           placeholder="Nimi"
+                           placeholder="${window.t('common.name')}"
                            ${canEdit ? '' : 'disabled'}>
                 </div>
                 <div class="overview-item">
-                    <span class="overview-label">Tüüp:</span>
-                    <span class="overview-value">${currentIncident.type === 'CYBER' ? 'Küberintsident' : 'Füüsiline'}</span>
+                    <span class="overview-label">${window.t('incident.overview.type')}</span>
+                    <span class="overview-value">${currentIncident.type === 'CYBER' ? window.t('incident.type.cyberFull') : window.t('incident.type.physicalFull')}</span>
                 </div>
                 <div class="overview-item">
-                    <span class="overview-label">Õppus:</span>
-                    <span class="overview-value">${currentIncident.isExercise ? '🎓 Jah' : '⚠️ Ei'}</span>
+                    <span class="overview-label">${window.t('incident.overview.exercise')}</span>
+                    <span class="overview-value">${currentIncident.isExercise ? '🎓 ' + window.t('common.yes') : '⚠️ ' + window.t('common.no')}</span>
                 </div>
             </div>
 
             ${currentIncident.type === 'CYBER' ? `
             <div class="overview-section">
-                <h3>💻 Mõju</h3>
+                <h3>${window.t('incident.overview.impact')}</h3>
                 <div class="overview-item">
-                    <label class="overview-label">Mõjutatud süsteemid:</label>
+                    <label class="overview-label">${window.t('incident.overview.affectedSystems')}</label>
                     <textarea id="detailAffectedSystems"
                               class="overview-textarea"
-                              placeholder="Iga süsteem eraldi real"
+                              placeholder="${window.t('incident.overview.affectedSystemsPlaceholder')}"
                               ${canEdit ? '' : 'disabled'}>${currentIncident.impact?.affectedSystems?.join('\n') || ''}</textarea>
                 </div>
                 <div class="overview-item">
@@ -183,7 +183,7 @@ function renderOverviewTab() {
                                id="detailServiceInterruption"
                                ${currentIncident.impact?.serviceInterruption ? 'checked' : ''}
                                ${canEdit ? '' : 'disabled'}>
-                        Teenuse katkestus
+                        ${window.t('incident.overview.disruption')}
                     </label>
                 </div>
                 <div class="overview-item">
@@ -192,28 +192,28 @@ function renderOverviewTab() {
                                id="detailDataLeakSuspected"
                                ${currentIncident.impact?.dataLeakSuspected ? 'checked' : ''}
                                ${canEdit ? '' : 'disabled'}>
-                        Andmeleke kahtlus
+                        ${window.t('incident.overview.dataBreach')}
                     </label>
                 </div>
             </div>
             ` : ''}
 
             <div class="overview-section">
-                <h3>👥 Meeskond</h3>
+                <h3>${window.t('incident.detail.team')}</h3>
                 <div class="overview-item">
-                    <label class="overview-label">Meeskonna liikmed:</label>
+                    <label class="overview-label">${window.t('incident.detail.teamMembers')}</label>
                     <textarea id="detailTeam"
                               class="overview-textarea"
-                              placeholder="Iga liige eraldi real"
+                              placeholder="${window.t('incident.detail.teamPlaceholder')}"
                               ${canEdit ? '' : 'disabled'}>${currentIncident.team?.join('\n') || ''}</textarea>
                 </div>
             </div>
 
             <div class="overview-section">
-                <h3>📝 Kokkuvõte</h3>
+                <h3>${window.t('incident.detail.summary')}</h3>
                 <textarea id="detailSummary"
                           class="overview-textarea overview-textarea-large"
-                          placeholder="Intsidendi kokkuvõte"
+                          placeholder="${window.t('incident.detail.summaryPlaceholder')}"
                           ${canEdit ? '' : 'disabled'}>${currentIncident.summary || ''}</textarea>
             </div>
         </div>
@@ -221,20 +221,20 @@ function renderOverviewTab() {
         ${canEdit ? `
         <div class="overview-actions">
             <button class="btn-primary" onclick="window.incidentDetailActions.saveDetail()">
-                💾 SALVESTA
+                ${window.t('incident.save')}
             </button>
         </div>
         ` : ''}
 
         ${isPreview ? `
         <div class="preview-warning">
-            ⚠️ EELVAADE — Intsident pole avatud. Väljad on lukustatud.
+            ${window.t('incident.detail.previewWarning')}
         </div>
         ` : ''}
 
         ${isClosed && !isPreview ? `
         <div class="closed-info">
-            🔒 Intsident on SULETUD. Väljad pole muudetavad.
+            ${window.t('incident.detail.closedInfo')}
         </div>
         ` : ''}
     `;
@@ -244,7 +244,7 @@ function renderTimelineTab() {
     const actions = currentIncident.actions || [];
 
     if (actions.length === 0) {
-        return '<p class="empty-message">Timeline on tühi</p>';
+        return `<p class="empty-message">${window.t('incident.detail.timelineEmpty')}</p>`;
     }
 
     return `
@@ -269,22 +269,22 @@ function renderChecklistTab() {
 
     return `
         <div class="checklist-section">
-            <h3>⚡ Kiiretoimingud</h3>
+            <h3>${window.t('incident.quickActions.title')}</h3>
             <div class="checklist-progress">
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: ${quick.total > 0 ? (quick.completed / quick.total * 100) : 0}%"></div>
                 </div>
-                <span>${quick.completed} / ${quick.total} tehtud</span>
+                <span>${window.t('incident.detail.done', { completed: quick.completed, total: quick.total })}</span>
             </div>
         </div>
 
         <div class="checklist-section">
-            <h3>📋 Tegevuskava</h3>
+            <h3>${window.t('incident.actionPlan.title')}</h3>
             <div class="checklist-progress">
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: ${plan.total > 0 ? (plan.completed / plan.total * 100) : 0}%"></div>
                 </div>
-                <span>${plan.completed} / ${plan.total} tehtud</span>
+                <span>${window.t('incident.detail.done', { completed: plan.completed, total: plan.total })}</span>
             </div>
         </div>
     `;
@@ -296,8 +296,8 @@ function renderNotificationsTab() {
     return `
         <div class="notifications-grid">
             ${renderNotificationItem('CERT-EE', notifications.certee)}
-            ${renderNotificationItem('Andmekaitsespetsialist (DPO)', notifications.dpo)}
-            ${renderNotificationItem('Juhtkond', notifications.management)}
+            ${renderNotificationItem(window.t('incident.detail.dpo'), notifications.dpo)}
+            ${renderNotificationItem(window.t('incident.metrics.notification.management'), notifications.management)}
         </div>
     `;
 }
@@ -305,8 +305,8 @@ function renderNotificationsTab() {
 function renderNotificationItem(name, notification) {
     if (!notification) return '';
 
-    const status = notification.notified ? '✅ Teavitatud' :
-                   (notification.required ? '⏳ Ootel' : '➖ Pole vajalik');
+    const status = notification.notified ? window.t('incident.detail.notifiedStatus') :
+                   (notification.required ? window.t('incident.detail.pendingStatus') : window.t('incident.detail.notRequiredStatus'));
     const statusClass = notification.notified ? 'notified' :
                        (notification.required ? 'pending' : 'not-required');
 
@@ -318,8 +318,8 @@ function renderNotificationItem(name, notification) {
             </div>
             ${notification.notified ? `
                 <div class="notification-details">
-                    Aeg: ${formatDateTime(notification.timestamp)}<br>
-                    Meetod: ${notification.method}
+                    ${window.t('incident.detail.notifTime')} ${formatDateTime(notification.timestamp)}<br>
+                    ${window.t('incident.detail.notifMethod')} ${notification.method}
                 </div>
             ` : ''}
         </div>
@@ -345,7 +345,7 @@ function checkIfPreviewMode() {
 // Save incident detail changes
 export function saveIncidentDetail() {
     if (!currentIncident) {
-        alert('Viga: Intsidenti ei leitud!');
+        alert(window.t('incident.detail.alertNotFound'));
         return;
     }
 
@@ -354,12 +354,12 @@ export function saveIncidentDetail() {
     const isPreview = checkIfPreviewMode();
 
     if (isClosed) {
-        alert('❌ SULETUD intsidenti ei saa muuta!');
+        alert(window.t('incident.detail.alertCannotEditClosed'));
         return;
     }
 
     if (isPreview) {
-        alert('⚠️ Intsident pole avatud! Ava intsident enne muudatuste tegemist.');
+        alert(window.t('incident.detail.alertNotOpen'));
         return;
     }
 
@@ -421,8 +421,8 @@ export function saveIncidentDetail() {
     // Add timeline action
     currentIncident.actions.push({
         timestamp: new Date().toISOString(),
-        user: 'Kasutaja',
-        action: 'Intsidendi detailid uuendatud',
+        user: window.t('incident.detail.user'),
+        action: window.t('incident.detail.actionDetailUpdated'),
         category: 'UPDATE'
     });
 
@@ -444,33 +444,33 @@ export function saveIncidentDetail() {
         window.updateIncidentsBadge();
     }
 
-    alert('✅ Muudatused salvestatud!');
+    alert(window.t('incident.detail.alertSaved'));
     console.log('[DETAIL] Incident updated:', currentIncident.id);
 }
 
 // Helper functions
 function getStatusText(status) {
-    const texts = {
-        'ACTIVE': 'AKTIIVNE',
-        'CONTAINED': 'OHJELDATUD',
-        'RESOLVED': 'LAHENDATUD',
-        'CLOSED': 'SULETUD'
+    const keys = {
+        'ACTIVE': 'active',
+        'CONTAINED': 'contained',
+        'RESOLVED': 'resolved',
+        'CLOSED': 'closed'
     };
-    return texts[status] || status;
+    return keys[status] ? window.t(`incident.status.${keys[status]}`) : status;
 }
 
 function getSeverityText(severity) {
-    const texts = {
-        'S0': 'KRIITILINE',
-        'S1': 'KÕRGE',
-        'S2': 'KESKMINE',
-        'S3': 'MADAL'
+    const keys = {
+        'S0': 'critical',
+        'S1': 'high',
+        'S2': 'medium',
+        'S3': 'low'
     };
-    return texts[severity] || '';
+    return keys[severity] ? window.t(`incident.severity.${keys[severity]}`) : '';
 }
 
 function formatDateTime(isoString) {
-    if (!isoString) return 'Määramata';
+    if (!isoString) return window.t('common.undefined');
     const date = new Date(isoString);
     return date.toLocaleString('et-EE', {
         year: 'numeric',
@@ -496,7 +496,7 @@ export function exportCurrentIncident() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    alert('Intsident eksporditud!');
+    alert(window.t('incident.detail.alertExported'));
 }
 
 // FAAS2: Update incident status with reason
@@ -516,33 +516,33 @@ export function updateIncidentStatus() {
     dialog.innerHTML = `
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2>Muuda intsidendi staatust</h2>
+                <h2>${window.t('incident.detail.statusDialogTitle')}</h2>
             </div>
             <div class="modal-body">
-                <p><strong>Praegune staatus:</strong> ${getStatusText(currentIncident.status)}</p>
+                <p><strong>${window.t('incident.detail.currentStatus')}</strong> ${getStatusText(currentIncident.status)}</p>
 
                 <div style="margin: 16px 0;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Uus staatus:</label>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">${window.t('incident.detail.newStatus')}</label>
                     <select id="newStatusSelect" class="metric-select" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #d1d5db;">
-                        <option value="ACTIVE" ${currentIncident.status === 'ACTIVE' ? 'selected' : ''}>AKTIIVNE</option>
-                        <option value="CONTAINED" ${currentIncident.status === 'CONTAINED' ? 'selected' : ''}>OHJELDATUD</option>
-                        <option value="RESOLVED" ${currentIncident.status === 'RESOLVED' ? 'selected' : ''}>LAHENDATUD</option>
-                        <option value="CLOSED" ${currentIncident.status === 'CLOSED' ? 'selected' : ''}>SULETUD</option>
+                        <option value="ACTIVE" ${currentIncident.status === 'ACTIVE' ? 'selected' : ''}>${window.t('incident.status.active')}</option>
+                        <option value="CONTAINED" ${currentIncident.status === 'CONTAINED' ? 'selected' : ''}>${window.t('incident.status.contained')}</option>
+                        <option value="RESOLVED" ${currentIncident.status === 'RESOLVED' ? 'selected' : ''}>${window.t('incident.status.resolved')}</option>
+                        <option value="CLOSED" ${currentIncident.status === 'CLOSED' ? 'selected' : ''}>${window.t('incident.status.closed')}</option>
                     </select>
                 </div>
 
                 <div style="margin: 16px 0;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Põhjendus (kohustuslik, min 5 tähemärki):</label>
-                    <textarea id="statusChangeReason" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #d1d5db; min-height: 80px;" placeholder="Kirjelda, miks muudad staatust..."></textarea>
-                    <p id="reasonError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;">Põhjendus peab olema vähemalt 5 tähemärki pikk</p>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">${window.t('incident.detail.statusReason')}</label>
+                    <textarea id="statusChangeReason" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #d1d5db; min-height: 80px;" placeholder="${window.t('incident.detail.statusReasonPlaceholder')}"></textarea>
+                    <p id="reasonError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;">${window.t('incident.detail.reasonError')}</p>
                 </div>
 
                 <div class="modal-actions" style="margin-top: 24px;">
                     <button class="btn-primary" onclick="window.incidentDetailActions.confirmStatusChange()" style="flex: 1;">
-                        Salvesta
+                        ${window.t('common.save')}
                     </button>
                     <button class="btn-secondary" onclick="window.incidentDetailActions.cancelStatusChange()" style="flex: 1;">
-                        Tühista
+                        ${window.t('common.cancel')}
                     </button>
                 </div>
             </div>
@@ -566,7 +566,7 @@ export function confirmStatusChange() {
 
     // Don't allow changing to same status
     if (newStatus === currentIncident.status) {
-        alert('Uus staatus on sama mis praegune!');
+        alert(window.t('incident.detail.sameStatus'));
         return;
     }
 
@@ -587,8 +587,8 @@ export function confirmStatusChange() {
     // Add timeline action
     currentIncident.actions.push({
         timestamp: now,
-        user: 'Kasutaja',
-        action: `Staatus muudetud: ${getStatusText(currentIncident.status)} - ${reason}`,
+        user: window.t('incident.detail.user'),
+        action: window.t('incident.detail.actionStatusChanged', { status: getStatusText(currentIncident.status), reason }),
         category: 'STATUS_CHANGE'
     });
 
@@ -643,28 +643,28 @@ export function closeIncident() {
     dialog.innerHTML = `
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2>Sulge intsident</h2>
+                <h2>${window.t('incident.detail.closeDialogTitle')}</h2>
             </div>
             <div class="modal-body">
-                <p><strong>Intsident:</strong> ${currentIncident.scenarioName}</p>
-                <p><strong>ID:</strong> ${currentIncident.id}</p>
+                <p><strong>${window.t('incident.detail.incidentLabel')}</strong> ${currentIncident.scenarioName}</p>
+                <p><strong>${window.t('incident.detail.idLabel')}</strong> ${currentIncident.id}</p>
 
                 <div style="margin: 16px 0;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">Põhjendus sulgemiseks (kohustuslik, min 5 tähemärki):</label>
-                    <textarea id="closeReason" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #d1d5db; min-height: 80px;" placeholder="Kirjelda, miks sulged intsidendi..."></textarea>
-                    <p id="closeReasonError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;">Põhjendus peab olema vähemalt 5 tähemärki pikk</p>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">${window.t('incident.detail.closeReason')}</label>
+                    <textarea id="closeReason" style="width: 100%; padding: 8px; border-radius: 8px; border: 1px solid #d1d5db; min-height: 80px;" placeholder="${window.t('incident.detail.closeReasonPlaceholder')}"></textarea>
+                    <p id="closeReasonError" style="color: #dc2626; font-size: 14px; margin-top: 4px; display: none;">${window.t('incident.detail.reasonError')}</p>
                 </div>
 
                 <p style="font-size: 14px; color: #6b7280; margin-top: 16px;">
-                    Kas oled kindel, et soovid selle intsidendi sulgeda?
+                    ${window.t('incident.detail.closeConfirm')}
                 </p>
 
                 <div class="modal-actions" style="margin-top: 24px;">
                     <button class="btn-primary" onclick="window.incidentDetailActions.confirmClose()" style="flex: 1; background: #dc2626;">
-                        Sulge intsident
+                        ${window.t('incident.detail.closeDialogTitle')}
                     </button>
                     <button class="btn-secondary" onclick="window.incidentDetailActions.cancelClose()" style="flex: 1;">
-                        Tühista
+                        ${window.t('common.cancel')}
                     </button>
                 </div>
             </div>
@@ -694,8 +694,8 @@ export function confirmClose() {
     // Add timeline action
     currentIncident.actions.push({
         timestamp: now,
-        user: 'Kasutaja',
-        action: `Intsident suletud: ${reason}`,
+        user: window.t('incident.detail.user'),
+        action: window.t('incident.detail.actionClosed', { reason }),
         category: 'CLOSURE'
     });
 
@@ -719,7 +719,7 @@ export function confirmClose() {
         window.updateIncidentsBadge();
     }
 
-    alert('Intsident suletud!');
+    alert(window.t('incident.detail.alertClosed'));
 
     // Navigate back to incidents list
     if (window.goBack) {

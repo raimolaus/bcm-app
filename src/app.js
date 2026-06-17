@@ -42,6 +42,9 @@ import { initPlansPage, renderPlans, plansActions } from './pages/PlansPage.js';
 import { initIncidentsPage, renderIncidentsList, incidentActions } from './pages/IncidentsPage.js';
 import { initIncidentDetailPage, incidentDetailActions } from './pages/IncidentDetailPage.js';
 
+// Import i18n
+import { onLangChange } from './i18n/index.js';
+
 // Import data
 import { scenarios, plans } from './data/crisis-data.js';
 import { contacts } from './data/contacts.js';
@@ -177,6 +180,15 @@ function initializeApp() {
     renderContacts();
     renderPlans();
     renderIncidentsList();
+
+    // Refresh JS-rendered (dynamic) content when the language changes.
+    // Static [data-i18n] DOM is handled by translateDOM(); these hooks
+    // cover content produced by JS via t().
+    onLangChange(renderContacts);
+    onLangChange(renderPlans);
+    onLangChange(renderIncidentsList);
+    onLangChange(updateHomeStatusAndList);
+    onLangChange(updateIncidentsBadge);
 
     // FAAS2: Update context box on page load
     if (typeof window.updateContextBox === 'function') {

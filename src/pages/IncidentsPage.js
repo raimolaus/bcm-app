@@ -34,7 +34,7 @@ export function renderIncidentsList() {
     if (!listContainer) return;
 
     if (incidents.length === 0) {
-        listContainer.innerHTML = '<p class="empty-message">Intsidente pole veel</p>';
+        listContainer.innerHTML = `<p class="empty-message">${window.t('incidents.empty')}</p>`;
         return;
     }
 
@@ -75,7 +75,7 @@ function renderIncidentCard(incident) {
                 </div>
                 ` : ''}
                 <div class="meta-item ${typeClass}">
-                    ${incident.isExercise ? '🎓 ÕPPUS' : '⚠️ PÄRIS'}
+                    ${incident.isExercise ? '🎓 ' + window.t('incident.type.exercise') : '⚠️ ' + window.t('incident.type.real')}
                 </div>
             </div>
 
@@ -84,7 +84,7 @@ function renderIncidentCard(incident) {
                 <div class="progress-bar">
                     <div class="progress-fill" style="width: ${progress}%"></div>
                 </div>
-                <span class="progress-text">${progress}% valmis</span>
+                <span class="progress-text">${window.t('incident.progress', { progress })}</span>
             </div>
             ` : ''}
 
@@ -95,7 +95,7 @@ function renderIncidentCard(incident) {
             ` : ''}
 
             <div class="incident-tags">
-                <span class="tag tag-${incident.type.toLowerCase()}">${incident.type === 'CYBER' ? 'KÜBER' : 'FÜÜSILINE'}</span>
+                <span class="tag tag-${incident.type.toLowerCase()}">${incident.type === 'CYBER' ? window.t('incident.type.cyber') : window.t('incident.type.physical')}</span>
                 ${incident.nis2Flag && incident.nis2Flag !== 'NO' ? '<span class="tag tag-nis2">NIS2</span>' : ''}
                 ${incident.notifications?.certee?.notified ? '<span class="tag tag-certee">CERT-EE ✓</span>' : ''}
             </div>
@@ -108,13 +108,13 @@ function getIncidentIcon(type) {
 }
 
 function getStatusText(status) {
-    const texts = {
-        'ACTIVE': 'AKTIIVNE',
-        'CONTAINED': 'OHJELDATUD',
-        'RESOLVED': 'LAHENDATUD',
-        'CLOSED': 'SULETUD'
+    const keys = {
+        'ACTIVE': 'active',
+        'CONTAINED': 'contained',
+        'RESOLVED': 'resolved',
+        'CLOSED': 'closed'
     };
-    return texts[status] || status;
+    return keys[status] ? window.t(`incident.status.${keys[status]}`) : status;
 }
 
 function getSeverityEmoji(severity) {
@@ -128,13 +128,13 @@ function getSeverityEmoji(severity) {
 }
 
 function getSeverityText(severity) {
-    const texts = {
-        'S0': 'KRIITILINE',
-        'S1': 'KÕRGE',
-        'S2': 'KESKMINE',
-        'S3': 'MADAL'
+    const keys = {
+        'S0': 'critical',
+        'S1': 'high',
+        'S2': 'medium',
+        'S3': 'low'
     };
-    return texts[severity] || '';
+    return keys[severity] ? window.t(`incident.severity.${keys[severity]}`) : '';
 }
 
 function formatDate(isoString) {
@@ -199,24 +199,26 @@ export function sortIncidentsBy(sortBy) {
 export function exportAllIncidents() {
     const incidents = loadIncidents();
     if (incidents.length === 0) {
-        alert('Intsidente pole veel');
+        alert(window.t('incidents.empty'));
         return;
     }
 
-    let text = `BCM INTSIDENTIDE KOONDRAPORT
+    let text = `${window.t('report.incidentsTitle')}
 ==============================
-Eksporditud: ${new Date().toLocaleString('et-EE')}
-Kokku intsidente: ${incidents.length}
+${window.t('report.header.exported', { date: new Date().toLocaleString('et-EE') })}
+${window.t('report.header.total', { count: incidents.length })}
 
 `;
 
     incidents.forEach((incident, index) => {
+        const typeText = incident.type === 'CYBER' ? window.t('report.type.cyber') : window.t('report.type.physical');
+        const exerciseText = incident.isExercise ? window.t('common.yes') : window.t('common.no');
         text += `
 ${index + 1}. ${incident.scenarioName} (${incident.id})
-   Staatus: ${getStatusText(incident.status)}
-   Aeg: ${formatDate(incident.t0)}
-   Tüüp: ${incident.type === 'CYBER' ? 'Küber' : 'Füüsiline'}
-   Õppus: ${incident.isExercise ? 'Jah' : 'Ei'}
+   ${window.t('report.incident.status', { status: getStatusText(incident.status) })}
+   ${window.t('report.incident.time', { time: formatDate(incident.t0) })}
+   ${window.t('report.incident.type', { type: typeText })}
+   ${window.t('report.incident.exercise', { value: exerciseText })}
 
 `;
     });

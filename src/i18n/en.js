@@ -41,6 +41,10 @@ export const en = {
         title: "Logs & Incidents",
         description: "Incident tracking and reporting"
       }
+    },
+    confirm: {
+      open: "Are you sure you want to open a new incident?",
+      mode: "Do you want to open the new incident in REAL mode?\n\nOK = REAL\nCancel = TRAINING"
     }
   },
 
@@ -239,6 +243,8 @@ export const en = {
         status: "Status",
         statusPlanned: "Planned",
         statusSent: "Sent",
+        statusNotNeeded: "Not needed",
+        management: "Management",
         timestamp: "Time"
       },
       toggle: {
@@ -272,7 +278,11 @@ export const en = {
       saved: "Incident metrics saved!",
       cleared: "Incident metrics cleared",
       errorNoScenario: "Please select scenario first",
-      errorNoSlevel: "Please select S-level"
+      errorNoSlevel: "Please select S-level",
+      clearConfirm: "Are you sure you want to clear the form?"
+    },
+    quickActions: {
+      title: "⚡ Quick Actions"
     },
     actionPlan: {
       title: "📋 Action Plan"
@@ -282,6 +292,46 @@ export const en = {
     },
     contacts: {
       title: "📞 Contacts"
+    },
+    detail: {
+      team: "👥 Team",
+      teamMembers: "Team members:",
+      teamPlaceholder: "Each member on separate line",
+      summary: "📝 Summary",
+      summaryPlaceholder: "Incident summary",
+      done: "{completed} / {total} done",
+      previewWarning: "⚠️ PREVIEW — Incident not open. Fields are locked.",
+      closedInfo: "🔒 Incident is CLOSED. Fields are not editable.",
+      timelineEmpty: "Timeline is empty",
+      notifiedStatus: "✅ Notified",
+      pendingStatus: "⏳ Pending",
+      notRequiredStatus: "➖ Not required",
+      dpo: "Data Protection Officer (DPO)",
+      notifTime: "Time:",
+      notifMethod: "Method:",
+      statusDialogTitle: "Change incident status",
+      currentStatus: "Current status:",
+      newStatus: "New status:",
+      statusReason: "Reason (required, min 5 characters):",
+      statusReasonPlaceholder: "Describe why you are changing the status...",
+      reasonError: "Reason must be at least 5 characters long",
+      sameStatus: "New status is the same as current!",
+      closeDialogTitle: "Close incident",
+      incidentLabel: "Incident:",
+      idLabel: "ID:",
+      closeReason: "Reason for closing (required, min 5 characters):",
+      closeReasonPlaceholder: "Describe why you are closing the incident...",
+      closeConfirm: "Are you sure you want to close this incident?",
+      alertNotFound: "Error: Incident not found!",
+      alertCannotEditClosed: "❌ A CLOSED incident cannot be edited!",
+      alertNotOpen: "⚠️ Incident not open! Open the incident before making changes.",
+      alertSaved: "✅ Changes saved!",
+      alertExported: "Incident exported!",
+      alertClosed: "Incident closed!",
+      user: "User",
+      actionDetailUpdated: "Incident details updated",
+      actionStatusChanged: "Status changed: {status} - {reason}",
+      actionClosed: "Incident closed: {reason}"
     }
   },
 
@@ -332,7 +382,13 @@ export const en = {
     filenameTitle: "BCM Event Log",
     exported: "Exported: {date}",
     scenario: "Scenario: {name}",
-    notSelected: "Not selected"
+    notSelected: "Not selected",
+    createdLabel: "Created:",
+    updatedLabel: "Updated:",
+    exportEvent: "Log exported",
+    callMade: "Called: {phone}",
+    slevelSelected: "S-level selected: {level}",
+    t0Set: "t0 set to current time"
   },
 
   report: {
@@ -366,6 +422,12 @@ export const en = {
     action: {
       cancel: "CANCEL",
       open: "OPEN"
+    },
+    banner: {
+      active: "ACTIVE INCIDENT",
+      startedAt: "Started:",
+      preview: "PREVIEW — INCIDENT NOT OPEN",
+      openAction: "OPEN INCIDENT"
     }
   },
 
@@ -387,6 +449,8 @@ export const en = {
 
   system: {
     modalTitle: "Set system status",
+    selectStatus: "Please select a status",
+    reasonRequired: "Please enter a reason",
     status: {
       ok: "OK",
       okDescription: "Systems operating normally",
@@ -419,7 +483,10 @@ export const en = {
       sms: "SMS notification",
       call: "Phone call",
       email: "Email notification"
-    }
+    },
+    sendSms: "SMS will be sent:\n\n{template}",
+    sendEmail: "Email will be sent:\n\nSubject: {subject}\n\n{body}",
+    emailTemplateFallback: "Template will be sent..."
   },
 
   priority: {

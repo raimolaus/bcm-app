@@ -92,34 +92,34 @@ function showIncidentConfirmationDialog(scenarioId, scenarioData) {
         <div class="incident-gate-backdrop"></div>
         <div class="incident-gate-content">
             <div class="incident-gate-header">
-                <h2>Kas avada intsident?</h2>
+                <h2>${window.t('gate.title')}</h2>
             </div>
             <div class="incident-gate-body">
                 <div class="incident-gate-scenario">
-                    <span class="incident-gate-label">Stsenaarium:</span>
+                    <span class="incident-gate-label">${window.t('gate.scenario')}</span>
                     <span class="incident-gate-value">${scenarioData.name}</span>
                 </div>
-                
+
                 <div class="incident-gate-mode-section">
-                    <span class="incident-gate-label">Vali režiim:</span>
+                    <span class="incident-gate-label">${window.t('gate.mode.label')}</span>
                     <div class="incident-gate-mode-toggle">
                         <button class="incident-gate-mode-btn active" id="modeIncident" onclick="window.incidentGate.selectMode('INCIDENT')">
                             <span class="mode-icon">🔴</span>
-                            <span class="mode-text">INTSIDENT</span>
+                            <span class="mode-text">${window.t('gate.mode.incident')}</span>
                         </button>
                         <button class="incident-gate-mode-btn" id="modeExercise" onclick="window.incidentGate.selectMode('EXERCISE')">
                             <span class="mode-icon">🎓</span>
-                            <span class="mode-text">ÕPPUS</span>
+                            <span class="mode-text">${window.t('gate.mode.exercise')}</span>
                         </button>
                     </div>
                 </div>
             </div>
             <div class="incident-gate-actions">
                 <button class="incident-gate-btn cancel" onclick="window.incidentGate.cancelAndPreview()">
-                    TÜHISTA
+                    ${window.t('gate.action.cancel')}
                 </button>
                 <button class="incident-gate-btn confirm" onclick="window.incidentGate.confirmAndCreate()">
-                    AVA
+                    ${window.t('gate.action.open')}
                 </button>
             </div>
         </div>
@@ -275,7 +275,7 @@ export function updateIncidentBanner() {
         // AKTIIVNE INTSIDENT
         const isExercise = currentActiveIncident.isExercise;
         const bgColor = isExercise ? '#3b82f6' : '#dc2626';
-        const label = isExercise ? 'ÕPPUS' : 'AKTIIVNE INTSIDENT';
+        const label = isExercise ? window.t('incident.type.exercise') : window.t('gate.banner.active');
         const time = new Date(currentActiveIncident.createdAt).toLocaleTimeString('et-EE', { hour: '2-digit', minute: '2-digit' });
         
         banner.className = 'incident-banner incident-banner-active';
@@ -289,7 +289,7 @@ export function updateIncidentBanner() {
                 <div class="incident-banner-meta">
                     <span>${currentActiveIncident.scenarioName}</span>
                     <span>•</span>
-                    <span>Alustatud: ${time}</span>
+                    <span>${window.t('gate.banner.startedAt')} ${time}</span>
                 </div>
             </div>
         `;
@@ -309,10 +309,10 @@ export function updateIncidentBanner() {
             <div class="incident-banner-content">
                 <div class="incident-banner-status">
                     <span class="incident-banner-icon">⚠️</span>
-                    <span class="incident-banner-label">EELVAADE — INTSIDENT POLE AVATUD</span>
+                    <span class="incident-banner-label">${window.t('gate.banner.preview')}</span>
                 </div>
                 <button class="incident-banner-action" onclick="window.incidentGate.openFromPreview()">
-                    AVA INTSIDENT
+                    ${window.t('gate.banner.openAction')}
                 </button>
             </div>
         `;

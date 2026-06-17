@@ -19,7 +19,7 @@ export function renderPlans() {
     console.log('Rendering plans:', plans.length);
 
     if (plans.length === 0) {
-        plansGrid.innerHTML = '<p class="empty-message">Plaane pole veel lisatud</p>';
+        plansGrid.innerHTML = `<p class="empty-message">${window.t('plans.empty')}</p>`;
         return;
     }
 
@@ -39,7 +39,7 @@ export function renderPlans() {
                         <circle cx="12" cy="12" r="10"/>
                         <polyline points="12 6 12 12 16 14"/>
                     </svg>
-                    <span>Versioon ${plan.version || 'N/A'}</span>
+                    <span>${window.t('plans.version', { version: plan.version || 'N/A' })}</span>
                 </div>
                 <div class="plan-meta-item">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -48,7 +48,7 @@ export function renderPlans() {
                         <line x1="8" y1="2" x2="8" y2="6"/>
                         <line x1="3" y1="10" x2="21" y2="10"/>
                     </svg>
-                    <span>Kehtib kuni ${formatDate(plan.validUntil)}</span>
+                    <span>${window.t('plans.validUntil', { date: formatDate(plan.validUntil) })}</span>
                 </div>
             </div>
             ${plan.tags && plan.tags.length > 0 ? `
@@ -62,7 +62,7 @@ export function renderPlans() {
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
                         <polyline points="14 2 14 8 20 8"/>
                     </svg>
-                    ${plan.annexes.length} lisa(t)
+                    ${window.t('plans.annexes.count', { count: plan.annexes.length })}
                 </div>
             ` : ''}
         </div>
@@ -70,12 +70,12 @@ export function renderPlans() {
 }
 
 function formatDate(dateString) {
-    if (!dateString) return 'Määramata';
+    if (!dateString) return window.t('common.undefined');
     try {
         const date = new Date(dateString);
         return date.toLocaleDateString('et-EE');
     } catch (error) {
-        return 'Määramata';
+        return window.t('common.undefined');
     }
 }
 
@@ -92,7 +92,7 @@ export function openPlan(planId) {
     if (plan.annexes && plan.annexes.length > 0) {
         annexesHTML = `
             <div class="plan-detail-section">
-                <h3>Lisad</h3>
+                <h3>${window.t('plan.detail.annexes')}</h3>
                 <ul class="plan-annexes-list">
                     ${plan.annexes.map(annex => `<li>${annex}</li>`).join('')}
                 </ul>
@@ -109,7 +109,7 @@ export function openPlan(planId) {
                 const scenariosSection = document.querySelector('.related-scenarios-section');
                 if (scenariosSection) {
                     scenariosSection.innerHTML = `
-                        <h3>Seotud stsenaariumid</h3>
+                        <h3>${window.t('plan.detail.relatedScenarios')}</h3>
                         <div class="related-scenarios">
                             ${relatedScenarios.map(s => `
                                 <span class="scenario-tag">${s.icon} ${s.name}</span>
@@ -130,13 +130,13 @@ export function openPlan(planId) {
                 <p class="plan-detail-code">${plan.code || 'N/A'} - ${plan.version || 'N/A'}</p>
 
                 <div class="plan-detail-section">
-                    <h3>Kirjeldus</h3>
+                    <h3>${window.t('plan.detail.description')}</h3>
                     <p>${plan.description}</p>
                 </div>
 
                 ${plan.scope ? `
                 <div class="plan-detail-section">
-                    <h3>Ulatus</h3>
+                    <h3>${window.t('plan.detail.scope')}</h3>
                     <p>${plan.scope}</p>
                 </div>
                 ` : ''}
@@ -144,22 +144,22 @@ export function openPlan(planId) {
                 <div class="plan-detail-metadata">
                     ${plan.documentNumber ? `
                     <div class="metadata-item">
-                        <strong>Dokumendi number:</strong> ${plan.documentNumber}
+                        <strong>${window.t('plan.detail.documentNumber')}</strong> ${plan.documentNumber}
                     </div>
                     ` : ''}
                     ${plan.validFrom ? `
                     <div class="metadata-item">
-                        <strong>Kehtiv alates:</strong> ${formatDate(plan.validFrom)}
+                        <strong>${window.t('plan.detail.validFrom')}</strong> ${formatDate(plan.validFrom)}
                     </div>
                     ` : ''}
                     ${plan.validUntil ? `
                     <div class="metadata-item">
-                        <strong>Kehtiv kuni:</strong> ${formatDate(plan.validUntil)}
+                        <strong>${window.t('plan.detail.validUntil')}</strong> ${formatDate(plan.validUntil)}
                     </div>
                     ` : ''}
                     ${plan.lastReviewedDate ? `
                     <div class="metadata-item">
-                        <strong>Viimati üle vaadatud:</strong> ${formatDate(plan.lastReviewedDate)}
+                        <strong>${window.t('plan.detail.lastReviewed')}</strong> ${formatDate(plan.lastReviewedDate)}
                     </div>
                     ` : ''}
                 </div>
@@ -174,9 +174,9 @@ export function openPlan(planId) {
                             <polyline points="7 10 12 15 17 10"/>
                             <line x1="12" y1="15" x2="12" y2="3"/>
                         </svg>
-                        Laadi alla PDF
+                        ${window.t('plan.action.downloadPdf')}
                     </button>
-                    <button class="btn-secondary" onclick="window.plansActions.closePlan()">Sulge</button>
+                    <button class="btn-secondary" onclick="window.plansActions.closePlan()">${window.t('plan.action.close')}</button>
                 </div>
             </div>
         </div>
@@ -197,7 +197,7 @@ export function downloadPlan(planId) {
     const plan = plans.find(p => p.id === planId);
     if (!plan) return;
 
-    alert(`PDF allalaadimine: ${plan.title}\n\nTulevik: Siin laetakse alla plaani PDF dokument`);
+    alert(window.t('plan.action.downloadPdfMessage', { title: plan.title }));
     console.log('Download plan:', planId);
 }
 

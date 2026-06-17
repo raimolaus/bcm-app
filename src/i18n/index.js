@@ -176,3 +176,90 @@ export function hasKey(key, lang) {
 export function clearWarningCache() {
   warnedKeys.clear();
 }
+
+// ===========================================================================
+// DOM translation layer
+// ===========================================================================
+
+/**
+ * Registry of callbacks that re-render dynamic (JS-generated) content.
+ * Called by applyLang() after translateDOM() so that JS-rendered text
+ * (lists, badges, status boxes) is refreshed in the new language.
+ */
+const rerenderHooks = new Set();
+
+/**
+ * Register a callback to be invoked whenever the language changes.
+ * Use this for content that is rendered by JS (not static HTML).
+ * @param {Function} fn - Re-render callback (no arguments)
+ */
+export function onLangChange(fn) {
+  if (typeof fn === 'function') {
+    rerenderHooks.add(fn);
+  }
+}
+
+/**
+ * Translate all elements within a root that carry i18n data-* attributes.
+ *
+ * Supported attributes:
+ *   data-i18n="key"             -> sets textContent
+ *   data-i18n-placeholder="key" -> sets placeholder attribute
+ *   data-i18n-title="key"       -> sets title attribute
+ *   data-i18n-aria-label="key"  -> sets aria-label attribute
+ *
+ * @param {ParentNode} [root=document] - Subtree to translate
+ */
+export function translateDOM(root = document) {
+  if (!root || typeof root.querySelectorAll !== 'function') {
+    return;
+  }
+
+  root.querySelectorAll('[data-i18n]').forEach(el => {
+    el.textContent = t(el.getAttribute('data-i18n'));
+  });
+
+  root.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+    el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+  });
+
+  root.querySelectorAll('[data-i18n-title]').forEach(el => {
+    el.setAttribute('title', t(el.getAttribute('data-i18n-title')));
+  });
+
+  root.querySelectorAll('[data-i18n-aria-label]').forEach(el => {
+    el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria-label')));
+  });
+
+  // Keep <html lang> in sync when translating the whole document
+  if (root === document && document.documentElement) {
+    document.documentElement.setAttribute('lang', getLang());
+  }
+}
+
+/**
+ * Change the active language and refresh the whole UI.
+ * 1. Persists the choice (setLang)
+ * 2. Re-translates all static DOM (translateDOM)
+ * 3. Runs registered re-render hooks for dynamic content
+ *
+ * @param {'et' | 'en'} lang - Language code
+ * @returns {boolean} True if the language was applied
+ */
+export function applyLang(lang) {
+  if (!setLang(lang)) {
+    return false;
+  }
+
+  translateDOM(document);
+
+  rerenderHooks.forEach(fn => {
+    try {
+      fn();
+    } catch (e) {
+      console.error('i18n: re-render hook failed', e);
+    }
+  });
+
+  return true;
+}

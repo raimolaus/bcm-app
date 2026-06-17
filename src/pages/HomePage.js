@@ -71,13 +71,13 @@ function setupCardHandlers() {
 let __incidentMode = 'REAL';
 
 function askIncidentMode() {
-    const real = window.confirm('Kas soovid avada uue intsidendi REAL režiimis?\n\nOK = REAL\nCancel = TRAINING');
+    const real = window.confirm(window.t('home.confirm.mode'));
     return real ? 'REAL' : 'TRAINING';
 }
 
 export function activateCrisisMode() {
     // 1) Confirmation dialog
-    const ok = window.confirm('Kas oled kindel, et soovid avada uue intsidendi?');
+    const ok = window.confirm(window.t('home.confirm.open'));
     if (!ok) return;
 
     // 2) Ask for REAL/TRAINING mode

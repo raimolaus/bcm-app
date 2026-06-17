@@ -32,7 +32,7 @@ export function renderContacts() {
     // Update count
     const contactsCount = document.querySelector('.contacts-count');
     if (contactsCount) {
-        contactsCount.textContent = `${filteredContacts.length} kontakti leitud`;
+        contactsCount.textContent = window.t('contacts.count.found', { count: filteredContacts.length });
     }
     
     // Render cards

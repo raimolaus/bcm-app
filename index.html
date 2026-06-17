@@ -25,6 +25,12 @@
         </div>
 
         <div class="top-bar-right">
+            <!-- Language Switcher -->
+            <div class="lang-switch" id="langSwitch" role="group" aria-label="Language">
+                <button class="lang-btn" data-lang="et" onclick="setAppLang('et')">ET</button>
+                <button class="lang-btn" data-lang="en" onclick="setAppLang('en')">EN</button>
+            </div>
+
             <!-- Fixed Home Button -->
             <button class="home-btn-fixed" onclick="goHome()" id="homeBtn" style="display: none;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -57,8 +63,8 @@
                             <line x1="12" y1="17" x2="12.01" y2="17"/>
                         </svg>
                     </div>
-                    <h2>AVA INTSIDENT</h2>
-                    <p>Vali hädaolukorra stsenaarium</p>
+                    <h2 data-i18n="home.card.openIncident.title">AVA INTSIDENT</h2>
+                    <p data-i18n="home.card.openIncident.description">Vali hädaolukorra stsenaarium</p>
                 </div>
 
                 <div class="card" data-card="plans" onclick="navigateTo('plansPage')">
@@ -68,8 +74,8 @@
                             <polyline points="14 2 14 8 20 8"/>
                         </svg>
                     </div>
-                    <h2>Plaanid</h2>
-                    <p>Business Continuity plaanide vaatamine ja otsing</p>
+                    <h2 data-i18n="home.card.plans.title">Plaanid</h2>
+                    <p data-i18n="home.card.plans.description">Business Continuity plaanide vaatamine ja otsing</p>
                 </div>
 
                 <div class="card" data-card="contacts" onclick="navigateTo('contactsPage')">
@@ -79,8 +85,8 @@
                             <circle cx="9" cy="7" r="4"/>
                         </svg>
                     </div>
-                    <h2>Kriitilised kontaktid</h2>
-                    <p>Kriitilised kontaktid ja kommunikatsioon</p>
+                    <h2 data-i18n="home.card.contacts.title">Kriitilised kontaktid</h2>
+                    <p data-i18n="home.card.contacts.description">Kriitilised kontaktid ja kommunikatsioon</p>
                 </div>
 
                 <div class="card" data-card="communication" onclick="navigateTo('commPage')">
@@ -89,8 +95,8 @@
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                         </svg>
                     </div>
-                    <h2>Kommunikatsioon</h2>
-                    <p>Kommunikatsiooni plaanid ja kanalid</p>
+                    <h2 data-i18n="home.card.communication.title">Kommunikatsioon</h2>
+                    <p data-i18n="home.card.communication.description">Kommunikatsiooni plaanid ja kanalid</p>
                 </div>
 
                 <div class="card" data-card="logs" onclick="navigateTo('incidentsPage')">
@@ -100,8 +106,8 @@
                             <path d="M9 12h6m-6 4h6"/>
                         </svg>
                     </div>
-                    <h2>Logid & Intsidendid</h2>
-                    <p>Intsidentide jälgimine ja raporteerimine</p>
+                    <h2 data-i18n="home.card.incidents.title">Logid & Intsidendid</h2>
+                    <p data-i18n="home.card.incidents.description">Intsidentide jälgimine ja raporteerimine</p>
                     <span class="badge" id="incidentsBadge" style="display:none;">0</span>
                 </div>
 
@@ -116,14 +122,14 @@
                         <path d="M19 12H5M12 19l-7-7 7-7"/>
                     </svg>
                 </button>
-                <h1>Kriitilised kontaktid</h1>
+                <h1 data-i18n="contacts.title">Kriitilised kontaktid</h1>
             </div>
             <div class="filter-bar">
-                <button class="filter-btn active" onclick="filterContacts('all')">Kõik</button>
+                <button class="filter-btn active" onclick="filterContacts('all')" data-i18n="contacts.filter.all">Kõik</button>
                 <button class="filter-btn" onclick="filterContacts('HHLA')">HHLA</button>
                 <button class="filter-btn" onclick="filterContacts('HTK')">HTK</button>
                 <button class="filter-btn" onclick="filterContacts('CERT')">CERT-EE</button>
-                <button class="filter-btn" onclick="filterContacts('SADAM')">Sadam</button>
+                <button class="filter-btn" onclick="filterContacts('SADAM')" data-i18n="contacts.filter.port">Sadam</button>
             </div>
             <p class="contacts-count">6 kontakti leitud</p>
             <div class="contacts-grid" id="contactsGrid"></div>
@@ -137,7 +143,7 @@
                         <path d="M19 12H5M12 19l-7-7 7-7"/>
                     </svg>
                 </button>
-                <h1>Business Continuity Plaanid</h1>
+                <h1 data-i18n="plans.title">Business Continuity Plaanid</h1>
             </div>
             <div class="plans-grid" id="plansGrid"></div>
         </div>
@@ -150,12 +156,12 @@
                         <path d="M19 12H5M12 19l-7-7 7-7"/>
                     </svg>
                 </button>
-                <h1>Kommunikatsioon</h1>
+                <h1 data-i18n="communication.title">Kommunikatsioon</h1>
             </div>
 
             <div class="section">
-                <h2>Kommunikatsiooni kanalid</h2>
-                <p class="section-description">Erinevad kommunikatsiooni meetodid kriisiolukorras kasutamiseks.</p>
+                <h2 data-i18n="communication.channels.title">Kommunikatsiooni kanalid</h2>
+                <p class="section-description" data-i18n="communication.channels.description">Erinevad kommunikatsiooni meetodid kriisiolukorras kasutamiseks.</p>
 
                 <div class="comm-channels">
                     <!-- SMS Card -->
@@ -168,8 +174,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3>Massiteavitus (SMS)</h3>
-                                <p>SMS kõigile töötajatele</p>
+                                <h3 data-i18n="communication.channel.sms">Massiteavitus (SMS)</h3>
+                                <p data-i18n="communication.channel.smsDescription">SMS kõigile töötajatele</p>
                             </div>
                             <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="9 18 15 12 9 6"/>
@@ -180,7 +186,7 @@
                                 <path d="M9 11l3 3L22 4"/>
                                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
                             </svg>
-                            <span>Mallid ja kontroll-nimekirjad saadaval</span>
+                            <span data-i18n="communication.channels.templatesAvailable">Mallid ja kontroll-nimekirjad saadaval</span>
                         </div>
                     </div>
 
@@ -193,8 +199,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3>Kõnekett</h3>
-                                <p>Järjestikused telefonikõned</p>
+                                <h3 data-i18n="communication.channel.phonechain">Kõnekett</h3>
+                                <p data-i18n="communication.channel.phonechainDescription">Järjestikused telefonikõned</p>
                             </div>
                             <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="9 18 15 12 9 6"/>
@@ -205,7 +211,7 @@
                                 <path d="M9 11l3 3L22 4"/>
                                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
                             </svg>
-                            <span>Mallid ja kontroll-nimekirjad saadaval</span>
+                            <span data-i18n="communication.channels.templatesAvailable">Mallid ja kontroll-nimekirjad saadaval</span>
                         </div>
                     </div>
 
@@ -219,8 +225,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3>E-post</h3>
-                                <p>E-posti grupid ja mallid</p>
+                                <h3 data-i18n="communication.channel.email">E-post</h3>
+                                <p data-i18n="communication.channel.emailDescription">E-posti grupid ja mallid</p>
                             </div>
                             <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="9 18 15 12 9 6"/>
@@ -231,7 +237,7 @@
                                 <path d="M9 11l3 3L22 4"/>
                                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
                             </svg>
-                            <span>Mallid ja kontroll-nimekirjad saadaval</span>
+                            <span data-i18n="communication.channels.templatesAvailable">Mallid ja kontroll-nimekirjad saadaval</span>
                         </div>
                     </div>
 
@@ -247,8 +253,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3>Raadio/Sat</h3>
-                                <p>Alternatiivsed kanalid</p>
+                                <h3 data-i18n="communication.channel.radiosat">Raadio/Sat</h3>
+                                <p data-i18n="communication.channel.radiosatDescription">Alternatiivsed kanalid</p>
                             </div>
                             <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="9 18 15 12 9 6"/>
@@ -259,7 +265,7 @@
                                 <path d="M9 11l3 3L22 4"/>
                                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
                             </svg>
-                            <span>Mallid ja kontroll-nimekirjad saadaval</span>
+                            <span data-i18n="communication.channels.templatesAvailable">Mallid ja kontroll-nimekirjad saadaval</span>
                         </div>
                     </div>
 
@@ -275,8 +281,8 @@
                                 </svg>
                             </div>
                             <div>
-                                <h3>Teams/Chat</h3>
-                                <p>Digitaalsed suhtluskanalid</p>
+                                <h3 data-i18n="communication.channel.teams">Teams/Chat</h3>
+                                <p data-i18n="communication.channel.teamsDescription">Digitaalsed suhtluskanalid</p>
                             </div>
                             <svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <polyline points="9 18 15 12 9 6"/>
@@ -287,7 +293,7 @@
                                 <path d="M9 11l3 3L22 4"/>
                                 <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
                             </svg>
-                            <span>Mallid ja kontroll-nimekirjad saadaval</span>
+                            <span data-i18n="communication.channels.templatesAvailable">Mallid ja kontroll-nimekirjad saadaval</span>
                         </div>
                     </div>
                 </div>
@@ -303,8 +309,8 @@
                     </svg>
                 </button>
                 <div>
-                    <h1>AVA INTSIDENT</h1>
-                    <p>Vali hädaolukorra stsenaarium</p>
+                    <h1 data-i18n="crisis.header.title">AVA INTSIDENT</h1>
+                    <p data-i18n="crisis.header.description">Vali hädaolukorra stsenaarium</p>
                 </div>
             </div>
             <div class="scenarios-grid" id="scenariosGrid"></div>
@@ -325,132 +331,132 @@
             </div>
             <div class="scenario-content">
                 <div class="action-block">
-                    <h2>⚡ Kiiretoimingud</h2>
+                    <h2 data-i18n="incident.quickActions.title">⚡ Kiiretoimingud</h2>
                     <div class="checklist" id="quickActionsChecklist"></div>
                 </div>
 
                 <!-- Incident Metrics Block (only for cyber scenarios) -->
                 <div class="action-block" id="incidentMetricsBlock" style="display: none;">
-                    <h2>📊 Intsidenti mõõtmed</h2>
+                    <h2 data-i18n="incident.metrics.title">📊 Intsidenti mõõtmed</h2>
                     <div class="incident-metrics-content" id="incidentMetricsContent">
                         <!-- MVP Fields -->
                         <div class="metrics-section">
                             <div class="metric-field">
-                                <label for="t0Time">t0 (avastamise aeg)</label>
+                                <label for="t0Time" data-i18n="incident.metrics.t0.label">t0 (avastamise aeg)</label>
                                 <div class="t0-input-group">
                                     <input type="datetime-local" id="t0Time">
-                                    <button class="btn-secondary" onclick="setT0Now()">Määra praegune aeg</button>
+                                    <button class="btn-secondary" onclick="setT0Now()" data-i18n="incident.metrics.t0.now">Määra praegune aeg</button>
                                 </div>
                             </div>
 
                             <div class="metric-field">
-                                <label>S-tase (klassifikatsioon)</label>
+                                <label data-i18n="incident.metrics.slevel.label">S-tase (klassifikatsioon)</label>
                                 <div class="s-level-grid" id="sLevelGrid"></div>
                             </div>
 
                             <div class="metric-field">
-                                <label for="affectedDomain">Mõjutatud domeen</label>
+                                <label for="affectedDomain" data-i18n="incident.metrics.domain.label">Mõjutatud domeen</label>
                                 <select id="affectedDomain" class="metric-select">
-                                    <option value="">Vali...</option>
+                                    <option value="" data-i18n="common.select">Vali...</option>
                                     <option value="IT">IT</option>
                                     <option value="OT">OT</option>
-                                    <option value="BOTH">Mõlemad</option>
-                                    <option value="UNKNOWN">Teadmata</option>
+                                    <option value="BOTH" data-i18n="incident.metrics.domain.both">Mõlemad</option>
+                                    <option value="UNKNOWN" data-i18n="incident.metrics.domain.unknown">Teadmata</option>
                                 </select>
                             </div>
 
                             <div class="metric-field">
-                                <label for="serviceDisruption">Teenuse seiskus?</label>
+                                <label for="serviceDisruption" data-i18n="incident.metrics.disruption.label">Teenuse seiskus?</label>
                                 <select id="serviceDisruption" class="metric-select">
-                                    <option value="">Vali...</option>
-                                    <option value="YES">Jah</option>
-                                    <option value="NO">Ei</option>
-                                    <option value="PARTIAL">Osaline</option>
-                                    <option value="UNKNOWN">Teadmata</option>
+                                    <option value="" data-i18n="common.select">Vali...</option>
+                                    <option value="YES" data-i18n="common.yes">Jah</option>
+                                    <option value="NO" data-i18n="common.no">Ei</option>
+                                    <option value="PARTIAL" data-i18n="incident.metrics.disruption.partial">Osaline</option>
+                                    <option value="UNKNOWN" data-i18n="incident.metrics.domain.unknown">Teadmata</option>
                                 </select>
                             </div>
 
                             <div class="metric-field">
-                                <label for="dataBreachSuspicion">Andmeleke kahtlus?</label>
+                                <label for="dataBreachSuspicion" data-i18n="incident.metrics.dataBreach.label">Andmeleke kahtlus?</label>
                                 <select id="dataBreachSuspicion" class="metric-select">
-                                    <option value="">Vali...</option>
-                                    <option value="YES">Jah</option>
-                                    <option value="NO">Ei</option>
-                                    <option value="UNKNOWN">Teadmata</option>
+                                    <option value="" data-i18n="common.select">Vali...</option>
+                                    <option value="YES" data-i18n="common.yes">Jah</option>
+                                    <option value="NO" data-i18n="common.no">Ei</option>
+                                    <option value="UNKNOWN" data-i18n="incident.metrics.domain.unknown">Teadmata</option>
                                 </select>
                             </div>
 
                             <div class="metric-field">
-                                <label for="spreadStatus">Leviku staatus</label>
+                                <label for="spreadStatus" data-i18n="incident.metrics.spread.label">Leviku staatus</label>
                                 <select id="spreadStatus" class="metric-select">
-                                    <option value="">Vali...</option>
-                                    <option value="ONGOING">Käib</option>
-                                    <option value="LIMITED">Piiratud</option>
-                                    <option value="STOPPED">Peatatud</option>
-                                    <option value="UNKNOWN">Teadmata</option>
+                                    <option value="" data-i18n="common.select">Vali...</option>
+                                    <option value="ONGOING" data-i18n="incident.metrics.spread.ongoing">Käib</option>
+                                    <option value="LIMITED" data-i18n="incident.metrics.spread.limited">Piiratud</option>
+                                    <option value="STOPPED" data-i18n="incident.metrics.spread.stopped">Peatatud</option>
+                                    <option value="UNKNOWN" data-i18n="incident.metrics.domain.unknown">Teadmata</option>
                                 </select>
                             </div>
 
                             <div class="metric-field">
-                                <label for="shortDescription">Lühikirjeldus (1-2 lauset)</label>
-                                <textarea id="shortDescription" class="metric-textarea" rows="3" placeholder="Kirjelda intsidenti lühidalt..."></textarea>
+                                <label for="shortDescription" data-i18n="incident.metrics.description.label">Lühikirjeldus (1-2 lauset)</label>
+                                <textarea id="shortDescription" class="metric-textarea" rows="3" placeholder="Kirjelda intsidenti lühidalt..." data-i18n-placeholder="incident.metrics.description.placeholder"></textarea>
                             </div>
 
                             <div class="metric-field">
-                                <label>Teavituste staatus</label>
+                                <label data-i18n="incident.metrics.notifications.title">Teavituste staatus</label>
                                 <div class="notifications-grid">
                                     <div class="notification-item">
                                         <h4>CERT-EE</h4>
                                         <div class="notification-controls">
-                                            <label>Vajalik?</label>
+                                            <label data-i18n="incident.metrics.notification.required">Vajalik?</label>
                                             <select id="certEE_required" class="metric-select-sm">
-                                                <option value="TO_BE_ASSESSED">Hinnata</option>
-                                                <option value="REQUIRED">Vajalik</option>
-                                                <option value="NOT_REQUIRED">Pole vaja</option>
+                                                <option value="TO_BE_ASSESSED" data-i18n="incident.metrics.notification.assess">Hinnata</option>
+                                                <option value="REQUIRED" data-i18n="incident.metrics.notification.requiredYes">Vajalik</option>
+                                                <option value="NOT_REQUIRED" data-i18n="incident.metrics.notification.requiredNo">Pole vaja</option>
                                             </select>
-                                            <label>Staatus</label>
+                                            <label data-i18n="incident.metrics.notification.status">Staatus</label>
                                             <select id="certEE_status" class="metric-select-sm">
-                                                <option value="PLANNED">Planeeritud</option>
-                                                <option value="SENT">Saadetud</option>
-                                                <option value="NOT_NEEDED">Pole vaja</option>
+                                                <option value="PLANNED" data-i18n="incident.metrics.notification.statusPlanned">Planeeritud</option>
+                                                <option value="SENT" data-i18n="incident.metrics.notification.statusSent">Saadetud</option>
+                                                <option value="NOT_NEEDED" data-i18n="incident.metrics.notification.statusNotNeeded">Pole vaja</option>
                                             </select>
-                                            <input type="datetime-local" id="certEE_timestamp" class="metric-input-sm" placeholder="Aeg">
+                                            <input type="datetime-local" id="certEE_timestamp" class="metric-input-sm" placeholder="Aeg" data-i18n-placeholder="incident.metrics.notification.timestamp">
                                         </div>
                                     </div>
                                     <div class="notification-item">
                                         <h4>DPO/GDPR</h4>
                                         <div class="notification-controls">
-                                            <label>Vajalik?</label>
+                                            <label data-i18n="incident.metrics.notification.required">Vajalik?</label>
                                             <select id="dpoGDPR_required" class="metric-select-sm">
-                                                <option value="TO_BE_ASSESSED">Hinnata</option>
-                                                <option value="REQUIRED">Vajalik</option>
-                                                <option value="NOT_REQUIRED">Pole vaja</option>
+                                                <option value="TO_BE_ASSESSED" data-i18n="incident.metrics.notification.assess">Hinnata</option>
+                                                <option value="REQUIRED" data-i18n="incident.metrics.notification.requiredYes">Vajalik</option>
+                                                <option value="NOT_REQUIRED" data-i18n="incident.metrics.notification.requiredNo">Pole vaja</option>
                                             </select>
-                                            <label>Staatus</label>
+                                            <label data-i18n="incident.metrics.notification.status">Staatus</label>
                                             <select id="dpoGDPR_status" class="metric-select-sm">
-                                                <option value="PLANNED">Planeeritud</option>
-                                                <option value="SENT">Saadetud</option>
-                                                <option value="NOT_NEEDED">Pole vaja</option>
+                                                <option value="PLANNED" data-i18n="incident.metrics.notification.statusPlanned">Planeeritud</option>
+                                                <option value="SENT" data-i18n="incident.metrics.notification.statusSent">Saadetud</option>
+                                                <option value="NOT_NEEDED" data-i18n="incident.metrics.notification.statusNotNeeded">Pole vaja</option>
                                             </select>
-                                            <input type="datetime-local" id="dpoGDPR_timestamp" class="metric-input-sm" placeholder="Aeg">
+                                            <input type="datetime-local" id="dpoGDPR_timestamp" class="metric-input-sm" placeholder="Aeg" data-i18n-placeholder="incident.metrics.notification.timestamp">
                                         </div>
                                     </div>
                                     <div class="notification-item">
-                                        <h4>Juhtkond</h4>
+                                        <h4 data-i18n="incident.metrics.notification.management">Juhtkond</h4>
                                         <div class="notification-controls">
-                                            <label>Vajalik?</label>
+                                            <label data-i18n="incident.metrics.notification.required">Vajalik?</label>
                                             <select id="management_required" class="metric-select-sm">
-                                                <option value="TO_BE_ASSESSED">Hinnata</option>
-                                                <option value="REQUIRED">Vajalik</option>
-                                                <option value="NOT_REQUIRED">Pole vaja</option>
+                                                <option value="TO_BE_ASSESSED" data-i18n="incident.metrics.notification.assess">Hinnata</option>
+                                                <option value="REQUIRED" data-i18n="incident.metrics.notification.requiredYes">Vajalik</option>
+                                                <option value="NOT_REQUIRED" data-i18n="incident.metrics.notification.requiredNo">Pole vaja</option>
                                             </select>
-                                            <label>Staatus</label>
+                                            <label data-i18n="incident.metrics.notification.status">Staatus</label>
                                             <select id="management_status" class="metric-select-sm">
-                                                <option value="PLANNED">Planeeritud</option>
-                                                <option value="SENT">Saadetud</option>
-                                                <option value="NOT_NEEDED">Pole vaja</option>
+                                                <option value="PLANNED" data-i18n="incident.metrics.notification.statusPlanned">Planeeritud</option>
+                                                <option value="SENT" data-i18n="incident.metrics.notification.statusSent">Saadetud</option>
+                                                <option value="NOT_NEEDED" data-i18n="incident.metrics.notification.statusNotNeeded">Pole vaja</option>
                                             </select>
-                                            <input type="datetime-local" id="management_timestamp" class="metric-input-sm" placeholder="Aeg">
+                                            <input type="datetime-local" id="management_timestamp" class="metric-input-sm" placeholder="Aeg" data-i18n-placeholder="incident.metrics.notification.timestamp">
                                         </div>
                                     </div>
                                 </div>
@@ -460,63 +466,63 @@
                         <!-- Nice-to-have Fields (collapsible) -->
                         <div class="metrics-additional">
                             <button class="metrics-toggle" onclick="toggleAdditionalMetrics()">
-                                <span id="additionalMetricsToggleText">▶ Näita lisaväljad</span>
+                                <span id="additionalMetricsToggleText" data-i18n="incident.metrics.toggle.show">▶ Näita lisaväljad</span>
                             </button>
                             <div id="additionalMetricsContent" style="display: none;">
                                 <div class="metric-field">
-                                    <label for="reporter">Raporteerija / teataja</label>
-                                    <input type="text" id="reporter" class="metric-input" placeholder="Nimi või kontakt">
+                                    <label for="reporter" data-i18n="incident.metrics.reporter.label">Raporteerija / teataja</label>
+                                    <input type="text" id="reporter" class="metric-input" placeholder="Nimi või kontakt" data-i18n-placeholder="incident.metrics.reporter.placeholder">
                                 </div>
                                 <div class="metric-field">
-                                    <label for="systemLocation">Süsteem/teenus/asukoht</label>
-                                    <input type="text" id="systemLocation" class="metric-input" placeholder="Näiteks: Server-01, TOS süsteem">
+                                    <label for="systemLocation" data-i18n="incident.metrics.systemLocation.label">Süsteem/teenus/asukoht</label>
+                                    <input type="text" id="systemLocation" class="metric-input" placeholder="Näiteks: Server-01, TOS süsteem" data-i18n-placeholder="incident.metrics.systemLocation.placeholder">
                                 </div>
                                 <div class="metric-field">
-                                    <label for="nis2Relevant">NIS2 relevants</label>
+                                    <label for="nis2Relevant" data-i18n="incident.metrics.nis2.label">NIS2 relevants</label>
                                     <select id="nis2Relevant" class="metric-select">
-                                        <option value="UNKNOWN">Teadmata</option>
-                                        <option value="YES">Jah</option>
-                                        <option value="NO">Ei</option>
+                                        <option value="UNKNOWN" data-i18n="incident.metrics.domain.unknown">Teadmata</option>
+                                        <option value="YES" data-i18n="common.yes">Jah</option>
+                                        <option value="NO" data-i18n="common.no">Ei</option>
                                     </select>
                                 </div>
                                 <div class="metric-field">
-                                    <label for="initialIndicators">Esmased indikaatorid/sümptomid</label>
-                                    <textarea id="initialIndicators" class="metric-textarea" rows="3" placeholder="Kirjelda esmased sümptomid..."></textarea>
+                                    <label for="initialIndicators" data-i18n="incident.metrics.indicators.label">Esmased indikaatorid/sümptomid</label>
+                                    <textarea id="initialIndicators" class="metric-textarea" rows="3" placeholder="Kirjelda esmased sümptomid..." data-i18n-placeholder="incident.metrics.indicators.placeholder"></textarea>
                                 </div>
                                 <div class="metric-field">
-                                    <label for="evidenceArtifacts">Tõendid/artefaktid (lingid/ID-d)</label>
-                                    <textarea id="evidenceArtifacts" class="metric-textarea" rows="2" placeholder="Näiteks: SIEM alert ID, log faili nimi..."></textarea>
+                                    <label for="evidenceArtifacts" data-i18n="incident.metrics.evidence.label">Tõendid/artefaktid (lingid/ID-d)</label>
+                                    <textarea id="evidenceArtifacts" class="metric-textarea" rows="2" placeholder="Näiteks: SIEM alert ID, log faili nimi..." data-i18n-placeholder="incident.metrics.evidence.placeholder"></textarea>
                                 </div>
                                 <div class="metric-field">
-                                    <label for="logger">Logija (kes kogub ajajoont)</label>
-                                    <input type="text" id="logger" class="metric-input" placeholder="Nimi">
+                                    <label for="logger" data-i18n="incident.metrics.logger.label">Logija (kes kogub ajajoont)</label>
+                                    <input type="text" id="logger" class="metric-input" placeholder="Nimi" data-i18n-placeholder="common.name">
                                 </div>
                             </div>
                         </div>
 
                         <div class="metrics-actions">
-                            <button class="btn-primary" onclick="saveIncidentMetrics()">💾 Salvesta</button>
-                            <button class="btn-secondary" onclick="clearIncidentMetrics()">🗑️ Tühjenda</button>
+                            <button class="btn-primary" onclick="saveIncidentMetrics()" data-i18n="incident.metrics.save">💾 Salvesta</button>
+                            <button class="btn-secondary" onclick="clearIncidentMetrics()" data-i18n="incident.metrics.clear">🗑️ Tühjenda</button>
                         </div>
                     </div>
                 </div>
 
                 <div class="action-block">
-                    <h2>📋 Tegevuskava</h2>
+                    <h2 data-i18n="incident.actionPlan.title">📋 Tegevuskava</h2>
                     <div class="checklist" id="actionPlanChecklist"></div>
                 </div>
                 <div class="action-block">
-                    <h2>📢 Kommunikatsioon</h2>
+                    <h2 data-i18n="incident.communication.title">📢 Kommunikatsioon</h2>
                     <div id="communicationButtons"></div>
                 </div>
                 <div class="action-block">
-                    <h2>📞 Kontaktid</h2>
+                    <h2 data-i18n="incident.contacts.title">📞 Kontaktid</h2>
                     <div class="contacts-grid" id="scenarioContacts"></div>
                 </div>
                 
                 <!-- SALVESTA NUPP -->
                 <div class="scenario-save-section" id="scenarioSaveSection">
-                    <button class="btn-save-scenario" id="btnSaveScenario" onclick="window.saveScenarioData()">
+                    <button class="btn-save-scenario" id="btnSaveScenario" onclick="window.saveScenarioData()" data-i18n="incident.save">
                         💾 SALVESTA
                     </button>
                     <span class="save-status" id="saveStatus"></span>
@@ -532,14 +538,14 @@
                         <path d="M19 12H5M12 19l-7-7 7-7"/>
                     </svg>
                 </button>
-                <h1>Sündmuste Logi</h1>
+                <h1 data-i18n="log.title">Sündmuste Logi</h1>
                 <button class="log-btn" onclick="exportLog()">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
                         <polyline points="7 10 12 15 17 10"/>
                         <line x1="12" y1="15" x2="12" y2="3"/>
                     </svg>
-                    Ekspordi
+                    <span data-i18n="log.export">Ekspordi</span>
                 </button>
             </div>
             <div class="log-timeline" id="logTimeline"></div>
@@ -555,44 +561,44 @@
                         <path d="M19 12H5M12 19l-7-7 7-7"/>
                     </svg>
                 </button>
-                <h1>Logid & Intsidendid</h1>
+                <h1 data-i18n="incidents.title">Logid & Intsidendid</h1>
             </div>
 
             <!-- FILTERS -->
             <div class="incident-filters">
                 <button class="filter-btn active" onclick="window.incidentActions.filter('all')" data-filter="all">
-                    Kõik <span class="count" id="countAll">0</span>
+                    <span data-i18n="incidents.filter.all">Kõik</span> <span class="count" id="countAll">0</span>
                 </button>
                 <button class="filter-btn" onclick="window.incidentActions.filter('active')" data-filter="active">
-                    🔴 Aktiivsed <span class="count" id="countActive">0</span>
+                    <span data-i18n="incidents.filter.active">🔴 Aktiivsed</span> <span class="count" id="countActive">0</span>
                 </button>
                 <button class="filter-btn" onclick="window.incidentActions.filter('exercise')" data-filter="exercise">
-                    🎓  Õppused <span class="count" id="countExercise">0</span>
+                    <span data-i18n="incidents.filter.exercise">🎓 Õppused</span> <span class="count" id="countExercise">0</span>
                 </button>
                 <button class="filter-btn" onclick="window.incidentActions.filter('closed')" data-filter="closed">
-                    âœ… Suletud <span class="count" id="countClosed">0</span>
+                    <span data-i18n="incidents.filter.closed">✅ Suletud</span> <span class="count" id="countClosed">0</span>
                 </button>
             </div>
 
             <!-- SORT & ACTIONS -->
             <div class="incidents-toolbar">
                 <div class="sort-controls">
-                    <label>Sorteeri:</label>
+                    <label data-i18n="incidents.sort.label">Sorteeri:</label>
                     <select id="incidentSort" onchange="window.incidentActions.sort(this.value)">
-                        <option value="date-desc">Uusim enne</option>
-                        <option value="date-asc">Vanim enne</option>
-                        <option value="severity">Tõsiduse järgi</option>
-                        <option value="status">Staatuse järgi</option>
+                        <option value="date-desc" data-i18n="incidents.sort.dateDesc">Uusim enne</option>
+                        <option value="date-asc" data-i18n="incidents.sort.dateAsc">Vanim enne</option>
+                        <option value="severity" data-i18n="incidents.sort.severity">Tõsiduse järgi</option>
+                        <option value="status" data-i18n="incidents.sort.status">Staatuse järgi</option>
                     </select>
                 </div>
-                <button class="btn-secondary btn-small" onclick="window.incidentActions.exportAll()">
+                <button class="btn-secondary btn-small" onclick="window.incidentActions.exportAll()" data-i18n="incidents.exportAll">
                     📄 Ekspordi kõik
                 </button>
             </div>
 
             <!-- INCIDENTS LIST -->
             <div class="incidents-list" id="incidentsList">
-                <p class="empty-message">Intsidente pole veel</p>
+                <p class="empty-message" data-i18n="incidents.empty">Intsidente pole veel</p>
             </div>
         </div>
 
@@ -629,16 +635,16 @@
 
             <!-- TABS -->
             <div class="incident-tabs">
-                <button class="tab-btn active" onclick="window.incidentActions.switchTab('overview')" data-tab="overview">
+                <button class="tab-btn active" onclick="window.incidentActions.switchTab('overview')" data-tab="overview" data-i18n="incident.tab.overview">
                     📊 Ülevaade
                 </button>
-                <button class="tab-btn" onclick="window.incidentActions.switchTab('timeline')" data-tab="timeline">
-                    â±️ Timeline
+                <button class="tab-btn" onclick="window.incidentActions.switchTab('timeline')" data-tab="timeline" data-i18n="incident.tab.timeline">
+                    ⏱️ Timeline
                 </button>
-                <button class="tab-btn" onclick="window.incidentActions.switchTab('checklist')" data-tab="checklist">
-                    â˜‘️ Tegevused
+                <button class="tab-btn" onclick="window.incidentActions.switchTab('checklist')" data-tab="checklist" data-i18n="incident.tab.actions">
+                    ☑️ Tegevused
                 </button>
-                <button class="tab-btn" onclick="window.incidentActions.switchTab('notifications')" data-tab="notifications">
+                <button class="tab-btn" onclick="window.incidentActions.switchTab('notifications')" data-tab="notifications" data-i18n="incident.tab.notifications">
                     📢 Teavitused
                 </button>
             </div>
@@ -650,13 +656,13 @@
 
             <!-- ACTIONS -->
             <div class="incident-actions-bar">
-                <button class="btn-secondary" onclick="window.incidentDetailActions.exportCurrent()">
+                <button class="btn-secondary" onclick="window.incidentDetailActions.exportCurrent()" data-i18n="incident.export">
                     📄 Eksport
                 </button>
-                <button class="btn-primary" onclick="window.incidentDetailActions.updateStatus()" id="updateStatusBtn">
+                <button class="btn-primary" onclick="window.incidentDetailActions.updateStatus()" id="updateStatusBtn" data-i18n="incident.updateStatus">
                     ✏️ Uuenda staatus
                 </button>
-                <button class="btn-secondary" onclick="window.incidentDetailActions.closeIncident()" id="closeIncidentBtn" style="background: #dc2626; color: white; border-color: #dc2626;">
+                <button class="btn-secondary" onclick="window.incidentDetailActions.closeIncident()" id="closeIncidentBtn" style="background: #dc2626; color: white; border-color: #dc2626;" data-i18n="incident.close">
                     🔒 Sulge intsident
                 </button>
             </div>
@@ -667,38 +673,38 @@
     <div class="modal" id="systemStatusModal" style="display: none;">
         <div class="modal-content">
             <div class="modal-header">
-                <h2>Määra süsteemi olek</h2>
-                <button class="modal-close" onclick="closeSystemStatusModal()">Ã—</button>
+                <h2 data-i18n="system.modalTitle">Määra süsteemi olek</h2>
+                <button class="modal-close" onclick="closeSystemStatusModal()">×</button>
             </div>
             <div class="modal-body">
                 <div class="status-select-grid">
                     <div class="status-select-card ok" onclick="selectManualStatus('OK')">
                         <div class="status-select-icon">✔</div>
-                        <div class="status-select-label">OK</div>
-                        <div class="status-select-desc">Süsteemid töötavad tavapäraselt</div>
+                        <div class="status-select-label" data-i18n="system.status.ok">OK</div>
+                        <div class="status-select-desc" data-i18n="system.status.okDescription">Süsteemid töötavad tavapäraselt</div>
                     </div>
                     <div class="status-select-card warning" onclick="selectManualStatus('WARNING')">
                         <div class="status-select-icon">⚠</div>
-                        <div class="status-select-label">HOIATUS</div>
-                        <div class="status-select-desc">Väike häire või õppus</div>
+                        <div class="status-select-label" data-i18n="system.status.warning">HOIATUS</div>
+                        <div class="status-select-desc" data-i18n="system.status.warningDescription">Väike häire või õppus</div>
                     </div>
                     <div class="status-select-card alert" onclick="selectManualStatus('ALERT')">
                         <div class="status-select-icon">🚨</div>
-                        <div class="status-select-label">HÄIRE</div>
-                        <div class="status-select-desc">Kriitiline olukord</div>
+                        <div class="status-select-label" data-i18n="system.status.alert">HÄIRE</div>
+                        <div class="status-select-desc" data-i18n="system.status.alertDescription">Kriitiline olukord</div>
                     </div>
                 </div>
                 <div class="manual-status-form" id="manualStatusForm" style="display: none;">
-                    <label for="manualStatusReason">Põhjus (max 120 tähemärki):</label>
-                    <textarea id="manualStatusReason" maxlength="120" rows="3" placeholder="Kirjelda lühidalt olukorda..."></textarea>
+                    <label for="manualStatusReason" data-i18n="system.manual.reason">Põhjus (max 120 tähemärki):</label>
+                    <textarea id="manualStatusReason" maxlength="120" rows="3" placeholder="Kirjelda lühidalt olukorda..." data-i18n-placeholder="system.manual.reasonPlaceholder"></textarea>
                     <div class="modal-actions">
-                        <button class="btn-primary" onclick="saveManualStatus()">Salvesta</button>
-                        <button class="btn-secondary" onclick="closeSystemStatusModal()">Tühista</button>
+                        <button class="btn-primary" onclick="saveManualStatus()" data-i18n="common.save">Salvesta</button>
+                        <button class="btn-secondary" onclick="closeSystemStatusModal()" data-i18n="common.cancel">Tühista</button>
                     </div>
                 </div>
                 <div class="manual-status-info">
-                    <p><strong>Märkus:</strong> Käsitsi määratud olek kehtib kuni taastamiseni või kuni tekib S0/S1 pärisintsident.</p>
-                    <button class="btn-link" onclick="resetToAutoStatus()" id="resetAutoBtn" style="display: none;">Taasta automaatne olek</button>
+                    <p><strong data-i18n="system.manual.note">Märkus:</strong> <span data-i18n="system.manual.noteText">Käsitsi määratud olek kehtib kuni taastamiseni või kuni tekib S0/S1 pärisintsident.</span></p>
+                    <button class="btn-link" onclick="resetToAutoStatus()" id="resetAutoBtn" style="display: none;" data-i18n="system.manual.reset">Taasta automaatne olek</button>
                 </div>
             </div>
         </div>
@@ -706,10 +712,39 @@
 
     <!-- i18n Module Wiring -->
     <script type="module">
-        import { t, setLang, getLang } from './src/i18n/index.js';
+        import { t, setLang, getLang, translateDOM, applyLang, onLangChange } from './src/i18n/index.js';
         window.t = t;
         window.setLang = setLang;
         window.getLang = getLang;
+        window.translateDOM = translateDOM;
+        window.applyLang = applyLang;
+        window.onLangChange = onLangChange;
+
+        // Reflect active language on the switcher buttons
+        function updateLangButtons() {
+            const current = getLang();
+            document.querySelectorAll('.lang-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-lang') === current);
+            });
+        }
+
+        // Called by the language switcher buttons (onclick="setAppLang('et')")
+        window.setAppLang = function (lang) {
+            applyLang(lang);
+            updateLangButtons();
+        };
+
+        // Apply stored language to static DOM on first load
+        function initI18nDom() {
+            translateDOM(document);
+            updateLangButtons();
+        }
+
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initI18nDom);
+        } else {
+            initI18nDom();
+        }
     </script>
 
     <!-- Main Application Script (ES6 Module) -->

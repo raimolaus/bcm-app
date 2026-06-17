@@ -97,7 +97,7 @@ export function updateCrisisModeUI() {
             // Update text to show it's active
             const bannerH1 = crisisBanner.querySelector('h1');
             if (bannerH1) {
-                bannerH1.innerHTML = 'INTSIDENT KÄSITLEMISEL - KLIKKA LÕPETAMISEKS';
+                bannerH1.innerHTML = window.t('crisis.banner.active');
             }
         } else {
             crisisBanner.classList.remove('crisis-active');
@@ -106,7 +106,7 @@ export function updateCrisisModeUI() {
             // Restore original text
             const bannerH1 = crisisBanner.querySelector('h1');
             if (bannerH1) {
-                bannerH1.textContent = 'Ava intsident';
+                bannerH1.textContent = window.t('crisis.button.open');
             }
         }
     }

@@ -258,7 +258,7 @@ export function selectManualStatus(status) {
 
 export function saveManualStatus() {
     if (!selectedManualStatus) {
-        alert('Palun vali olek');
+        alert(window.t('system.selectStatus'));
         return;
     }
 
@@ -266,7 +266,7 @@ export function saveManualStatus() {
     const reason = reasonInput ? reasonInput.value.trim() : '';
 
     if (!reason) {
-        alert('Palun sisesta põhjus');
+        alert(window.t('system.reasonRequired'));
         return;
     }
 

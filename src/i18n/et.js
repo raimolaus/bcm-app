@@ -41,6 +41,10 @@ export const et = {
         title: "Logid & Intsidendid",
         description: "Intsidentide jälgimine ja raporteerimine"
       }
+    },
+    confirm: {
+      open: "Kas oled kindel, et soovid avada uue intsidendi?",
+      mode: "Kas soovid avada uue intsidendi REAL režiimis?\n\nOK = REAL\nCancel = TRAINING"
     }
   },
 
@@ -239,6 +243,8 @@ export const et = {
         status: "Staatus",
         statusPlanned: "Planeeritud",
         statusSent: "Saadetud",
+        statusNotNeeded: "Pole vaja",
+        management: "Juhtkond",
         timestamp: "Aeg"
       },
       toggle: {
@@ -272,7 +278,11 @@ export const et = {
       saved: "Intsidendi mõõtmed salvestatud!",
       cleared: "Intsidendi mõõtmed tühjendatud",
       errorNoScenario: "Palun vali esmalt stsenaarium",
-      errorNoSlevel: "Palun vali S-tase"
+      errorNoSlevel: "Palun vali S-tase",
+      clearConfirm: "Kas oled kindel, et soovid vormi tühjendada?"
+    },
+    quickActions: {
+      title: "⚡ Kiiretoimingud"
     },
     actionPlan: {
       title: "📋 Tegevuskava"
@@ -282,6 +292,46 @@ export const et = {
     },
     contacts: {
       title: "📞 Kontaktid"
+    },
+    detail: {
+      team: "👥 Meeskond",
+      teamMembers: "Meeskonna liikmed:",
+      teamPlaceholder: "Iga liige eraldi real",
+      summary: "📝 Kokkuvõte",
+      summaryPlaceholder: "Intsidendi kokkuvõte",
+      done: "{completed} / {total} tehtud",
+      previewWarning: "⚠️ EELVAADE — Intsident pole avatud. Väljad on lukustatud.",
+      closedInfo: "🔒 Intsident on SULETUD. Väljad pole muudetavad.",
+      timelineEmpty: "Timeline on tühi",
+      notifiedStatus: "✅ Teavitatud",
+      pendingStatus: "⏳ Ootel",
+      notRequiredStatus: "➖ Pole vajalik",
+      dpo: "Andmekaitsespetsialist (DPO)",
+      notifTime: "Aeg:",
+      notifMethod: "Meetod:",
+      statusDialogTitle: "Muuda intsidendi staatust",
+      currentStatus: "Praegune staatus:",
+      newStatus: "Uus staatus:",
+      statusReason: "Põhjendus (kohustuslik, min 5 tähemärki):",
+      statusReasonPlaceholder: "Kirjelda, miks muudad staatust...",
+      reasonError: "Põhjendus peab olema vähemalt 5 tähemärki pikk",
+      sameStatus: "Uus staatus on sama mis praegune!",
+      closeDialogTitle: "Sulge intsident",
+      incidentLabel: "Intsident:",
+      idLabel: "ID:",
+      closeReason: "Põhjendus sulgemiseks (kohustuslik, min 5 tähemärki):",
+      closeReasonPlaceholder: "Kirjelda, miks sulged intsidendi...",
+      closeConfirm: "Kas oled kindel, et soovid selle intsidendi sulgeda?",
+      alertNotFound: "Viga: Intsidenti ei leitud!",
+      alertCannotEditClosed: "❌ SULETUD intsidenti ei saa muuta!",
+      alertNotOpen: "⚠️ Intsident pole avatud! Ava intsident enne muudatuste tegemist.",
+      alertSaved: "✅ Muudatused salvestatud!",
+      alertExported: "Intsident eksporditud!",
+      alertClosed: "Intsident suletud!",
+      user: "Kasutaja",
+      actionDetailUpdated: "Intsidendi detailid uuendatud",
+      actionStatusChanged: "Staatus muudetud: {status} - {reason}",
+      actionClosed: "Intsident suletud: {reason}"
     }
   },
 
@@ -332,7 +382,13 @@ export const et = {
     filenameTitle: "BCM Sündmuste Logi",
     exported: "Eksporditud: {date}",
     scenario: "Stsenaarium: {name}",
-    notSelected: "Pole valitud"
+    notSelected: "Pole valitud",
+    createdLabel: "Loodud:",
+    updatedLabel: "Uuendatud:",
+    exportEvent: "Logi eksporditud",
+    callMade: "Helistatud numbrile: {phone}",
+    slevelSelected: "S-tase valitud: {level}",
+    t0Set: "t0 määratud praegusele ajale"
   },
 
   report: {
@@ -366,6 +422,12 @@ export const et = {
     action: {
       cancel: "TÜHISTA",
       open: "AVA"
+    },
+    banner: {
+      active: "AKTIIVNE INTSIDENT",
+      startedAt: "Alustatud:",
+      preview: "EELVAADE — INTSIDENT POLE AVATUD",
+      openAction: "AVA INTSIDENT"
     }
   },
 
@@ -387,6 +449,8 @@ export const et = {
 
   system: {
     modalTitle: "Määra süsteemi olek",
+    selectStatus: "Palun vali olek",
+    reasonRequired: "Palun sisesta põhjus",
     status: {
       ok: "OK",
       okDescription: "Süsteemid töötavad tavapäraselt",
@@ -419,7 +483,10 @@ export const et = {
       sms: "SMS teavitus",
       call: "Telefoni kõne",
       email: "E-posti teavitus"
-    }
+    },
+    sendSms: "SMS saadetakse:\n\n{template}",
+    sendEmail: "E-post saadetakse:\n\nTeema: {subject}\n\n{body}",
+    emailTemplateFallback: "Mall saadetakse..."
   },
 
   priority: {

@@ -166,7 +166,7 @@ function renderScenarioPage(scenarioId) {
         window.updateIncidentBanner();
     }
 
-    addToLog('ACTION', `Avatud stsenaarium: ${currentScenario.name}`);
+    addToLog('ACTION', window.t('crisis.log.openedScenario', { scenario: currentScenario.name }));
 }
 
 // Render Quick Actions
@@ -189,7 +189,7 @@ function renderQuickActions() {
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
                         </svg>
-                        Helista
+                        ${window.t('contact.action.call')}
                     </button>` : ''}
             </div>
         `;
@@ -248,12 +248,12 @@ function getCommIcon(channel) {
 }
 
 function getChannelName(channel) {
-    const names = {
-        'SMS': 'SMS teavitus',
-        'CALL': 'Telefoni kõne',
-        'EMAIL': 'E-posti teavitus'
+    const keys = {
+        'SMS': 'sms',
+        'CALL': 'call',
+        'EMAIL': 'email'
     };
-    return names[channel] || channel;
+    return keys[channel] ? window.t(`comm.channel.${keys[channel]}`) : channel;
 }
 
 // Render Scenario Contacts
@@ -290,7 +290,7 @@ function toggleChecklistItem(itemId, itemTitle) {
     
     if (!hasActive) {
         // Preview mode — näita hoiatust ja ära salvesta
-        alert('⚠️ Intsident pole avatud!\n\nChecklistid salvestuvad ainult siis, kui intsident on aktiivne.');
+        alert(window.t('crisis.warning.notOpen') + '\n\n' + window.t('crisis.warning.checklistSave'));
         
         // Pööra checkbox tagasi
         const checkbox = document.getElementById(itemId);
@@ -309,10 +309,10 @@ function toggleChecklistItem(itemId, itemTitle) {
     const item = checkbox.closest('.checklist-item');
     if (isChecked) {
         item.classList.add('checked');
-        addToLog('ACTION', `✔ ${itemTitle}`, getCurrentTimestamp());
+        addToLog('ACTION', window.t('crisis.log.checked', { title: itemTitle }), getCurrentTimestamp());
     } else {
         item.classList.remove('checked');
-        addToLog('INFO', `Eemaldatud linnuke: ${itemTitle}`);
+        addToLog('INFO', window.t('crisis.log.unchecked', { title: itemTitle }));
     }
     
     // ============================================
@@ -370,9 +370,9 @@ function sendCommunication(commId, channel, title) {
     const comm = currentScenario.communications.find(c => c.id == commId);
 
     if (channel === 'SMS') {
-        alert(`SMS saadetakse:\n\n${comm.template}`);
+        alert(window.t('comm.sendSms', { template: comm.template }));
     } else if (channel === 'EMAIL') {
-        alert(`E-post saadetakse:\n\nTeema: ${comm.subject || title}\n\n${comm.template || 'Mall saadetakse...'}`);
+        alert(window.t('comm.sendEmail', { subject: comm.subject || title, body: comm.template || window.t('comm.emailTemplateFallback') }));
     } else if (channel === 'CALL') {
         makeCall(comm.phone);
     }
@@ -381,8 +381,8 @@ function sendCommunication(commId, channel, title) {
 }
 
 function makeCall(phoneNumber) {
-    addToLog('COMMUNICATION', `Helistatud numbrile: ${phoneNumber}`);
-    alert(`Helistatakse numbrile: ${phoneNumber}`);
+    addToLog('COMMUNICATION', window.t('log.callMade', { phone: phoneNumber }));
+    alert(window.t('contact.action.callMessage', { phone: phoneNumber }));
     // In real app: window.location.href = `tel:${phoneNumber}`;
 }
 
@@ -419,7 +419,7 @@ function renderIncidentLog() {
     const storedLog = JSON.parse(localStorage.getItem('bcm_incidents') || '[]');
 
     if (storedLog.length === 0) {
-        container.innerHTML = '<p class="empty-log">Logis pole veel kirjeid</p>';
+        container.innerHTML = `<p class="empty-log">${window.t('log.empty')}</p>`;
         return;
     }
 
@@ -438,19 +438,19 @@ function renderIncidentLog() {
                 <div class="log-entry-header">
                     <h3>
                         ${entry.scenarioName}
-                        ${isExercise ? '<span class="exercise-badge">[ÕPPUS]</span>' : ''}
+                        ${isExercise ? `<span class="exercise-badge">${window.t('log.badgeExercise')}</span>` : ''}
                         <span class="status-badge status-${status.toLowerCase()}">${status}</span>
                     </h3>
                     <span class="log-entry-id">${entry.id}</span>
                 </div>
                 <div class="log-entry-meta">
-                    <span>ðŸ• Loodud: ${createdDate.toLocaleString('et-EE')}</span>
-                    ${entry.updatedAt !== entry.createdAt ? `<span>ðŸ”„ Uuendatud: ${updatedDate.toLocaleString('et-EE')}</span>` : ''}
+                    <span>🕐 ${window.t('log.createdLabel')} ${createdDate.toLocaleString('et-EE')}</span>
+                    ${entry.updatedAt !== entry.createdAt ? `<span>🔄 ${window.t('log.updatedLabel')} ${updatedDate.toLocaleString('et-EE')}</span>` : ''}
                 </div>
 
                 ${hasMetrics ? `
                     <div class="log-metrics-summary">
-                        <h4>📊 Intsidenti mõõtmed</h4>
+                        <h4>${window.t('log.metricsTitle')}</h4>
                         <div class="metrics-grid">
                             ${metrics.t0 ? `<div class="metric-item"><strong>t0:</strong> ${new Date(metrics.t0).toLocaleString('et-EE')}</div>` : ''}
                             ${metrics.sLevel ? `<div class="metric-item"><strong>S-tase:</strong> <span class="badge badge-${SLevelDetails[metrics.sLevel].class}">${metrics.sLevel}</span></div>` : ''}
@@ -462,31 +462,31 @@ function renderIncidentLog() {
                         ${metrics.shortDescription ? `<div class="metric-description"><strong>Kirjeldus:</strong> ${metrics.shortDescription}</div>` : ''}
 
                         <div class="notifications-summary">
-                            <h5>Teavituste staatus:</h5>
+                            <h5>${window.t('log.notificationsTitle')}</h5>
                             <div class="notifications-list">
                                 ${renderNotificationStatus('CERT-EE', metrics.notifications.certEE)}
                                 ${renderNotificationStatus('DPO/GDPR', metrics.notifications.dpoGDPR)}
-                                ${renderNotificationStatus('Juhtkond', metrics.notifications.management)}
+                                ${renderNotificationStatus(window.t('incident.metrics.notification.management'), metrics.notifications.management)}
                             </div>
                         </div>
 
                         ${metrics.reporter || metrics.systemLocation || metrics.logger ? `
                             <div class="additional-info">
-                                ${metrics.reporter ? `<div><strong>Raporteerija:</strong> ${metrics.reporter}</div>` : ''}
-                                ${metrics.systemLocation ? `<div><strong>Süsteem:</strong> ${metrics.systemLocation}</div>` : ''}
-                                ${metrics.logger ? `<div><strong>Logija:</strong> ${metrics.logger}</div>` : ''}
+                                ${metrics.reporter ? `<div><strong>${window.t('log.reporter')}</strong> ${metrics.reporter}</div>` : ''}
+                                ${metrics.systemLocation ? `<div><strong>${window.t('log.system')}</strong> ${metrics.systemLocation}</div>` : ''}
+                                ${metrics.logger ? `<div><strong>${window.t('log.logger')}</strong> ${metrics.logger}</div>` : ''}
                             </div>
                         ` : ''}
                     </div>
                 ` : ''}
 
                 <div class="log-entry-actions">
-                    <button class="btn-secondary-sm" onclick="viewLogEntry('${entry.id}')">🕐️ Vaata</button>
+                    <button class="btn-secondary-sm" onclick="viewLogEntry('${entry.id}')">${window.t('log.action.view')}</button>
                     ${status === 'OPEN' ?
-                        `<button class="btn-secondary-sm" onclick="closeIncident('${entry.id}')">✔ Sulge intsident</button>` :
-                        `<button class="btn-secondary-sm" onclick="reopenIncident('${entry.id}')">â†» Ava uuesti</button>`
+                        `<button class="btn-secondary-sm" onclick="closeIncident('${entry.id}')">${window.t('log.action.close')}</button>` :
+                        `<button class="btn-secondary-sm" onclick="reopenIncident('${entry.id}')">${window.t('log.action.reopen')}</button>`
                     }
-                    <button class="btn-secondary-sm" onclick="deleteLogEntry('${entry.id}')">🗑️ Kustuta</button>
+                    <button class="btn-secondary-sm" onclick="deleteLogEntry('${entry.id}')">${window.t('log.action.delete')}</button>
                 </div>
             </div>
         `;
@@ -507,7 +507,7 @@ function renderNotificationStatus(recipient, notification) {
         <div class="notification-summary-item">
             <strong>${recipient}:</strong>
             <span class="badge badge-${statusBadge}">${getNotificationStatusText(notification.status)}</span>
-            ${notification.required === 'REQUIRED' ? '<span class="required-badge">⚠️ Vajalik</span>' : ''}
+            ${notification.required === 'REQUIRED' ? `<span class="required-badge">${window.t('log.notificationRequired')}</span>` : ''}
             ${timestamp}
         </div>
     `;
@@ -515,12 +515,12 @@ function renderNotificationStatus(recipient, notification) {
 
 // Helper function to get notification status text
 function getNotificationStatusText(status) {
-    const texts = {
-        'PLANNED': 'Planeeritud',
-        'SENT': 'Saadetud',
-        'NOT_NEEDED': 'Pole vaja'
+    const keys = {
+        'PLANNED': 'statusPlanned',
+        'SENT': 'statusSent',
+        'NOT_NEEDED': 'statusNotNeeded'
     };
-    return texts[status] || status;
+    return keys[status] ? window.t(`incident.metrics.notification.${keys[status]}`) : status;
 }
 
 // View log entry details
@@ -529,17 +529,17 @@ function viewLogEntry(entryId) {
     const entry = storedLog.find(e => e.id === entryId);
 
     if (!entry) {
-        alert('Logikirjet ei leitud');
+        alert(window.t('log.notFound'));
         return;
     }
 
-    alert(`Logikirje detailid:\n\n${JSON.stringify(entry, null, 2)}`);
+    alert(window.t('log.details') + `\n\n${JSON.stringify(entry, null, 2)}`);
     // TODO: Implement proper detail view modal
 }
 
 // Delete log entry
 function deleteLogEntry(entryId) {
-    if (!confirm('Kas oled kindel, et soovid selle logikirje kustutada?')) {
+    if (!confirm(window.t('confirm.deleteLog'))) {
         return;
     }
 
@@ -547,9 +547,9 @@ function deleteLogEntry(entryId) {
     storedLog = storedLog.filter(e => e.id !== entryId);
     localStorage.setItem('bcm_incidents', JSON.stringify(storedLog));
 
-    alert('Logikirje kustutatud');
+    alert(window.t('log.deleted'));
     renderIncidentLog();
-    addToLog('SYSTEM_EVENT', `Logikirje kustutatud: ${entryId}`);
+    addToLog('SYSTEM_EVENT', window.t('log.event.deleted', { id: entryId }));
 
     // Update system status after deletion
     if (window.updateSystemStatus) {
@@ -559,7 +559,7 @@ function deleteLogEntry(entryId) {
 
 // Close incident
 function closeIncident(entryId) {
-    if (!confirm('Kas oled kindel, et soovid selle intsidendi sulgeda?')) {
+    if (!confirm(window.t('confirm.closeIncident'))) {
         return;
     }
 
@@ -571,9 +571,9 @@ function closeIncident(entryId) {
         entry.updatedAt = new Date().toISOString();
         localStorage.setItem('bcm_incidents', JSON.stringify(storedLog));
 
-        alert('Intsident suletud');
+        alert(window.t('incident.closed'));
         renderIncidentLog();
-        addToLog('SYSTEM_EVENT', `Intsident suletud: ${entryId}`);
+        addToLog('SYSTEM_EVENT', window.t('log.event.closed', { id: entryId }));
 
         // Update system status after closing
         if (window.updateSystemStatus) {
@@ -584,7 +584,7 @@ function closeIncident(entryId) {
 
 // Reopen incident
 function reopenIncident(entryId) {
-    if (!confirm('Kas oled kindel, et soovid selle intsidendi uuesti avada?')) {
+    if (!confirm(window.t('confirm.reopenIncident'))) {
         return;
     }
 
@@ -596,9 +596,9 @@ function reopenIncident(entryId) {
         entry.updatedAt = new Date().toISOString();
         localStorage.setItem('bcm_incidents', JSON.stringify(storedLog));
 
-        alert('Intsident avatud');
+        alert(window.t('incident.opened'));
         renderIncidentLog();
-        addToLog('SYSTEM_EVENT', `Intsident avatud uuesti: ${entryId}`);
+        addToLog('SYSTEM_EVENT', window.t('log.event.reopened', { id: entryId }));
 
         // Update system status after reopening
         if (window.updateSystemStatus) {
@@ -609,22 +609,22 @@ function reopenIncident(entryId) {
 
 function getLogTypeIcon(type) {
     const icons = {
-        'INFO': 'â„¹️',
+        'INFO': 'ℹ️',
         'ACTION': '✔',
-        'COMMUNICATION': 'ðŸ“§',
-        'SYSTEM_EVENT': 'âš™️'
+        'COMMUNICATION': '📧',
+        'SYSTEM_EVENT': '⚙️'
     };
-    return icons[type] || 'â€¢';
+    return icons[type] || '•';
 }
 
 function exportLog() {
     if (incidentLog.length === 0) {
-        alert('Logis pole veel kirjeid');
+        alert(window.t('log.empty'));
         return;
     }
 
-    let logText = `BCM Sündmuste Logi\nEksportitud: ${new Date().toLocaleString('et-EE')}\n\n`;
-    logText += `Stsenaarium: ${currentScenario ? currentScenario.name : 'Pole valitud'}\n\n`;
+    let logText = `${window.t('log.filenameTitle')}\n${window.t('log.exported', { date: new Date().toLocaleString('et-EE') })}\n\n`;
+    logText += `${window.t('log.scenario', { name: currentScenario ? currentScenario.name : window.t('log.notSelected') })}\n\n`;
     logText += `---\n\n`;
 
     incidentLog.forEach(entry => {
@@ -641,7 +641,7 @@ function exportLog() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
 
-    addToLog('SYSTEM_EVENT', 'Logi eksporditud');
+    addToLog('SYSTEM_EVENT', window.t('log.exportEvent'));
 }
 
 // Initialize on page load
@@ -692,7 +692,7 @@ function renderSLevelGrid() {
                 <h4>${level.name}</h4>
                 <p>${level.description}</p>
                 <div class="s-level-meta">
-                    <span>â±️ ${level.response}</span>
+                    <span>⏱️ ${level.response}</span>
                     <span>🎯 ${level.containment}</span>
                 </div>
             </div>
@@ -709,7 +709,7 @@ function selectSLevel(level) {
     const dataBreachSuspicion = document.getElementById('dataBreachSuspicion').value;
     updateNotificationSuggestions(level, dataBreachSuspicion);
 
-    addToLog('INFO', `S-tase valitud: ${level}`);
+    addToLog('INFO', window.t('log.slevelSelected', { level }));
 }
 
 // Set t0 to current time
@@ -717,7 +717,7 @@ function setT0Now() {
     const now = new Date();
     const dateTimeLocal = now.toISOString().slice(0, 16);
     document.getElementById('t0Time').value = dateTimeLocal;
-    addToLog('INFO', 't0 määratud praegusele ajale');
+    addToLog('INFO', window.t('log.t0Set'));
 }
 
 // Toggle Additional Metrics
@@ -727,10 +727,10 @@ function toggleAdditionalMetrics() {
 
     if (content.style.display === 'none') {
         content.style.display = 'block';
-        toggleText.textContent = '▼ Peida lisaväljad';
+        toggleText.textContent = window.t('incident.metrics.toggle.hide');
     } else {
         content.style.display = 'none';
-        toggleText.textContent = '▶ Näita lisaväljad';
+        toggleText.textContent = window.t('incident.metrics.toggle.show');
     }
 }
 
@@ -770,18 +770,18 @@ function saveIncidentMetrics() {
     const incidentId = typeof window.getActiveIncidentId === 'function' ? window.getActiveIncidentId() : null;
     
     if (!hasActive || !incidentId) {
-        alert('⚠️ Intsident pole avatud!\n\nMetrics salvestub ainult siis, kui intsident on aktiivne.');
+        alert(window.t('crisis.warning.notOpen') + '\n\n' + window.t('crisis.warning.saveFirst'));
         return;
     }
 
     if (!currentScenario) {
-        alert('Palun vali esmalt stsenaarium');
+        alert(window.t('incident.metrics.errorNoScenario'));
         return;
     }
 
     // Validate MVP fields
     if (!selectedSLevel) {
-        alert('Palun vali S-tase');
+        alert(window.t('incident.metrics.errorNoSlevel'));
         return;
     }
 
@@ -840,8 +840,8 @@ function saveIncidentMetrics() {
         incident.actions = incident.actions || [];
         incident.actions.push({
             timestamp: new Date().toISOString(),
-            user: 'Kasutaja',
-            action: 'Intsidendi mõõtmed salvestatud',
+            user: window.t('incident.detail.user'),
+            action: window.t('incident.metrics.saved'),
             category: 'METRICS'
         });
         
@@ -849,12 +849,12 @@ function saveIncidentMetrics() {
         
         currentIncidentMetrics = metrics;
 
-        alert('Intsidendi mõõtmed salvestatud!');
-        addToLog('SYSTEM_EVENT', `💾 Intsidendi mõõtmed salvestatud (${incidentId})`);
+        alert(window.t('incident.metrics.saved'));
+        addToLog('SYSTEM_EVENT', `💾 ${window.t('incident.metrics.saved')} (${incidentId})`);
 
         console.log('[CRISIS-APP] Saved incident metrics:', incidentId, metrics);
     } else {
-        alert('Viga: Intsidenti ei leitud!');
+        alert(window.t('incident.detail.alertNotFound'));
         console.error('[CRISIS-APP] Incident not found:', incidentId);
     }
 
@@ -869,7 +869,7 @@ function saveIncidentMetrics() {
 
 // Clear Incident Metrics Form
 function clearIncidentMetrics() {
-    if (!confirm('Kas oled kindel, et soovid vormi tühjendada?')) {
+    if (!confirm(window.t('incident.metrics.clearConfirm'))) {
         return;
     }
 
@@ -901,7 +901,7 @@ function clearIncidentMetrics() {
     document.getElementById('evidenceArtifacts').value = '';
     document.getElementById('logger').value = '';
 
-    addToLog('INFO', 'Intsidenti mõõtmed tühjendatud');
+    addToLog('INFO', window.t('incident.metrics.cleared'));
 }
 
 // Load Incident Metrics to Form (if editing existing)
@@ -1082,14 +1082,14 @@ function showIncidentConfirmationDialog(scenarioId, scenarioData) {
     dialog.innerHTML = `
         <div class="modal-content" style="max-width: 500px;">
             <div class="modal-header">
-                <h2>Ava uus intsident</h2>
+                <h2>${window.t('faas2.dialogTitle')}</h2>
             </div>
             <div class="modal-body">
-                <p><strong>Stsenaarium:</strong> ${scenarioData.name}</p>
+                <p><strong>${window.t('faas2.dialogScenario')}</strong> ${scenarioData.name}</p>
                 <p style="margin-bottom: 24px;">${scenarioData.description}</p>
 
                 <div style="margin-bottom: 24px;">
-                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">ReÅ¾iim:</label>
+                    <label style="display: block; margin-bottom: 8px; font-weight: 600;">${window.t('faas2.dialogMode')}</label>
                     <div style="display: flex; gap: 12px;">
                         <button class="btn-mode-toggle active" id="modeReal" onclick="selectIncidentMode('REAL')" style="flex: 1; padding: 12px; border-radius: 8px; border: 2px solid #3b82f6; background: #3b82f6; color: white; font-weight: 600; cursor: pointer;">
                             REAL
@@ -1099,18 +1099,18 @@ function showIncidentConfirmationDialog(scenarioId, scenarioData) {
                         </button>
                     </div>
                     <p style="margin-top: 8px; font-size: 14px; color: #6b7280;">
-                        <span id="modeDescription">Päris intsident - kajastub süsteemis reaalsena</span>
+                        <span id="modeDescription">${window.t('faas2.mode.realDescription')}</span>
                     </p>
                 </div>
 
-                <p style="font-size: 14px; color: #6b7280;">Kas oled kindel, et soovid luua uue intsidendi?</p>
+                <p style="font-size: 14px; color: #6b7280;">${window.t('faas2.confirmCreate')}</p>
 
                 <div class="modal-actions" style="margin-top: 24px;">
                     <button class="btn-primary" onclick="confirmCreateIncident('${scenarioId}')" style="flex: 1;">
-                        Kinnita ja loo intsident
+                        ${window.t('faas2.actionConfirm')}
                     </button>
                     <button class="btn-secondary" onclick="cancelIncidentCreation()" style="flex: 1;">
-                        Tühista
+                        ${window.t('common.cancel')}
                     </button>
                 </div>
             </div>
@@ -1139,7 +1139,7 @@ function selectIncidentMode(mode) {
         trainingBtn.style.color = '#374151';
         trainingBtn.style.borderColor = '#d1d5db';
 
-        description.textContent = 'Päris intsident - kajastub süsteemis reaalsena';
+        description.textContent = window.t('faas2.mode.realDescription');
     } else {
         trainingBtn.classList.add('active');
         trainingBtn.style.background = '#3b82f6';
@@ -1151,7 +1151,7 @@ function selectIncidentMode(mode) {
         realBtn.style.color = '#374151';
         realBtn.style.borderColor = '#d1d5db';
 
-        description.textContent = 'Õppus/Treening - märgitud õppusena';
+        description.textContent = window.t('faas2.mode.trainingDescription');
     }
 }
 
@@ -1159,7 +1159,7 @@ function selectIncidentMode(mode) {
 function confirmCreateIncident(scenarioId) {
     const scenario = scenarios.find(s => s.id === scenarioId);
     if (!scenario) {
-        alert('Stsenaariumi ei leitud');
+        alert(window.t('error.scenarioNotFound'));
         return;
     }
 
@@ -1180,7 +1180,7 @@ function confirmCreateIncident(scenarioId) {
         console.log(`[FAAS2] Incident created: ${incident} (${selectedIncidentMode})`);
 
         // Add timeline entry
-        addToLog('SYSTEM_EVENT', `Intsident loodud: ${scenario.name} (${selectedIncidentMode})`);
+        addToLog('SYSTEM_EVENT', window.t('crisis.log.created', { scenario: scenario.name, mode: selectedIncidentMode }));
     }
 
     // Clear flow state
@@ -1225,7 +1225,7 @@ function confirmCreateIncident(scenarioId) {
     renderCommunicationButtons();
     renderScenarioContacts();
 
-    addToLog('ACTION', `Avatud stsenaarium: ${currentScenario.name}`);
+    addToLog('ACTION', window.t('crisis.log.openedScenario', { scenario: currentScenario.name }));
 }
 
 // Cancel incident creation
@@ -1279,7 +1279,7 @@ function saveScenarioData() {
     const incidentId = typeof window.getActiveIncidentId === 'function' ? window.getActiveIncidentId() : null;
     
     if (!hasActive || !incidentId) {
-        alert('⚠️ Intsident pole avatud!\n\nAndmete salvestamiseks ava esmalt intsident.');
+        alert(window.t('crisis.warning.notOpen') + '\n\n' + window.t('crisis.warning.saveFirst'));
         return;
     }
     
@@ -1297,7 +1297,7 @@ function saveScenarioData() {
     // Näita kinnitust
     const statusEl = document.getElementById('saveStatus');
     if (statusEl) {
-        statusEl.textContent = '✓ Salvestatud!';
+        statusEl.textContent = window.t('common.saved');
         statusEl.classList.add('show');
         setTimeout(() => {
             statusEl.classList.remove('show');
